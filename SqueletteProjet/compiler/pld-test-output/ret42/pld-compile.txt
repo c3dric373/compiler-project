@@ -1,0 +1,3 @@
+/bin/sh: /home/c3dric/Uni/Studium/master/ss20/compiler-project/SqueletteProjet/tests/pld-wrapper.sh: Permission denied
+
+return code: 126
