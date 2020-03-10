@@ -17,5 +17,5 @@ main:
 	.cfi_endproc
 .LFE0:
 	.size	main, .-main
-	.ident	"GCC: (GNU) 9.2.0"
+	.ident	"GCC: (Arch Linux 9.2.1+20200130-2) 9.2.1 20200130"
 	.section	.note.GNU-stack,"",@progbits
