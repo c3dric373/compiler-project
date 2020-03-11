@@ -3,9 +3,9 @@
 # Edit at https://www.gitignore.io/?templates=c,c++,python,assembler
 
 ###directory
-SqueletteProjet/compiler/antlr4-generated/
-SqueletteProjet/compiler/output/
-SqueletteProjet/tests/pld-test-output/
+/SqueletteProjet/compiler/antlr4-generated/
+/SqueletteProjet/compiler/output/
+/SqueletteProjet/tests/pld-test-output/
 
 ### Assembler ###
 *.exe
