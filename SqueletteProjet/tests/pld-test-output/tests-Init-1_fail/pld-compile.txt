@@ -28,6 +28,6 @@ line 1:41 token recognition error at: 'g'
 line 1:42 token recognition error at: 'a'
 line 1:43 token recognition error at: '.'
 line 2:0 mismatched input '<EOF>' expecting 'int'
-/home/c3dric/Uni/Studium/master/ss20/compiler-project/SqueletteProjet/tests/pld-wrapper.sh: line 21: 27714 Segmentation fault      (core dumped) $(dirname $0)/../compiler/ifcc $SOURCENAME > $DESTNAME
+/home/c3dric/Uni/Studium/master/ss20/compiler-project/SqueletteProjet/tests/pld-wrapper.sh: line 21: 179683 Segmentation fault      (core dumped) $(dirname $0)/../compiler/ifcc $SOURCENAME > $DESTNAME
 
 return code: 139
