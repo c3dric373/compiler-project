@@ -21,45 +21,13 @@ public:
 
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override {
 
-     int retval = stoi(ctx->expr()->getText());
+     int retval = stoi(ctx->CONST()->getText());
      std::cout<<".globl	main\n"
            " main: \n"
            " 	movl	$"<<retval<<", %eax\n"
            " 	ret\n";
 
      return 0;
-  }
-
-  virtual antlrcpp::Any visitBloc(ifccParser::BlocContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitDefinition(ifccParser::DefinitionContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitMult(ifccParser::MultContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitConst(ifccParser::ConstContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitName(ifccParser::NameContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitMoins(ifccParser::MoinsContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitPlus(ifccParser::PlusContext *ctx) override {
-    return visitChildren(ctx);
   }
 
 
