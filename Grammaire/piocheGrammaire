@@ -1,0 +1,30 @@
+grammar v1;
+
+prog : expr;
+exprA   :exprA '+' exprA #plus
+	|exprA '-' exprA #moins
+	|exprA '*' exprA #mult
+	//pour après |exprA '/' exprA #div
+	|'('exprA')'
+	|'{'exprA'}'
+
+exprB  	:exprB '&' exprB #et
+	|exprB'|' exprB #ou
+	|exprB '^' exprB #
+	|exprB '&&' exprB #etP
+	|exprB '||' exprB #ouP
+	|exprB '!' exprB #
+	|'('exprB')'
+	|'{'exprB'}'
+	//pour après|'['exprB']'
+	;
+
+INT : DIGIT+ ; 
+fragment DIGIT : [0-9] ; // not a token by itself
+//pour après ID : LETTER (LETTER|'0'..'9')* ;	
+//pour après fragment LETTER : [a-zA-Z\u0080-\u00FF_] ;
+
+
+
+
+

@@ -23,9 +23,9 @@ expr   :
 	|expr '-' expr #moins
 	|expr '*' expr #mult
 	//pour après |expr '/' expr #div
-	|'('expr')'#par
-	|CONST #const
-	|NAME#name
+	|'('expr')'
+	|CONST
+	|NAME
 	;
 
 //instr : 
