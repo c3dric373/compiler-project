@@ -5,14 +5,14 @@
 
 
 #include "antlr4-runtime.h"
-#include "ifccVisitor.h"
+#include "antlr4-generated/ifccVisitor.h"
 
 
 /**
  * This class provides an empty implementation of ifccVisitor, which can be
  * extended to create a visitor which only needs to handle a subset of the available methods.
  */
-class  ifccBaseVisitor : public ifccVisitor {
+class  Visitor : public ifccVisitor {
 public:
 
   virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override {
@@ -20,7 +20,14 @@ public:
   }
 
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override {
-    return visitChildren(ctx);
+
+     int retval = stoi(ctx->CONST()->getText());
+     std::cout<<".globl	main\n"
+           " main: \n"
+           " 	movl	$"<<retval<<", %eax\n"
+           " 	ret\n";
+
+     return 0;
   }
 
 
