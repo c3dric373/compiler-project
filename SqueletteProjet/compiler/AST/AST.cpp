@@ -39,11 +39,11 @@ std::string AST::Expr::Name::makeAssembly(){
 }
 
 std::string AST::Def::makeAssembly(SymbolTable st){
-   int value = this->expr.getValeur();
-   string name = this->name; 
+   int value = this->expr->getValeur();
+   std::string name = this->name;
    int  offset = st.getOffset(0,name);
-   assembler_code = "mov" + " $" + std::to_string(value) +" "+  std::to_strin(offset) + "(%rbp)";
-    return assembler_code
+   std::string assembler_code = "mov $" + std::to_string(value) +" "+  std::to_string(offset) + "(%rbp)";
+    return assembler_code;
         // offset du rbp gcc -O0 variables c'est une case memoire la case est emmoire est dans lenregistremend dact de la fonction on lattrtape par loffset (distance par rapport au debuet de lenre => rbp, dabord ajouter offset a rbp et apres ecrire dans cette valeur, ) 
         // for constant creer varaible temp  dans st et pas de duplicat (!xys_offset), stocker a l'offset  
 }
@@ -51,7 +51,7 @@ std::string AST::Def::makeAssembly(SymbolTable st){
 
 
 int AST::Expr::Add::getValeur(){
-   return this->lvalue.getValeur() + this->rvalue.getValeur();
+   return this->lValue->getValeur() + this->rValue->getValeur();
 }
 
 int AST::Expr::Const::getValeur(){
@@ -70,18 +70,18 @@ std::string AST::Prog::makeAssembly(){
 }
 
 void AST::Prog::create_symbol_table(){
-  this->symbolTable = SymbolTable();
-  Bloc child = this->bloc; 
-  child.addToTable(this->symbolTable);
+  //this->table =  SymbolTable();
+  Bloc* child = this->bloc;
+  child->addToTable(table);
 
 }
-void Bloc::addToTable(SymbolTable st){
+void AST::Bloc::addToTable(SymbolTable st){
     for(auto& it : defs){
          it->addToTable(st);
     }
 } 
 
-void Def::addToTable(SymbolTable st){
+void AST::Def::addToTable(SymbolTable st){
     st.addSymbol(0, this->name , offset = offset-INT_OFFSET);
     // offset comme atribue de la table de symbole 
 }
