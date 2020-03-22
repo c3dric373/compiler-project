@@ -11,7 +11,6 @@ namespace AST{
         public:
             virtual std::string makeAssembly();
             virtual int getValeur();
-        private:
         };
 
         class Add: public Expr{
@@ -67,29 +66,55 @@ namespace AST{
 
         class Name: public Expr{
         public:
-            Name(std::string name): name(name){}
+            Name(std::string name): name(name){};
             std::string makeAssembly() override;
         private:
             std::string name;
         };
     }
 
-    class Def{
-    public:
-        Def(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-        std::string makeAssembly(SymbolTable st);
-    private:
-        std::string name;
-        Expr::Expr* expr;
-    };
+
+    namespace Instr{
+        class Instr{
+        public:
+            virtual std::string makeAssembly(SymbolTable st);
+        };
+
+        class Decl: public Instr{
+        public:
+            Decl(std::vector<std::string> names): names(names){};
+            std::string makeAssembly(SymbolTable st) override;
+        private:
+            std::vector<std::string> names;
+        };
+
+
+        class Def: public Instr{
+        public:
+            Def(std::string name, Expr::Expr* expr): name(name), expr(expr){};
+            std::string makeAssembly(SymbolTable st) override;
+        private:
+            std::string name;
+            Expr::Expr* expr;
+        };
+
+        class Affct: public Instr{
+        public:
+            Affct(std::string name, Expr::Expr* expr): name(name), expr(expr){};
+            std::string makeAssembly(SymbolTable st) override;
+        private:
+            std::string name;
+            Expr::Expr* expr;
+        };
+    }
 
     class Bloc{
     public:
         std::string makeAssembly();
-        void pushDef(Def* def);
+        void pushInstr(Instr::Instr* instr);
         void addToTable();
     private:
-        std::vector<Def*> defs;
+        std::vector<Instr::Instr*> blocinstr;
     };
 
     class Prog{
