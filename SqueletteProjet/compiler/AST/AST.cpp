@@ -90,7 +90,8 @@ std::string AST::Prog::makeAssembly(){
     std::string prolog = "pushq   %rbp\n     movq    %rsp, %rbp\n";
     Bloc* child = this->bloc;    
     std::string assembler_code = child->makeAssembly(this->table);
-    return prolog + assembler_code;
+    std::string epilog = "popq    %rbp\n     ret";
+    return prolog + assembler_code + epilog;
 }
 
 void AST::Prog::create_symbol_table(){
