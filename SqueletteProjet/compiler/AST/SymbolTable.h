@@ -6,7 +6,6 @@
 
 class SymbolTable{
 public:
-    SymbolTable();
     void addSymbol(unsigned depth, std::string& symbol, int offset);
     int getOffset(unsigned depth, std::string& symbol);
 

@@ -48,6 +48,22 @@ std::string AST::Def::makeAssembly(SymbolTable st){
         // for constant creer varaible temp  dans st et pas de duplicat (!xys_offset), stocker a l'offset  
 }
 
+int AST::Expr::Sub::getValeur(){
+   return this->lValue->getValeur() + this->rValue->getValeur();
+}
+
+int AST::Expr::Minus::getValeur(){
+   return 0;
+}
+int AST::Expr::Mult::getValeur(){
+   return this->lValue->getValeur() + this->rValue->getValeur();
+}
+
+int AST::Expr::Name::getValeur(){
+   return 0;
+}
+
+
 
 
 int AST::Expr::Add::getValeur(){

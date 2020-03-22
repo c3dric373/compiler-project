@@ -32,6 +32,7 @@ int main(int argn, const char **argv) {
 
   Visitor visitor;
   AST::Prog test =  visitor.visit(tree);
+  cout << "ntm";
   std::string result = test.makeAssembly();
   cout <<  result  ;
   return 0;
