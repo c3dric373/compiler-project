@@ -92,7 +92,7 @@ namespace AST{
 
     class Bloc{
     public:
-        std::string makeAssembly();
+        std::string makeAssembly(SymbolTable st);
         void pushDef(Def* def);
         void addToTable(SymbolTable table);
     private:

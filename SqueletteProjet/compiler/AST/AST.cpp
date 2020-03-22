@@ -74,15 +74,23 @@ int AST::Expr::Const::getValeur(){
     return this->value;
 }
 
-std::string AST::Bloc::makeAssembly(){
+std::string AST::Bloc::makeAssembly(SymbolTable st){
+    std::string assembler_code = "";
+      for(auto& it : defs){
+          assembler_code += it->makeAssembly(st);
+      }
+
     return "";
 }
 void AST::Bloc::pushDef(AST::Def* def){
-    defs.push_back(def);
+       defs.push_back(def);
 }
 
 std::string AST::Prog::makeAssembly(){
-    return "";
+    std::string prolog = "pushq   %rbp\n     movq    %rsp, %rbp\n";
+    Bloc* child = this->bloc;    
+    std::string assembler_code = child->makeAssembly(this->table);
+    return prolog + assembler_code;
 }
 
 void AST::Prog::create_symbol_table(){
