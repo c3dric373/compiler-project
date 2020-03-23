@@ -5,8 +5,9 @@
 ###directory
 SqueletteProjet/compiler/antlr4-generated/*
 SqueletteProjet/compiler/output/*
-SqueletteProjet/tests/pld-test-output/*
 
+SqueletteProjet/tests/pld-test-output/*
+SqueletteProjet/compiler/antlr4-runtime/*
 ### Assembler ###
 *.exe
 *.o
