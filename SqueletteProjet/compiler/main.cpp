@@ -32,6 +32,7 @@ int main(int argn, const char **argv) {
 
   Visitor visitor;
   AST::Prog* test =  visitor.visit(tree);
+	test->create_symbol_table();
 
 
   std::string result = test->makeAssembly();
