@@ -6,44 +6,33 @@ axiom : prog
 prog : 'int' 'main' OPENPAR CLOSEPAR OPENBRACE bloc RETURN expr ';' CLOSEBRACE 
      ;
 
-bloc : 
-	  declI
-	| declI bloc
-	|
-	//| instr bloc
+bloc : def*
 	;
 
-declI   : 
-         'int' NAME '=' CONST ';' #definition 
-	 //|'int' NAME '=' EXPR ';' #definition
+def   : 
+	'int' NAME '=' expr ';' #defexpr
         ;
 
 expr   :
-	 expr '+' expr #plus
-	|expr '-' expr #moins
+	 expr '+' expr #add
+	|expr '-' expr #sub
+	|'-' expr      #minus
 	|expr '*' expr #mult
-	//pour après |expr '/' expr #div
-	|'('expr')'#par
-	|CONST#const
-	|NAME#name
+
+	|'('expr')'    #par
+	|CONST         #const
+	|NAME          #name
 	;
 
-//instr : 
-//	
-//	;
-
 //les plus specifiques avant
-RETURN : 'return' ;
-CONST : [0-9]+ ;
-COMMENT : '/*' .*? '*/' -> skip ;
-DIRECTIVE : '#' .*? '\n' -> skip ;
-WS    : [ \t\r\n] -> channel(HIDDEN);
-
-
-NAME: [a-zA-Z]+;//chiffres lettres underscore et blanc souligne ou blanc souligne tout seul
 OPENPAR : '('; 
 CLOSEPAR : ')';
 OPENBRACE : '{';
 CLOSEBRACE : '}';
-
+RETURN : 'return' ;
+CONST : [0-9]+ ;
+NAME: [a-zA-Z_]+[a-zA-Z_0-9]* ;//chiffres lettres underscore et blanc souligne ou blanc souligne tout seul 
+COMMENT : '/*' .*? '*/' -> skip ;
+DIRECTIVE : '#' .*? '\n' -> skip ;
+WS    : [ \t\r\n] -> channel(HIDDEN);
 
