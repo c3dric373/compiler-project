@@ -29,15 +29,17 @@ affct :
         ;
 
 expr   :
-	 expr '+' expr #add
-	|expr '-' expr #sub
-	|'-' expr      #minus
-	|expr '*' expr #mult
+	 CONST          #const
+	|NAME           #name
 
-	|'('expr')'    #par
-	|CONST         #const
-	|NAME          #name
-	;
+	|'('expr')'     #par
+
+	|expr '*' expr  #mult
+
+	|expr '+' expr  #add
+	|expr '-' expr  #sub
+	|'-' expr       #minus
+;
 
 //les plus specifiques avant
 OPENPAR : '('; 
