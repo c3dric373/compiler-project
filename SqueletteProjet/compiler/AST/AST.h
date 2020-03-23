@@ -10,7 +10,7 @@ namespace AST{
         class Expr{
         public:
             virtual std::string makeAssembly();
-            virtual int getValeur();
+            //virtual int getValeur();
         };
 
         class Add: public Expr{
@@ -77,13 +77,13 @@ namespace AST{
     namespace Instr{
         class Instr{
         public:
-            virtual std::string makeAssembly(SymbolTable st);
+            //virtual std::string makeAssembly(SymbolTable st);
         };
 
         class Decl: public Instr{
         public:
             Decl(std::vector<std::string> names): names(names){};
-            std::string makeAssembly(SymbolTable st) override;
+            //std::string makeAssembly(SymbolTable st) override;
         private:
             std::vector<std::string> names;
         };
@@ -92,7 +92,7 @@ namespace AST{
         class Def: public Instr{
         public:
             Def(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-            std::string makeAssembly(SymbolTable st) override;
+            //std::string makeAssembly(SymbolTable st) override;
         private:
             std::string name;
             Expr::Expr* expr;
@@ -101,7 +101,7 @@ namespace AST{
         class Affct: public Instr{
         public:
             Affct(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-            std::string makeAssembly(SymbolTable st) override;
+            //std::string makeAssembly(SymbolTable st) override;
         private:
             std::string name;
             Expr::Expr* expr;
@@ -112,7 +112,7 @@ namespace AST{
     public:
         std::string makeAssembly();
         void pushInstr(Instr::Instr* instr);
-        void addToTable();
+        void addToTable(SymbolTable st);
     private:
         std::vector<Instr::Instr*> blocinstr;
     };
