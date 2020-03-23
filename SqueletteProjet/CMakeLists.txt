@@ -10,5 +10,5 @@ file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/compiler/*.h" "${CMAKE_SOURCE_DIR
 
 add_executable(ifcc ${SOURCES})
 target_link_libraries(ifcc "-lantlr4-runtime")
-include_directories(${CMAKE_SOURCE_DIR}/compiler/antlr4-runtime)
+include_directories(/usr/include/antlr4-runtime)
 
