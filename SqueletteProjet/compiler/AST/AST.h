@@ -58,14 +58,6 @@ namespace AST{
             Expr* value;
         };
 
-//        class Par: public Expr{
-//        public:
-//            Par(Expr* value): value(value){};
-//            std::string makeAssembly() override;
-//        private:
-//            Expr* value;
-//        };
-
         class Const: public Expr{
         public:
             Const(int value) : value(value){};
@@ -91,7 +83,6 @@ namespace AST{
     public:
         Def(std::string name, Expr::Expr* expr): name(name), expr(expr){};
         std::string makeAssembly(SymbolTable& st);
-        void addToTable(SymbolTable& table);
     private:
         std::string name;
         Expr::Expr* expr;
@@ -100,13 +91,17 @@ namespace AST{
     namespace Instr{
         class Instr{
         public:
-            //virtual std::string makeAssembly(SymbolTable st);
+            virtual std::string makeAssembly(SymbolTable st)=0;
+            virtual void addToTable(SymbolTable& table)=0;
+
         };
 
         class Decl: public Instr{
         public:
             Decl(std::vector<std::string> names): names(names){};
-            //std::string makeAssembly(SymbolTable st) override;
+            std::string makeAssembly(SymbolTable st) override;
+            void addToTable(SymbolTable& table);
+
         private:
             std::vector<std::string> names;
         };
@@ -115,7 +110,8 @@ namespace AST{
         class Def: public Instr{
         public:
             Def(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-            //std::string makeAssembly(SymbolTable st) override;
+            std::string makeAssembly(SymbolTable st) override;
+            void addToTable(SymbolTable& table);
         private:
             std::string name;
             Expr::Expr* expr;
@@ -124,7 +120,9 @@ namespace AST{
         class Affct: public Instr{
         public:
             Affct(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-            //std::string makeAssembly(SymbolTable st) override;
+            std::string makeAssembly(SymbolTable st) override;
+            void addToTable(SymbolTable& table);
+
         private:
             std::string name;
             Expr::Expr* expr;
