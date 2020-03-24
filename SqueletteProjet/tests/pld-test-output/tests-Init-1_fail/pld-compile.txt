@@ -1,4 +1,3 @@
-line 2:7 token recognition error at: 'x'
 line 1:9 mismatched input '{' expecting '('
 Segmentation fault (core dumped)
 
