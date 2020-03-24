@@ -91,7 +91,7 @@ namespace AST{
     namespace Instr{
         class Instr{
         public:
-            virtual std::string makeAssembly(SymbolTable st)=0;
+            virtual std::string makeAssembly(SymbolTable &st)=0;
             virtual void addToTable(SymbolTable& table)=0;
 
         };
@@ -99,7 +99,7 @@ namespace AST{
         class Decl: public Instr{
         public:
             Decl(std::vector<std::string> names): names(names){};
-            std::string makeAssembly(SymbolTable st) override;
+            //std::string makeAssembly(SymbolTable &st) override;
             void addToTable(SymbolTable& table);
 
         private:
@@ -110,7 +110,7 @@ namespace AST{
         class Def: public Instr{
         public:
             Def(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-            std::string makeAssembly(SymbolTable st) override;
+            std::string makeAssembly(SymbolTable &st) override;
             void addToTable(SymbolTable& table);
         private:
             std::string name;
@@ -120,8 +120,7 @@ namespace AST{
         class Affct: public Instr{
         public:
             Affct(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-            std::string makeAssembly(SymbolTable st) override;
-            void addToTable(SymbolTable& table);
+            std::string makeAssembly(SymbolTable &st) override;
 
         private:
             std::string name;
@@ -133,7 +132,7 @@ namespace AST{
     public:
         std::string makeAssembly();
         void pushInstr(Instr::Instr* instr);
-        void addToTable(SymbolTable st);
+        void addToTable(SymbolTable &st);
     private:
         std::vector<Instr::Instr*> blocinstr;
     };

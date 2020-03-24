@@ -1,7 +1,6 @@
 #include "AST.h"
 
 int INT_OFFSET = 4;
-int DOUBLE_OFFSET = -8;
 int offset =0;
 
 
@@ -33,7 +32,7 @@ std::string AST::Expr::Name::makeAssembly(){
     return "";
 }
 
-std::string AST::Instr::Def::makeAssembly(SymbolTable st){
+std::string AST::Instr::Def::makeAssembly(SymbolTable &st){
    int value = this->expr->getValeur();
    std::string name = this->name;
    int  offset = st.getOffset(0,name);
@@ -42,6 +41,17 @@ std::string AST::Instr::Def::makeAssembly(SymbolTable st){
         // offset du rbp gcc -O0 variables c'est une case memoire la case est emmoire est dans lenregistremend dact de la fonction on lattrtape par loffset (distance par rapport au debuet de lenre => rbp, dabord ajouter offset a rbp et apres ecrire dans cette valeur, ) 
         // for constant creer varaible temp  dans st et pas de duplicat (!xys_offset), stocker a l'offset  
 }
+
+std::string AST::Instr::Affct::makeAssembly(SymbolTable &st){
+    std::string assembleur_expr = this->expr->makeAssembly();
+    std::string name = this->name;
+    int  offset = st.getOffset(0,name);
+    std::string assembler_code = assembleur_expr + "\tmovl  %eax,  -"+  std::to_string(offset) + "(%rbp)\n";
+    return assembler_code;
+    // offset du rbp gcc -O0 variables c'est une case memoire la case est emmoire est dans lenregistremend dact de la fonction on lattrtape par loffset (distance par rapport au debuet de lenre => rbp, dabord ajouter offset a rbp et apres ecrire dans cette valeur, )
+    // for constant creer varaible temp  dans st et pas de duplicat (!xys_offset), stocker a l'offset
+}
+
 
 std::string AST::Expr::Const::makeAssemblyReturn(SymbolTable& st){
 	std::string assembly = "\tmovl $"+std::to_string(value)+", %eax\n";
@@ -117,22 +127,31 @@ std::string AST::Prog::makeAssembly(){
     std::string epilog = assembler_code_return+"\tpopq %rbp\n\tret\n";
     return prolog + assembler_code + epilog;
 }
-/*
+
 void AST::Prog::create_symbol_table(){
-  //this->table =  SymbolTable();
+  this->table =  SymbolTable();
   Bloc* child = this->bloc;
   child->addToTable(table);
 
 }
-void AST::Bloc::addToTable(SymbolTable& st){
-    for(auto& it : defs){
-void AST::Bloc::addToTable(SymbolTable st){
-    for(auto& it : blocinstr){
-         it->addToTable(st);
+
+void AST::Bloc::addToTable(SymbolTable &st) {
+    for (auto &it : blocinstr) {
+        it->addToTable(st);
+        }
+    }
+
+    void AST::Instr::Def::addToTable(SymbolTable &st) {
+        st.addSymbol(0, this->name, offset = offset + INT_OFFSET);
+        // offset comme atribue de la table de symbole
+}
+void AST::Instr::Decl::addToTable(SymbolTable &st) {
+    for (auto &it : this->names) {
+        st.addSymbol(0, it, offset = offset + INT_OFFSET);
     }
 }
 
-void AST::Def::addToTable(SymbolTable& st){
-    st.addSymbol(0, this->name , offset = offset+INT_OFFSET);
-    // offset comme atribue de la table de symbole 
-}*/
+
+
+
+
