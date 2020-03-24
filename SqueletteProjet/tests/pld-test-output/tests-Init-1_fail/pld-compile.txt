@@ -1,4 +1,0 @@
-line 1:9 mismatched input '{' expecting '('
-Segmentation fault (core dumped)
-
-return code: 139
