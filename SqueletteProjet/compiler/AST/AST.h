@@ -9,115 +9,129 @@ namespace AST{
     namespace Expr{
         class Expr{
         public:
-            virtual int getValeur()=0;
-            virtual std::string makeAssembly(SymbolTable &st)=0;
-        private:
+            virtual std::string makeAssembly();
+            //virtual int getValeur();
         };
 
         class Add: public Expr{
        public:
-            Add(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
-            std::string makeAssembly(SymbolTable &st) override;
-            int getValeur()override;
+            Add(Expr* lValue, Expr* rValue, unsigned line, unsigned column):
+            lValue(lValue), rValue(rValue), line(line), column(column){};
+            std::string makeAssembly() override;
         private:
             Expr* lValue;
             Expr* rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
         };
 
         class Sub: public Expr{
         public:
-            Sub(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
-            std::string makeAssembly(SymbolTable &st) override;
-            int getValeur() override;
+            Sub(Expr* lValue, Expr* rValue, unsigned line, unsigned column):
+            lValue(lValue), rValue(rValue), line(line), column(column){};
+            std::string makeAssembly() override;
         private:
             Expr* lValue;
             Expr* rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
         };
 
         class Mult: public Expr{
         public:
-            Mult(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
-            std::string makeAssembly(SymbolTable &st) override;
-            int getValeur() override;
+            Mult(Expr* lValue, Expr* rValue, unsigned line, unsigned column):
+            lValue(lValue), rValue(rValue), line(line), column(column){};
+            std::string makeAssembly() override;
         private:
             Expr* lValue;
             Expr* rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
         };
 
         class Minus: public Expr{
         public:
-            Minus(Expr* value): value(value){};
-            std::string makeAssembly(SymbolTable &st) override;
-            int getValeur() override;
+            Minus(Expr* value, unsigned line, unsigned column):
+            value(value), line(line), column(column){};
+            std::string makeAssembly() override;
         private:
             Expr* value;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
         };
 
         class Const: public Expr{
         public:
-            Const(int value) : value(value){};
-            std::string makeAssembly(SymbolTable &st) override;
-            int getValeur() override;
+            Const(int value, unsigned line, unsigned column):
+            value(value), line(line), column(column){};
+            std::string makeAssembly() override;
         private:
             int value;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
         };
 
         class Name: public Expr{
         public:
-            Name(std::string name): name(name){};
-            std::string makeAssembly(SymbolTable &st) override;
-            int getValeur() override;
+            Name(std::string name, unsigned line, unsigned column):
+            name(name), line(line), column(column){};
+            std::string makeAssembly() override;
         private:
             std::string name;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
         };
     }
+
 
     namespace Instr{
         class Instr{
         public:
-            virtual std::string makeAssembly(SymbolTable &st)=0;
-            virtual void addToTable(SymbolTable& table)=0;
+            //virtual std::string makeAssembly(SymbolTable st);
         };
 
         class Decl: public Instr{
         public:
-            Decl(std::vector<std::string> names): names(names){};
-            //std::string makeAssembly(SymbolTable &st) override;
-            void addToTable(SymbolTable& table);
-            std::string makeAssembly(SymbolTable &st);
-
+            Decl(std::vector<std::string> names, unsigned line, unsigned column):
+            names(names), line(line), column(column){};
+            //std::string makeAssembly(SymbolTable st) override;
         private:
             std::vector<std::string> names;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
         };
 
 
         class Def: public Instr{
         public:
-            Def(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-            std::string makeAssembly(SymbolTable &st) ;
-            void addToTable(SymbolTable& table)  ;
+            Def(std::string name, Expr::Expr* expr, unsigned line, unsigned column):
+            name(name), expr(expr), line(line), column(column){};
+            //std::string makeAssembly(SymbolTable st) override;
         private:
             std::string name;
             Expr::Expr* expr;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
         };
 
         class Affct: public Instr{
         public:
-            Affct(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-            std::string makeAssembly(SymbolTable &st) ;
-            void addToTable(SymbolTable& table)  ;
-
+            Affct(std::string name, Expr::Expr* expr, unsigned line, unsigned column):
+            name(name), expr(expr), line(line), column(column){};
+            //std::string makeAssembly(SymbolTable st) override;
         private:
             std::string name;
             Expr::Expr* expr;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
         };
     }
 
     class Bloc{
     public:
-        std::string makeAssembly(SymbolTable &st);
+        std::string makeAssembly();
         void pushInstr(Instr::Instr* instr);
-        void addToTable(SymbolTable &st);
+        void addToTable(SymbolTable st);
     private:
         std::vector<Instr::Instr*> blocinstr;
     };
