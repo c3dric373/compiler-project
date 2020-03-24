@@ -48,6 +48,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitInstrif(ifccParser::InstrifContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitDeclint(ifccParser::DeclintContext *ctx) override {
     auto names = std::vector<std::string>();
     for(auto& it : ctx->NAME()){
@@ -70,6 +74,12 @@ public:
       unsigned line = ctx->getStart()->getLine();
       unsigned column = ctx->getStart()->getCharPositionInLine();
     return (AST::Instr::Instr*)(new AST::Instr::Def(ctx->NAME()->getText(), astExpr, line, column));
+  }
+
+  virtual antlrcpp::Any visitIfbloc(ifccParser::IfblocContext *ctx) override {
+      AST::Expr::Expr* astExpr = visit(ctx->expr());
+      AST::Bloc* astBloc = visit(ctx->bloc());
+      return (AST::Instr::Instr*)(new AST::Instr::If(astExpr, astBloc));
   }
 
   //EXPRESSIONS
