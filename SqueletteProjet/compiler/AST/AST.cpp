@@ -39,7 +39,9 @@ std::string AST::Expr::Mult::makeAssembly(SymbolTable &st){
 }
 
 std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
-    return "test";
+    std::string value_code = this->value->makeAssembly(st);
+    std::string neg_code = "\tNEG %eax\n";
+    return value_code + neg_code;
 }
 
 std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
@@ -77,7 +79,7 @@ std::string AST::Instr::Affct::makeAssembly(SymbolTable &st){
 
 
 int AST::Expr::Sub::getValeur(){
-   return this->lValue->getValeur() + this->rValue->getValeur();
+   return 0;
 }
 
 int AST::Expr::Minus::getValeur(){
@@ -134,7 +136,8 @@ void AST::Bloc::addToTable(SymbolTable &st) {
         }
     }
 
-    void AST::Instr::Def::addToTable(SymbolTable &st) {
+
+void AST::Instr::Def::addToTable(SymbolTable &st) {
         st.addSymbol(0, this->name, offset = offset + INT_OFFSET);
         // offset comme atribue de la table de symbole
 }
