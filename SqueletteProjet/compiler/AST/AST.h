@@ -10,16 +10,14 @@ namespace AST{
         class Expr{
         public:
             virtual int getValeur()=0;
-            virtual std::string makeAssembly()=0;
-			virtual std::string makeAssemblyReturn(SymbolTable& st)=0;
+            virtual std::string makeAssembly(SymbolTable &st)=0;
         private:
         };
 
         class Add: public Expr{
        public:
             Add(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
-            std::string makeAssembly() override;
-			std::string makeAssemblyReturn(SymbolTable& st) override;
+            std::string makeAssembly(SymbolTable &st) override;
             int getValeur()override;
         private:
             Expr* lValue;
@@ -29,8 +27,7 @@ namespace AST{
         class Sub: public Expr{
         public:
             Sub(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
-            std::string makeAssembly() override;
-			std::string makeAssemblyReturn(SymbolTable& st) override;
+            std::string makeAssembly(SymbolTable &st) override;
             int getValeur() override;
         private:
             Expr* lValue;
@@ -40,8 +37,7 @@ namespace AST{
         class Mult: public Expr{
         public:
             Mult(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
-            std::string makeAssembly() override;
-			std::string makeAssemblyReturn(SymbolTable& st) override;
+            std::string makeAssembly(SymbolTable &st) override;
             int getValeur() override;
         private:
             Expr* lValue;
@@ -51,8 +47,7 @@ namespace AST{
         class Minus: public Expr{
         public:
             Minus(Expr* value): value(value){};
-            std::string makeAssembly() override;
-			std::string makeAssemblyReturn(SymbolTable& st) override;
+            std::string makeAssembly(SymbolTable &st) override;
             int getValeur() override;
         private:
             Expr* value;
@@ -61,8 +56,7 @@ namespace AST{
         class Const: public Expr{
         public:
             Const(int value) : value(value){};
-            std::string makeAssembly() override;
-			std::string makeAssemblyReturn(SymbolTable& st) override;
+            std::string makeAssembly(SymbolTable &st) override;
             int getValeur() override;
         private:
             int value;
@@ -71,29 +65,18 @@ namespace AST{
         class Name: public Expr{
         public:
             Name(std::string name): name(name){};
-            std::string makeAssembly() override;
-			std::string makeAssemblyReturn(SymbolTable& st) override;
+            std::string makeAssembly(SymbolTable &st) override;
             int getValeur() override;
         private:
             std::string name;
         };
     }
 
-    class Def{
-    public:
-        Def(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-        std::string makeAssembly(SymbolTable& st);
-    private:
-        std::string name;
-        Expr::Expr* expr;
-    };
-
     namespace Instr{
         class Instr{
         public:
             virtual std::string makeAssembly(SymbolTable &st)=0;
             virtual void addToTable(SymbolTable& table)=0;
-
         };
 
         class Decl: public Instr{
@@ -101,6 +84,7 @@ namespace AST{
             Decl(std::vector<std::string> names): names(names){};
             //std::string makeAssembly(SymbolTable &st) override;
             void addToTable(SymbolTable& table);
+            std::string makeAssembly(SymbolTable &st);
 
         private:
             std::vector<std::string> names;
@@ -110,8 +94,8 @@ namespace AST{
         class Def: public Instr{
         public:
             Def(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-            std::string makeAssembly(SymbolTable &st) override;
-            void addToTable(SymbolTable& table);
+            std::string makeAssembly(SymbolTable &st) ;
+            void addToTable(SymbolTable& table)  ;
         private:
             std::string name;
             Expr::Expr* expr;
@@ -120,7 +104,8 @@ namespace AST{
         class Affct: public Instr{
         public:
             Affct(std::string name, Expr::Expr* expr): name(name), expr(expr){};
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string makeAssembly(SymbolTable &st) ;
+            void addToTable(SymbolTable& table)  ;
 
         private:
             std::string name;
@@ -130,7 +115,7 @@ namespace AST{
 
     class Bloc{
     public:
-        std::string makeAssembly();
+        std::string makeAssembly(SymbolTable &st);
         void pushInstr(Instr::Instr* instr);
         void addToTable(SymbolTable &st);
     private:
