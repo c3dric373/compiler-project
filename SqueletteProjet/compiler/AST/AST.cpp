@@ -25,7 +25,9 @@ std::string AST::Expr::Minus::makeAssembly(){
 }
 
 std::string AST::Expr::Const::makeAssembly(){
-    return "";
+   int value = this->value;
+    std::string assembler_code = "\tmovl $" + std::to_string(value) + ", %eax\n";
+    return assembler_code;
 }
 
 std::string AST::Expr::Name::makeAssembly(){
@@ -108,7 +110,7 @@ int AST::Expr::Const::getValeur(){
 
 std::string AST::Bloc::makeAssembly(SymbolTable& st){
     std::string assembler_code = "";
-      for(auto& it : defs){
+      for(auto& it : blocinstr){
           assembler_code += it->makeAssembly(st);
       }
 
@@ -150,6 +152,13 @@ void AST::Instr::Decl::addToTable(SymbolTable &st) {
         st.addSymbol(0, it, offset = offset + INT_OFFSET);
     }
 }
+void AST::Instr::Affct::addToTable(SymbolTable &st) {
+
+}
+std::string AST::Instr::Decl::makeAssembly(SymbolTable& st){
+    return "";
+}
+
 
 
 
