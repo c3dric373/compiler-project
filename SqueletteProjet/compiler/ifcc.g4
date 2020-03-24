@@ -36,8 +36,8 @@ expr   :
 
 	|expr '*' expr  #mult
 
-	|expr '+' expr  #add
 	|expr '-' expr  #sub
+	|expr '+' expr  #add
 	|'-' expr       #minus
 ;
 
