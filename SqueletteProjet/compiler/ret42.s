@@ -3,15 +3,19 @@ main:
 	pushq %rbp
 	movq %rsp, %rbp
 	movl $8, %eax
+	movl %eax, %edx
+	movl $2, %eax
 	movl %eax, %ebx
-	movl $5, %eax
-	imull %ebx, %eax
-	movl %eax, %ebx
-	movl $4, %eax
-	movl %eax, %ebx
-	movl $7, %eax
-	imull %ebx, %eax
+	movl $3, %eax
 	addl %ebx, %eax
+	movl %eax, %esi
+	movl %edx, %eax
+	subl %esi, %eax
+	movl %eax, %edx
+	movl $1, %eax
+	movl %eax, %esi
+	movl %edx, %eax
+	subl %esi, %eax
 	movl %eax, -4(%rbp)
 	movl -4 (%rbp) , %eax
 	popq %rbp

@@ -1,4 +1,7 @@
 int main(){ 
-    int a = 8*5+4*7;
+    int a = 8-2+3-1;
     return a;
 }
+
+
+
