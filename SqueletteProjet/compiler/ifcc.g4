@@ -11,9 +11,10 @@ bloc :
 	;
 
 instr :
-	  decl   #instrdecl
-	| def    #instrdef
-	| affct  #instraffct
+	  decl     #instrdecl
+	| def      #instrdef
+	| affct    #instraffct
+	| ifinstr  #instrif
 ;
 
 decl :
@@ -22,11 +23,15 @@ decl :
 
 def : 
 	'int' NAME '=' expr ';' #defexpr
-        ;
+    ;
 
 affct :
 	NAME '=' expr ';' #affexpr
-        ;
+    ;
+
+ifinstr :
+    'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE #ifbloc
+    ;
 
 expr   :
 	 CONST          #const
@@ -48,8 +53,9 @@ OPENBRACE : '{';
 CLOSEBRACE : '}';
 RETURN : 'return' ;
 CONST : [0-9]+ ;
-NAME: [a-zA-Z_]+[a-zA-Z_0-9]* ;//chiffres lettres underscore et blanc souligne ou blanc souligne tout seul 
-COMMENT : '/*' .*? '*/' -> skip ;
+NAME: [a-zA-Z_]+[a-zA-Z_0-9]* ;//chiffres lettres underscore et blanc souligne ou blanc souligne tout seul
+COMMENT1 : '/*' .*? '*/' -> skip ;
+COMMENT2 : '//' .*? '\n' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
 WS    : [ \t\r\n] -> channel(HIDDEN);
 
