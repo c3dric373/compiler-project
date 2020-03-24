@@ -18,11 +18,22 @@ std::string AST::Expr::Add::makeAssembly(SymbolTable &st){
 }
 
 std::string AST::Expr::Sub::makeAssembly(SymbolTable &st){
-    return "";
+    // Return value of expression always in eax
+    // Calculate rValue first in order to facilitate the result calculation
+    std::string rValue_code = this-> rValue->makeAssembly(st);
+    std::string move_rValue =  "\tmovl %eax, %ebx\n";
+    std::string lValue_code= this-> lValue->makeAssembly(st);
+    std::string substraction_code = "\tsubl %ebx, %eax\n";
+    return rValue_code + move_rValue + lValue_code + substraction_code;
 }
 
 std::string AST::Expr::Mult::makeAssembly(SymbolTable &st){
-    return "";
+    // Return value of expression always in eax
+    std::string lValue_code= this-> lValue->makeAssembly(st);
+    std::string move_lValue =  "\tmovl %eax, %ebx\n";
+    std::string rValue_code = this-> rValue->makeAssembly(st);
+    std::string multiplication_code = "\timull %ebx, %eax\n";
+    return lValue_code + move_lValue + rValue_code + multiplication_code;
 }
 
 std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
@@ -71,7 +82,7 @@ int AST::Expr::Minus::getValeur(){
    return 0;
 }
 int AST::Expr::Mult::getValeur(){
-   return this->lValue->getValeur() + this->rValue->getValeur();
+   return 0;
 }
 
 int AST::Expr::Name::getValeur(){
@@ -79,7 +90,7 @@ int AST::Expr::Name::getValeur(){
 }
 
 int AST::Expr::Add::getValeur(){
-   return 55;
+   return 0;
 }
 
 int AST::Expr::Const::getValeur(){
