@@ -5,11 +5,13 @@
 #include <vector>
 #include "SymbolTable.h"
 namespace AST{
+    class Bloc;
 
     namespace Expr{
         class Expr{
         public:
             virtual std::string makeAssembly();
+            virtual void display();
             //virtual int getValeur();
         };
 
@@ -18,6 +20,7 @@ namespace AST{
             Add(Expr* lValue, Expr* rValue, unsigned line, unsigned column):
             lValue(lValue), rValue(rValue), line(line), column(column){};
             std::string makeAssembly() override;
+            void display() override;
         private:
             Expr* lValue;
             Expr* rValue;
@@ -30,6 +33,7 @@ namespace AST{
             Sub(Expr* lValue, Expr* rValue, unsigned line, unsigned column):
             lValue(lValue), rValue(rValue), line(line), column(column){};
             std::string makeAssembly() override;
+            void display() override;
         private:
             Expr* lValue;
             Expr* rValue;
@@ -42,6 +46,7 @@ namespace AST{
             Mult(Expr* lValue, Expr* rValue, unsigned line, unsigned column):
             lValue(lValue), rValue(rValue), line(line), column(column){};
             std::string makeAssembly() override;
+            void display() override;
         private:
             Expr* lValue;
             Expr* rValue;
@@ -54,6 +59,7 @@ namespace AST{
             Minus(Expr* value, unsigned line, unsigned column):
             value(value), line(line), column(column){};
             std::string makeAssembly() override;
+            void display() override;
         private:
             Expr* value;
             unsigned line; // the line of the expression
@@ -65,6 +71,7 @@ namespace AST{
             Const(int value, unsigned line, unsigned column):
             value(value), line(line), column(column){};
             std::string makeAssembly() override;
+            void display() override;
         private:
             int value;
             unsigned line; // the line of the expression
@@ -76,6 +83,7 @@ namespace AST{
             Name(std::string name, unsigned line, unsigned column):
             name(name), line(line), column(column){};
             std::string makeAssembly() override;
+            void display() override;
         private:
             std::string name;
             unsigned line; // the line of the expression
@@ -88,6 +96,7 @@ namespace AST{
         class Instr{
         public:
             //virtual std::string makeAssembly(SymbolTable st);
+            virtual void display();
         };
 
         class Decl: public Instr{
@@ -95,18 +104,19 @@ namespace AST{
             Decl(std::vector<std::string> names, unsigned line, unsigned column):
             names(names), line(line), column(column){};
             //std::string makeAssembly(SymbolTable st) override;
+            virtual void display() override;
         private:
             std::vector<std::string> names;
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
 
-
         class Def: public Instr{
         public:
             Def(std::string name, Expr::Expr* expr, unsigned line, unsigned column):
             name(name), expr(expr), line(line), column(column){};
             //std::string makeAssembly(SymbolTable st) override;
+            virtual void display() override;
         private:
             std::string name;
             Expr::Expr* expr;
@@ -119,11 +129,22 @@ namespace AST{
             Affct(std::string name, Expr::Expr* expr, unsigned line, unsigned column):
             name(name), expr(expr), line(line), column(column){};
             //std::string makeAssembly(SymbolTable st) override;
+            virtual void display() override;
         private:
             std::string name;
             Expr::Expr* expr;
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
+        };
+
+        class If: public Instr{
+        public:
+            If(Expr::Expr* expr, AST::Bloc* bloc):
+            expr(expr), bloc(bloc){};
+            virtual void display() override;
+        private:
+            Expr::Expr* expr;
+            AST::Bloc* bloc;
         };
     }
 
@@ -132,6 +153,7 @@ namespace AST{
         std::string makeAssembly();
         void pushInstr(Instr::Instr* instr);
         void addToTable(SymbolTable st);
+        void display();
     private:
         std::vector<Instr::Instr*> blocinstr;
     };
@@ -141,6 +163,7 @@ namespace AST{
         Prog(Bloc* bloc, Expr::Expr* returnValue): bloc(bloc), returnValue(returnValue){};
         std::string makeAssembly();
         void create_symbol_table();
+        void display();
     private:
         Bloc* bloc;
         Expr::Expr* returnValue;
