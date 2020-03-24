@@ -27,8 +27,8 @@ int main(int argn, const char **argv) {
 //    std::cout << token->toString() << std::endl;
 //  }
 
-  ifccParser parser(&tokens);
-  tree::ParseTree* tree = parser.axiom();
+    ifccParser parser(&tokens);
+    tree::ParseTree* tree = parser.axiom();
 
   Visitor visitor;
   AST::Prog* test =  visitor.visit(tree);

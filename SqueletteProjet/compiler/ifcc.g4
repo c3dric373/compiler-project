@@ -6,23 +6,40 @@ axiom : prog
 prog : 'int' 'main' OPENPAR CLOSEPAR OPENBRACE bloc RETURN expr ';' CLOSEBRACE 
      ;
 
-bloc : def*
+bloc :
+	instr*  #blocinstr
 	;
 
-def   : 
+instr :
+	  decl   #instrdecl
+	| def    #instrdef
+	| affct  #instraffct
+;
+
+decl :
+	'int' NAME (',' NAME)* ';' #declint
+	;
+
+def : 
 	'int' NAME '=' expr ';' #defexpr
         ;
 
-expr   :
-	 expr '+' expr #add
-	|expr '-' expr #sub
-	|'-' expr      #minus
-	|expr '*' expr #mult
+affct :
+	NAME '=' expr ';' #affexpr
+        ;
 
-	|'('expr')'    #par
-	|CONST         #const
-	|NAME          #name
-	;
+expr   :
+	 CONST          #const
+	|NAME           #name
+
+	|'('expr')'     #par
+
+	|expr '*' expr  #mult
+
+	|expr '+' expr  #add
+	|expr '-' expr  #sub
+	|'-' expr       #minus
+;
 
 //les plus specifiques avant
 OPENPAR : '('; 

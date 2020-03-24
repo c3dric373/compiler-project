@@ -17,7 +17,7 @@ class  Visitor : public ifccVisitor {
 public:
 
   virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override {
-    return (AST::Prog*)visit(ctx->prog());
+    return visitChildren(ctx);
   }
 
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override {
@@ -26,17 +26,42 @@ public:
     return new AST::Prog(astBloc, astExpr);
   }
 
-  virtual antlrcpp::Any visitBloc(ifccParser::BlocContext *ctx) override {
+  virtual antlrcpp::Any visitBlocinstr(ifccParser::BlocinstrContext *ctx) override {
     AST::Bloc* astBloc = new AST::Bloc();
-    for(auto& it : ctx->def()){
-      astBloc->pushDef(visit(it));
+    for(auto& it : ctx->instr()){
+      astBloc->pushInstr(visit(it));
     }
     return astBloc;
   }
 
+  virtual antlrcpp::Any visitInstrdecl(ifccParser::InstrdeclContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitInstrdef(ifccParser::InstrdefContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitInstraffct(ifccParser::InstraffctContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitDeclint(ifccParser::DeclintContext *ctx) override {
+    auto names = std::vector<std::string>();
+    for(auto& it : ctx->NAME()){
+      names.push_back(it->getText());
+    }
+    return (AST::Instr::Instr*)(new AST::Instr::Decl(names));
+  }
+
+  virtual antlrcpp::Any visitAffexpr(ifccParser::AffexprContext *ctx) override {
+    AST::Expr::Expr* astExpr = visit(ctx->expr());
+    return (AST::Instr::Instr*)(new AST::Instr::Affct(ctx->NAME()->getText(), astExpr));
+  }
+
   virtual antlrcpp::Any visitDefexpr(ifccParser::DefexprContext *ctx) override {
     AST::Expr::Expr* astExpr = visit(ctx->expr());
-    return new AST::Def(ctx->NAME()->getText(), astExpr);
+    return (AST::Instr::Instr*)(new AST::Instr::Def(ctx->NAME()->getText(), astExpr));
   }
 
   virtual antlrcpp::Any visitAdd(ifccParser::AddContext *ctx) override {

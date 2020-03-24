@@ -58,14 +58,6 @@ namespace AST{
             Expr* value;
         };
 
-//        class Par: public Expr{
-//        public:
-//            Par(Expr* value): value(value){};
-//            std::string makeAssembly() override;
-//        private:
-//            Expr* value;
-//        };
-
         class Const: public Expr{
         public:
             Const(int value) : value(value){};
@@ -78,7 +70,7 @@ namespace AST{
 
         class Name: public Expr{
         public:
-            Name(std::string name): name(name){}
+            Name(std::string name): name(name){};
             std::string makeAssembly() override;
 			std::string makeAssemblyReturn(SymbolTable& st) override;
             int getValeur() override;
@@ -91,19 +83,59 @@ namespace AST{
     public:
         Def(std::string name, Expr::Expr* expr): name(name), expr(expr){};
         std::string makeAssembly(SymbolTable& st);
-        void addToTable(SymbolTable& table);
     private:
         std::string name;
         Expr::Expr* expr;
     };
 
+    namespace Instr{
+        class Instr{
+        public:
+            virtual std::string makeAssembly(SymbolTable st)=0;
+            virtual void addToTable(SymbolTable& table)=0;
+
+        };
+
+        class Decl: public Instr{
+        public:
+            Decl(std::vector<std::string> names): names(names){};
+            std::string makeAssembly(SymbolTable st) override;
+            void addToTable(SymbolTable& table);
+
+        private:
+            std::vector<std::string> names;
+        };
+
+
+        class Def: public Instr{
+        public:
+            Def(std::string name, Expr::Expr* expr): name(name), expr(expr){};
+            std::string makeAssembly(SymbolTable st) override;
+            void addToTable(SymbolTable& table);
+        private:
+            std::string name;
+            Expr::Expr* expr;
+        };
+
+        class Affct: public Instr{
+        public:
+            Affct(std::string name, Expr::Expr* expr): name(name), expr(expr){};
+            std::string makeAssembly(SymbolTable st) override;
+            void addToTable(SymbolTable& table);
+
+        private:
+            std::string name;
+            Expr::Expr* expr;
+        };
+    }
+
     class Bloc{
     public:
-        std::string makeAssembly(SymbolTable& st);
-        void pushDef(Def* def);
-        void addToTable(SymbolTable& table);
+        std::string makeAssembly();
+        void pushInstr(Instr::Instr* instr);
+        void addToTable(SymbolTable st);
     private:
-        std::vector<Def*> defs;
+        std::vector<Instr::Instr*> blocinstr;
     };
 
     class Prog{
