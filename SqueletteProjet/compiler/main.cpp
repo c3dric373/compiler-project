@@ -31,7 +31,11 @@ int main(int argn, const char **argv) {
   tree::ParseTree* tree = parser.axiom();
 
   Visitor visitor;
-  visitor.visit(tree);
+  AST::Prog* test =  visitor.visit(tree);
+	test->create_symbol_table();
 
+
+  std::string result = test->makeAssembly();
+  cout <<  result  ;
   return 0;
 }

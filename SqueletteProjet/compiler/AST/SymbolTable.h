@@ -1,18 +1,18 @@
 #ifndef AST_SYMBOLTABLE_H
 #define AST_SYMBOLTABLE_H
 
-#include <map>
+#include <unordered_map>
 #include <utility>
+#include <iostream>
 
 class SymbolTable{
 public:
-    void addSymbol(unsigned depth, std::string& symbol, std::string& address, std::string& offset);
-    std::string getMem(unsigned depth, std::string& symbol);
-    std::string getOffset(unsigned depth, std::string& symbol);
+    void addSymbol(unsigned depth, std::string& symbol, int offset);
+    int getOffset(unsigned depth, std::string& symbol);
+	void dispTable();
 
 private:
-    std::map<std::string, std::string> addressMap;
-    std::map<std::string, std::string> offsetMap;
+    std::unordered_map<std::string, int> offsetMap;
 };
 
 #endif //AST_SYMBOLTABLE_H
