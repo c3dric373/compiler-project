@@ -34,6 +34,8 @@ public:
     return astBloc;
   }
 
+  //INSTRUCTIONS
+
   virtual antlrcpp::Any visitInstrdecl(ifccParser::InstrdeclContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -51,40 +53,56 @@ public:
     for(auto& it : ctx->NAME()){
       names.push_back(it->getText());
     }
-    return (AST::Instr::Instr*)(new AST::Instr::Decl(names));
+    unsigned line = ctx->getStart()->getLine();
+    unsigned column = ctx->getStart()->getCharPositionInLine();
+    return (AST::Instr::Instr*)(new AST::Instr::Decl(names, line, column));
   }
 
   virtual antlrcpp::Any visitAffexpr(ifccParser::AffexprContext *ctx) override {
     AST::Expr::Expr* astExpr = visit(ctx->expr());
-    return (AST::Instr::Instr*)(new AST::Instr::Affct(ctx->NAME()->getText(), astExpr));
+      unsigned line = ctx->getStart()->getLine();
+      unsigned column = ctx->getStart()->getCharPositionInLine();
+    return (AST::Instr::Instr*)(new AST::Instr::Affct(ctx->NAME()->getText(), astExpr, line, column));
   }
 
   virtual antlrcpp::Any visitDefexpr(ifccParser::DefexprContext *ctx) override {
     AST::Expr::Expr* astExpr = visit(ctx->expr());
-    return (AST::Instr::Instr*)(new AST::Instr::Def(ctx->NAME()->getText(), astExpr));
+      unsigned line = ctx->getStart()->getLine();
+      unsigned column = ctx->getStart()->getCharPositionInLine();
+    return (AST::Instr::Instr*)(new AST::Instr::Def(ctx->NAME()->getText(), astExpr, line, column));
   }
+
+  //EXPRESSIONS
 
   virtual antlrcpp::Any visitAdd(ifccParser::AddContext *ctx) override {
     AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
     AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
-    return (AST::Expr::Expr*)new AST::Expr::Add(astLeftExpr, astRightExpr);
+      unsigned line = ctx->getStart()->getLine();
+      unsigned column = ctx->getStart()->getCharPositionInLine();
+    return (AST::Expr::Expr*)new AST::Expr::Add(astLeftExpr, astRightExpr, line, column);
   }
 
   virtual antlrcpp::Any visitSub(ifccParser::SubContext *ctx) override {
-    AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+      AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
     AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
-    return (AST::Expr::Expr*)new AST::Expr::Sub(astLeftExpr, astRightExpr);
+      unsigned line = ctx->getStart()->getLine();
+      unsigned column = ctx->getStart()->getCharPositionInLine();
+    return (AST::Expr::Expr*)new AST::Expr::Sub(astLeftExpr, astRightExpr, line, column);
   }
 
   virtual antlrcpp::Any visitMinus(ifccParser::MinusContext *ctx) override {
     AST::Expr::Expr* astExpr = visit(ctx->expr());
-    return (AST::Expr::Expr*)new AST::Expr::Minus(astExpr);
+      unsigned line = ctx->getStart()->getLine();
+      unsigned column = ctx->getStart()->getCharPositionInLine();
+    return (AST::Expr::Expr*)new AST::Expr::Minus(astExpr, line, column);
   }
 
   virtual antlrcpp::Any visitMult(ifccParser::MultContext *ctx) override {
     AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
     AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
-    return (AST::Expr::Expr*)new AST::Expr::Mult(astLeftExpr, astRightExpr);
+      unsigned line = ctx->getStart()->getLine();
+      unsigned column = ctx->getStart()->getCharPositionInLine();
+    return (AST::Expr::Expr*)new AST::Expr::Mult(astLeftExpr, astRightExpr, line, column);
   }
 
   virtual antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override {
@@ -92,11 +110,15 @@ public:
   }
 
   virtual antlrcpp::Any visitConst(ifccParser::ConstContext *ctx) override {
-    return (AST::Expr::Expr*)new AST::Expr::Const(std::stoi(ctx->CONST()->getText()));
+      unsigned line = ctx->getStart()->getLine();
+      unsigned column = ctx->getStart()->getCharPositionInLine();
+    return (AST::Expr::Expr*)new AST::Expr::Const(std::stoi(ctx->CONST()->getText()), line, column);
   }
 
   virtual antlrcpp::Any visitName(ifccParser::NameContext *ctx) override {
-    return (AST::Expr::Expr*)new AST::Expr::Name(ctx->NAME()->getText());
+      unsigned line = ctx->getStart()->getLine();
+      unsigned column = ctx->getStart()->getCharPositionInLine();
+    return (AST::Expr::Expr*)new AST::Expr::Name(ctx->NAME()->getText(), line, column);
   }
 };
 
