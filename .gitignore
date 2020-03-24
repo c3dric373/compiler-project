@@ -5,6 +5,7 @@
 ###directory
 SqueletteProjet/compiler/antlr4-generated/*
 SqueletteProjet/compiler/output/*
+SqueletteProjet/compiler/ifcc
 
 SqueletteProjet/tests/pld-test-output/*
 SqueletteProjet/compiler/antlr4-runtime/*

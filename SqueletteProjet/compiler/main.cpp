@@ -30,11 +30,12 @@ int main(int argn, const char **argv) {
     ifccParser parser(&tokens);
     tree::ParseTree* tree = parser.axiom();
 
-    Visitor visitor;
-    AST::Prog* test =  visitor.visit(tree);
+  Visitor visitor;
+  AST::Prog* test =  visitor.visit(tree);
+	test->create_symbol_table();
 
 
-    std::string result = test->makeAssembly();
-    cout <<  result  ;
-    return 0;
+  std::string result = test->makeAssembly();
+  cout <<  result  ;
+  return 0;
 }
