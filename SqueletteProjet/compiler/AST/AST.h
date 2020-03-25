@@ -164,6 +164,17 @@ namespace AST{
             unsigned column; // even more: the column in this line
         };
 
+        class Not: public Expr{
+        public:
+            Not(Expr* value, unsigned line, unsigned column):
+                    value(value), line(line), column(column){};
+            std::string makeAssembly() override;
+            void display() override;
+        private:
+            Expr* value;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
     }
 
 
