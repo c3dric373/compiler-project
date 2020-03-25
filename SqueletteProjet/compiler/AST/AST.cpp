@@ -1,157 +1,199 @@
 #include "AST.h"
 
-int INT_OFFSET = 4;
+int INT_OFFSET = -4;
+int DOUBLE_OFFSET = -8;
 int offset =0;
 
 
-std::string AST::Expr::Expr::makeAssembly(SymbolTable &st){
+std::string AST::Expr::Expr::makeAssembly(){
     return "";
 }
+void AST::Expr::Expr::display(){
 
-std::string AST::Expr::Add::makeAssembly(SymbolTable &st){
-    // Return value of expression always in eax
-    std::string lValue_code= this-> lValue->makeAssembly(st);
-    std::string move_lValue =  "\tmovl %eax, %ebx\n";
-    std::string rValue_code = this-> rValue->makeAssembly(st);
-    std::string addition_code = "\taddl %ebx, %eax\n";
-    return lValue_code + move_lValue + rValue_code + addition_code;
 }
 
-std::string AST::Expr::Sub::makeAssembly(SymbolTable &st){
-    // Return value of expression always in eax
-    // Calculate rValue first in order to facilitate the result calculation
-    std::string lValue_code= this-> lValue->makeAssembly(st);
-    std::string move_lValue =  "\tmovl %eax, %edx\n";
-    std::string rValue_code = this-> rValue->makeAssembly(st);
-    std::string move_rValue_tmp =  "\tmovl %eax, %esi\n";
-    std::string move_lValue_eax =  "\tmovl %edx, %eax\n";
-    std::string substraction_code = "\tsubl %esi, %eax\n";
-    return  lValue_code + move_lValue + rValue_code  + move_rValue_tmp +  move_lValue_eax + substraction_code;
+std::string AST::Expr::Add::makeAssembly(){
+    return "";
+}
+void AST::Expr::Add::display(){
+    std::cout << "(ADD " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
+//AST::Expr::Add::Add(AST::Expr::Expr* lValue, AST::Expr::Expr* rValue): lValue(lValue), rValue(rValue){}
+
+std::string AST::Expr::Sub::makeAssembly(){
+    return "";
+}
+void AST::Expr::Sub::display(){
+    std::cout << "(SUB " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
 }
 
-std::string AST::Expr::Mult::makeAssembly(SymbolTable &st){
-    // Return value of expression always in eax
-    std::string lValue_code= this-> lValue->makeAssembly(st);
-    std::string move_lValue =  "\tmovl %eax, %ecx\n";
-    std::string rValue_code = this-> rValue->makeAssembly(st);
-    std::string multiplication_code = "\timull %ecx, %eax\n";
-    return lValue_code + move_lValue + rValue_code + multiplication_code;
+std::string AST::Expr::Mult::makeAssembly(){
+    return "";
+}
+void AST::Expr::Mult::display(){
+    std::cout << "(MULT " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
 }
 
-std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
-    return "test";
+std::string AST::Expr::Minus::makeAssembly(){
+    return "";
+}
+void AST::Expr::Minus::display(){
+    std::cout << "(MIN " << std::flush;
+    value->display();
+    std::cout << ')' << std::flush;
 }
 
-std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
-   int value = this->value;
-    std::string assembler_code = "\tmovl $" + std::to_string(value) + ", %eax\n";
-    return assembler_code;
+std::string AST::Expr::Const::makeAssembly(){
+    return "";
+}
+void AST::Expr::Const::display(){
+    std::cout << "(CONST " << value << ')' << std::flush;
 }
 
-std::string AST::Expr::Name::makeAssembly(SymbolTable &st){
-    int value = st.getOffset(0,name);
-    std::string code_move_variable = "\tmovl -" + std::to_string(value) + " (%rbp) " + ", %eax\n";
-    return code_move_variable;
+std::string AST::Expr::Name::makeAssembly(){
+    return "";
 }
-
-std::string AST::Instr::Def::makeAssembly(SymbolTable &st){
-   std::string valeur_code = this->expr->makeAssembly(st);
-   std::string name = this->name;
+void AST::Expr::Name::display(){
+    std::cout << "(NAME " << name << ')' << std::flush;
+}
+/*
+std::string AST::Instr::Def::makeAssembly(SymbolTable st){
+   int value = this->expr.getValeur();
+   string name = this->name; 
    int  offset = st.getOffset(0,name);
-    std::string assembler_code = "\tmovl %eax, -"+  std::to_string(offset) + "(%rbp)\n";
-    return valeur_code + assembler_code;
+   assembler_code = "mov" + " $" + std::to_string(value) +" "+  std::to_strin(offset) + "(%rbp)";
+    return assembler_code
         // offset du rbp gcc -O0 variables c'est une case memoire la case est emmoire est dans lenregistremend dact de la fonction on lattrtape par loffset (distance par rapport au debuet de lenre => rbp, dabord ajouter offset a rbp et apres ecrire dans cette valeur, ) 
         // for constant creer varaible temp  dans st et pas de duplicat (!xys_offset), stocker a l'offset  
-}
-
-std::string AST::Instr::Affct::makeAssembly(SymbolTable &st){
-    std::string assembleur_expr = this->expr->makeAssembly(st);
-    std::string name = this->name;
-    int  offset = st.getOffset(0,name);
-    std::string assembler_code = assembleur_expr + "\tmovl  %eax,  -"+  std::to_string(offset) + "(%rbp)\n";
-    return assembler_code;
-    // offset du rbp gcc -O0 variables c'est une case memoire la case est emmoire est dans lenregistremend dact de la fonction on lattrtape par loffset (distance par rapport au debuet de lenre => rbp, dabord ajouter offset a rbp et apres ecrire dans cette valeur, )
-    // for constant creer varaible temp  dans st et pas de duplicat (!xys_offset), stocker a l'offset
-}
+}*/
 
 
-
-int AST::Expr::Sub::getValeur(){
-   return this->lValue->getValeur() + this->rValue->getValeur();
-}
-
-int AST::Expr::Minus::getValeur(){
-   return 0;
-}
-int AST::Expr::Mult::getValeur(){
-   return 0;
-}
-
-int AST::Expr::Name::getValeur(){
-   return 0;
-}
-
+/*
 int AST::Expr::Add::getValeur(){
-   return 0;
+   return this->lvalue.getValeur() + this->rvalue.getValeur();
 }
 
 int AST::Expr::Const::getValeur(){
     return this->value;
 }
-
-std::string AST::Bloc::makeAssembly(SymbolTable& st){
-    std::string assembler_code = "";
-      for(auto& it : blocinstr){
-          assembler_code += it->makeAssembly(st);
-      }
-
-    return assembler_code;
+*/
+std::string AST::Bloc::makeAssembly(){
+    return "";
 }
-
 void AST::Bloc::pushInstr(Instr::Instr* instr){
     blocinstr.push_back(instr);
 }
+void AST::Bloc::display(){
+    std::cout << "(BLOC " << std::flush;
+    for(auto& it : blocinstr){
+        it->display();
+    }
+    std::cout << ')' << std::flush;
+}
 
 std::string AST::Prog::makeAssembly(){
-    std::string prolog = ".globl\tmain\nmain:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n";
-    Bloc* child = this->bloc;    
-    std::string assembler_code = child->makeAssembly(this->table);
-	std::string assembler_code_return = this->returnValue->makeAssembly(this->table);
-    std::string epilog = assembler_code_return+"\tpopq %rbp\n\tret\n";
-    return prolog + assembler_code + epilog;
-}
-
-void AST::Prog::create_symbol_table(){
-  this->table =  SymbolTable();
-  Bloc* child = this->bloc;
-  child->addToTable(table);
-
-}
-
-void AST::Bloc::addToTable(SymbolTable &st) {
-    for (auto &it : blocinstr) {
-        it->addToTable(st);
-        }
-    }
-
-    void AST::Instr::Def::addToTable(SymbolTable &st) {
-        st.addSymbol(0, this->name, offset = offset + INT_OFFSET);
-        // offset comme atribue de la table de symbole
-}
-void AST::Instr::Decl::addToTable(SymbolTable &st) {
-    for (auto &it : this->names) {
-        st.addSymbol(0, it, offset = offset + INT_OFFSET);
-    }
-}
-void AST::Instr::Affct::addToTable(SymbolTable &st) {
-
-}
-std::string AST::Instr::Decl::makeAssembly(SymbolTable& st){
     return "";
 }
+void AST::Prog::display(){
+    std::cout << "(AST " << std::flush;
+    bloc->display();
+    std::cout << ", " << std::flush;
+    returnValue->display();
+    std::cout << ")" << std::endl;
+    }
+/*
+void AST::Prog::create_symbol_table(){
+  this->symbolTable = SymbolTable();
+  Bloc child = this->bloc; 
+  child.addToTable(this->symbolTable);
 
+}
+void AST::Bloc::addToTable(SymbolTable st){
+    for(auto& it : blocinstr){
+         it->addToTable(st);
+    }
+}
 
+void Def::addToTable(SymbolTable st){
+    st.addSymbol(0, this->name , offset = offset-INT_OFFSET);
+    // offset comme atribue de la table de symbole 
+}*/
+void AST::Instr::Decl::display(){
+    std::cout << "(DECL " << std::flush;
+    for(auto& it : names){
+        std::cout << it << ' ' << std::flush;
+    }
+    std::cout << ')' << std::flush;
+}
+void AST::Instr::Def::display(){
+    std::cout << "(DEF " << name << ' ' << std::flush;
+    expr->display();
+    std::cout << ')' << std::flush;
+}
+void AST::Instr::Affct::display(){
+    std::cout << "(AFF " << name << ' ' << std::flush;
+    expr->display();
+    std::cout << ')' << std::flush;
+}
+void AST::Instr::If::display(){
+    std::cout << "(IF " << std::flush;
+    expr->display();
+    bloc->display();
+    std::cout << ')' << std::flush;
+}
+void AST::Instr::Instr::display(){
 
-
-
-
+}
+void AST::Expr::Eq::display(){
+    std::cout << "(EQ " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
+void AST::Expr::Neq::display(){
+    std::cout << "(NEQ " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
+void AST::Expr::Leq::display(){
+    std::cout << "(LEQ " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
+void AST::Expr::Low::display(){
+    std::cout << "(LOW " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
+void AST::Expr::Geq::display(){
+    std::cout << "(GEQ " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
+void AST::Expr::Great::display(){
+    std::cout << "(GRT " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
+void AST::Expr::Not::display(){
+    std::cout << "(NOT " << std::flush;
+    value->display();
+    std::cout << ')' << std::flush;
+}
+std::string AST::Expr::Not::makeAssembly(){
+    return Expr::makeAssembly();
+}
