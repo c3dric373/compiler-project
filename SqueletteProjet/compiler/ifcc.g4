@@ -11,10 +11,10 @@ bloc :
 	;
 
 instr :
-	  decl     #instrdecl
-	| def      #instrdef
-	| affct    #instraffct
-	| ifinstr  #instrif
+	 decl     #instrdecl
+	|def      #instrdef
+	|affct    #instraffct
+	|ifinstr  #instrif
 ;
 
 decl :
@@ -33,17 +33,20 @@ ifinstr :
     'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE #ifbloc
     ;
 
-expr   :
-	 CONST          #const
-	|NAME           #name
-
-	|'('expr')'     #par
-
-	|expr '*' expr  #mult
-
-	|expr '-' expr  #sub
-	|expr '+' expr  #add
-	|'-' expr       #minus
+expr :
+	 '('expr')'      #par
+    |expr '==' expr  #eq
+    |expr '!=' expr  #neq
+    |expr '<=' expr  #leq
+    |expr '>=' expr  #geq
+    |expr '<' expr   #low
+    |expr '>' expr   #geat
+	|expr '*' expr   #mult
+	|expr '-' expr   #sub
+	|expr '+' expr   #add
+	|'-' expr        #minus
+	|CONST           #const
+	|NAME            #name
 ;
 
 //les plus specifiques avant
