@@ -1,4 +1,5 @@
 int main(){
-    int a = 7+8*6+9;
+    int a = (5*1+1*1)+(6*1+6*1+1*1);
+    // mettre em place des registres pour stocker des resultats temporaire
     return a;
 }
