@@ -150,6 +150,12 @@ void AST::Instr::If::display(){
     bloc->display();
     std::cout << ')' << std::flush;
 }
+void AST::Instr::While::display(){
+    std::cout << "(WHL " << std::flush;
+    expr->display();
+    bloc->display();
+    std::cout << ')' << std::flush;
+}
 void AST::Instr::Instr::display(){
 
 }
