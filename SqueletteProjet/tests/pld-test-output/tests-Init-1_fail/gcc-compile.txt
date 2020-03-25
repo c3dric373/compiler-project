@@ -1,5 +1,0 @@
-input.c:1:10: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
- int main {
-          ^
-
-return code: 1
