@@ -131,7 +131,7 @@ public:
     return (AST::Expr::Expr*)new AST::Expr::Name(ctx->NAME()->getText(), line, column);
   }
 
-  //COMPARAISONS
+  //COMPARAISONS ET BOOLEENS
 
     virtual antlrcpp::Any visitEq(ifccParser::EqContext *ctx) override {
         AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
@@ -179,6 +179,13 @@ public:
       unsigned line = ctx->getStart()->getLine();
       unsigned column = ctx->getStart()->getCharPositionInLine();
     return (AST::Expr::Expr*)new AST::Expr::Great(astLeftExpr, astRightExpr, line, column);
+    }
+
+    virtual antlrcpp::Any visitNot(ifccParser::NotContext *ctx) override {
+        AST::Expr::Expr* astExpr = visit(ctx->expr());
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Expr::Expr*)new AST::Expr::Not(astExpr, line, column);
     }
 };
 
