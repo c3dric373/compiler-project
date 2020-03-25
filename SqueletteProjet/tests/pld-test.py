@@ -183,8 +183,10 @@ for jobname in jobs:
             dumpfile("gcc-execute.txt")
             
     ## PADAWAN compiler
+
     pldstatus=command(wrapper+" asm-pld.s input.c", "pld-compile.txt")
-    
+
+
     if gccstatus != 0 and pldstatus != 0:
         ## padawan correctly rejects invalid program -> test-case ok
         print("TEST OK")
@@ -195,6 +197,7 @@ for jobname in jobs:
         continue
     elif gccstatus == 0 and pldstatus != 0:
         ## padawan wrongly rejects valid program -> error
+        #print(pldstatus)
         print("TEST FAIL (your compiler rejects a valid program)")
         if args.verbose:
             dumpfile("pld-compile.txt")
