@@ -52,6 +52,10 @@ public:
     return visitChildren(ctx);
   }
 
+    virtual antlrcpp::Any visitInstrwhile(ifccParser::InstrwhileContext *ctx) override {
+        return visitChildren(ctx);
+    }
+
   virtual antlrcpp::Any visitDeclint(ifccParser::DeclintContext *ctx) override {
     auto names = std::vector<std::string>();
     for(auto& it : ctx->NAME()){
@@ -81,6 +85,12 @@ public:
       AST::Bloc* astBloc = visit(ctx->bloc());
       return (AST::Instr::Instr*)(new AST::Instr::If(astExpr, astBloc));
   }
+
+    virtual antlrcpp::Any visitWhilebloc(ifccParser::WhileblocContext *ctx) override {
+        AST::Expr::Expr* astExpr = visit(ctx->expr());
+        AST::Bloc* astBloc = visit(ctx->bloc());
+        return (AST::Instr::Instr*)(new AST::Instr::While(astExpr, astBloc));
+    }
 
   //EXPRESSIONS
 
