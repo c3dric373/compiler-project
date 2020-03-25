@@ -232,6 +232,16 @@ namespace AST{
             Expr::Expr* expr;
             AST::Bloc* bloc;
         };
+
+        class While: public Instr{
+        public:
+            While(Expr::Expr* expr, AST::Bloc* bloc):
+                    expr(expr), bloc(bloc){};
+            virtual void display() override;
+        private:
+            Expr::Expr* expr;
+            AST::Bloc* bloc;
+        };
     }
 
     class Bloc{
