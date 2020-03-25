@@ -11,10 +11,11 @@ bloc :
 	;
 
 instr :
-	 decl     #instrdecl
-	|def      #instrdef
-	|affct    #instraffct
-	|ifinstr  #instrif
+	 decl        #instrdecl
+	|def         #instrdef
+	|affct       #instraffct
+	|ifinstr     #instrif
+	|whileinstr  #instrwhile
 ;
 
 decl :
@@ -30,8 +31,13 @@ affct :
     ;
 
 ifinstr :
-    'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE #ifbloc
+     'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE #ifbloc
+    //|'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE 'else' OPENBRACE bloc CLOSEBRACE #ifelse
     ;
+
+whileinstr :
+     'while' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE #whilebloc
+     ;
 
 expr :
 	 '('expr')'      #par
