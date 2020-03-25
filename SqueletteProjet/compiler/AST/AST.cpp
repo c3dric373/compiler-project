@@ -11,9 +11,12 @@ std::string AST::Expr::Expr::makeAssembly(SymbolTable &st){
 std::string AST::Expr::Add::makeAssembly(SymbolTable &st){
     // Return value of expression always in eax
     std::string lValue_code= this-> lValue->makeAssembly(st);
-    std::string move_lValue =  "\tmovl %eax, %ebx\n";
+    std::string name_var_temp = "!tmp" + std::to_string(offset);
+    st.addSymbol(0,name_var_temp,offset += INT_OFFSET );
+    int start_offset = offset;
+    std::string move_lValue =  "\tmovl %eax, -" + std::to_string(start_offset) +" (%rbp)\n";
     std::string rValue_code = this-> rValue->makeAssembly(st);
-    std::string addition_code = "\taddl %ebx, %eax\n";
+    std::string addition_code = "\taddl -" +std::to_string(start_offset) +" (%rbp) , %eax\n";
     return lValue_code + move_lValue + rValue_code + addition_code;
 }
 
@@ -21,20 +24,29 @@ std::string AST::Expr::Sub::makeAssembly(SymbolTable &st){
     // Return value of expression always in eax
     // Calculate rValue first in order to facilitate the result calculation
     std::string lValue_code= this-> lValue->makeAssembly(st);
-    std::string move_lValue =  "\tmovl %eax, %edx\n";
+    std::string name_var_temp = "!tmp" + std::to_string(offset);
+    st.addSymbol(0,name_var_temp,offset += INT_OFFSET );
+    int start_offset = offset;
+    std::string move_lValue =  "\tmovl %eax, -" + std::to_string(start_offset) +" (%rbp)\n";
     std::string rValue_code = this-> rValue->makeAssembly(st);
-    std::string move_rValue_tmp =  "\tmovl %eax, %esi\n";
-    std::string move_lValue_eax =  "\tmovl %edx, %eax\n";
-    std::string substraction_code = "\tsubl %esi, %eax\n";
-    return  lValue_code + move_lValue + rValue_code  + move_rValue_tmp +  move_lValue_eax + substraction_code;
+    std::string name_var_temp1 = "!tmp" + std::to_string(offset);
+    st.addSymbol(0,name_var_temp1,offset += INT_OFFSET );
+    int start_offset1 = offset;
+    std::string move_rValue =  "\tmovl %eax, -" + std::to_string(start_offset1) +" (%rbp)\n";
+    std::string moveLValue_eax = "\tmovl -" + std::to_string(start_offset) +" (%rbp), %eax\n";
+    std::string substraction_code = "\tsubl -" + std::to_string(start_offset1) +" (%rbp), %eax\n";
+    return  lValue_code + move_lValue + rValue_code  + move_rValue +  moveLValue_eax + substraction_code;
 }
 
 std::string AST::Expr::Mult::makeAssembly(SymbolTable &st){
     // Return value of expression always in eax
     std::string lValue_code= this-> lValue->makeAssembly(st);
-    std::string move_lValue =  "\tmovl %eax, %ecx\n";
+    std::string name_var_temp = "!tmp" + std::to_string(offset);
+    st.addSymbol(0,name_var_temp,offset += INT_OFFSET );
+    int start_offset = offset;
+    std::string move_lValue =  "\tmovl %eax, -" + std::to_string(start_offset) +" (%rbp)\n";
     std::string rValue_code = this-> rValue->makeAssembly(st);
-    std::string multiplication_code = "\timull %ecx, %eax\n";
+    std::string multiplication_code = "\timull -" +std::to_string(start_offset) +" (%rbp) , %eax\n";
     return lValue_code + move_lValue + rValue_code + multiplication_code;
 }
 
