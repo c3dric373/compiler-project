@@ -89,6 +89,81 @@ namespace AST{
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
+
+        //COMPARAISONS ET BOOLEENS
+
+        class Eq: public Expr{
+        public:
+            Eq(AST::Expr::Expr* lValue, AST::Expr::Expr* rValue, unsigned line, unsigned column):
+            lValue(lValue), rValue(rValue){};
+            virtual void display();
+        private:
+            AST::Expr::Expr* lValue;
+            AST::Expr::Expr* rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Neq: public Expr{
+        public:
+            Neq(AST::Expr::Expr* lValue, AST::Expr::Expr* rValue, unsigned line, unsigned column):
+                    lValue(lValue), rValue(rValue){};
+            virtual void display();
+        private:
+            AST::Expr::Expr* lValue;
+            AST::Expr::Expr* rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Leq: public Expr{
+        public:
+            Leq(AST::Expr::Expr* lValue, AST::Expr::Expr* rValue, unsigned line, unsigned column):
+                    lValue(lValue), rValue(rValue){};
+            virtual void display();
+        private:
+            AST::Expr::Expr* lValue;
+            AST::Expr::Expr* rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Low: public Expr{
+        public:
+            Low(AST::Expr::Expr* lValue, AST::Expr::Expr* rValue, unsigned line, unsigned column):
+                    lValue(lValue), rValue(rValue){};
+            virtual void display();
+        private:
+            AST::Expr::Expr* lValue;
+            AST::Expr::Expr* rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Geq: public Expr{
+        public:
+            Geq(AST::Expr::Expr* lValue, AST::Expr::Expr* rValue, unsigned line, unsigned column):
+                    lValue(lValue), rValue(rValue){};
+            virtual void display();
+        private:
+            AST::Expr::Expr* lValue;
+            AST::Expr::Expr* rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Great: public Expr{
+        public:
+            Great(AST::Expr::Expr* lValue, AST::Expr::Expr* rValue, unsigned line, unsigned column):
+                    lValue(lValue), rValue(rValue){};
+            virtual void display();
+        private:
+            AST::Expr::Expr* lValue;
+            AST::Expr::Expr* rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
     }
 
 
