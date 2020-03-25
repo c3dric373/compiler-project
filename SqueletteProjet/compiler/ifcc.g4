@@ -35,6 +35,7 @@ ifinstr :
 
 expr :
 	 '('expr')'      #par
+	|'!' expr        #not
     |expr '==' expr  #eq
     |expr '!=' expr  #neq
     |expr '<=' expr  #leq
