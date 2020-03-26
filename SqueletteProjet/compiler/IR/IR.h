@@ -7,13 +7,18 @@
 #include <initializer_list>
 
 // Declarations from the parser -- replace with your own
-#include "type.h"
-#include "symbole.h"
+class Type;
+//#include "symbole.h"
 
 class BasicBlock;
 class CFG;
 #include "../AST/AST.h"
 
+using namespace std;
+
+class Type {
+	Type();
+};
 
 //! The class for one 3-address instruction
 class IRInstr {
