@@ -81,10 +81,31 @@ std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
     return value_code + neg_code;
 }
 
+std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
+    int value = this->value;
+    std::string assembler_code = "\tmovl $" + std::to_string(value) + ", %eax\n";
+    return assembler_code;
+}
+
+std::string AST::Bloc::makeAssembly(SymbolTable& st){
+    std::string assembler_code = "";
+    for(auto& it : blocinstr){
+        assembler_code += it->makeAssembly(st);
+    }
+
+    return assembler_code;
+}
+
+std::string AST::Expr::Expr::makeAssembly(SymbolTable &st){
+    return "";
+}
+
+
 void AST::Expr::Sub::exists(SymbolTable &st) {
     this->lValue->exists(st);
     this->rValue->exists(st);
 }
+void AST::Expr::Const::exists(SymbolTable &st) {}
 
 
 void AST::Expr::Minus::exists(SymbolTable &st) {
@@ -110,23 +131,7 @@ void AST::Expr::Add::exists(SymbolTable &st) {
     this->rValue->exists(st);
 }
 
-}
 
-void AST::Expr::Const::exists(SymbolTable &st) {
-}
-
-std::string AST::Bloc::makeAssembly(SymbolTable& st){
-    std::string assembler_code = "";
-      for(auto& it : blocinstr){
-          assembler_code += it->makeAssembly(st);
-      }
-
-    return assembler_code;
-}
-
-std::string AST::Expr::Expr::makeAssembly(SymbolTable &st){
-    return "";
-}
 
 
 void AST::Bloc::pushInstr(Instr::Instr* instr){
