@@ -94,23 +94,54 @@ int AST::Expr::Sub::getValeur(){
    return 0;
 }
 
+void AST::Expr::Sub::exists(SymbolTable &st) {
+    this->lValue->exists(st);
+    this->rValue->exists(st);
+}
+
 int AST::Expr::Minus::getValeur(){
    return 0;
 }
+
+void AST::Expr::Minus::exists(SymbolTable &st) {
+    this->value->exists(st);
+}
+
 int AST::Expr::Mult::getValeur(){
    return 0;
+}
+
+void AST::Expr::Mult::exists(SymbolTable &st) {
+    this->lValue->exists(st);
+    this->rValue->exists(st);
 }
 
 int AST::Expr::Name::getValeur(){
    return 0;
 }
 
+void AST::Expr::Name::exists(SymbolTable &st) {
+    if(!st.exists(0,this->name)){
+        st.setErrorTrue();
+        std::string error="errorr : variable "+this->name+" has not been declared\n";
+        st.addErrorMsg(error);
+    }
+}
+
 int AST::Expr::Add::getValeur(){
    return 0;
 }
 
+void AST::Expr::Add::exists(SymbolTable &st) {
+    this->lValue->exists(st);
+    this->rValue->exists(st);
+}
+
 int AST::Expr::Const::getValeur(){
     return this->value;
+}
+
+void AST::Expr::Const::exists(SymbolTable &st) {
 }
 
 std::string AST::Bloc::makeAssembly(SymbolTable& st){
@@ -127,12 +158,18 @@ void AST::Bloc::pushInstr(Instr::Instr* instr){
 }
 
 std::string AST::Prog::makeAssembly(){
-    std::string prolog = ".globl\tmain\nmain:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n";
-    Bloc* child = this->bloc;    
-    std::string assembler_code = child->makeAssembly(this->table);
-	std::string assembler_code_return = this->returnValue->makeAssembly(this->table);
-    std::string epilog = assembler_code_return+"\tpopq %rbp\n\tret\n";
-    return prolog + assembler_code + epilog;
+    std::string returnAssembly="";
+    if(this->table.getError()){
+        std::cout<<this->table.getErrorMsg();
+    }else{
+        std::string prolog = ".globl\tmain\nmain:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n";
+        Bloc* child = this->bloc;
+        std::string assembler_code = child->makeAssembly(this->table);
+        std::string assembler_code_return = this->returnValue->makeAssembly(this->table);
+        std::string epilog = assembler_code_return+"\tpopq %rbp\n\tret\n";
+        returnAssembly=prolog + assembler_code + epilog;
+    }
+    return returnAssembly;
 }
 
 void AST::Prog::create_symbol_table(){
@@ -150,12 +187,27 @@ void AST::Bloc::addToTable(SymbolTable &st) {
 
 
 void AST::Instr::Def::addToTable(SymbolTable &st) {
+    if(st.exists(0,this->name)){
+        st.setErrorTrue();
+        std::string error="error : int "+this->name+" has already been defined\n";
+        st.addErrorMsg(error);
+    }else{
         st.addSymbol(0, this->name, offset = offset + INT_OFFSET);
-        // offset comme atribue de la table de symbole
+    }
+    this->expr->exists(st);
+
+
+    // offset comme atribue de la table de symbole
 }
 void AST::Instr::Decl::addToTable(SymbolTable &st) {
     for (auto &it : this->names) {
-        st.addSymbol(0, it, offset = offset + INT_OFFSET);
+        if(st.exists(0,it)){
+            st.setErrorTrue();
+            std::string error="error : int "+it+" has already been defined\n";
+            st.addErrorMsg(error);
+        }else{
+            st.addSymbol(0, it, offset = offset + INT_OFFSET);
+        }
     }
 }
 void AST::Instr::Affct::addToTable(SymbolTable &st) {
