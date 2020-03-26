@@ -11,6 +11,7 @@ namespace AST{
         public:
             virtual int getValeur()=0;
             virtual std::string makeAssembly(SymbolTable &st)=0;
+            virtual void exists(SymbolTable &st)=0;
         private:
         };
 
@@ -18,7 +19,8 @@ namespace AST{
        public:
             Add(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
             std::string makeAssembly(SymbolTable &st) override;
-            int getValeur()override;
+            int getValeur() override;
+            void exists(SymbolTable &st) override;
         private:
             Expr* lValue;
             Expr* rValue;
@@ -29,6 +31,7 @@ namespace AST{
             Sub(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
             std::string makeAssembly(SymbolTable &st) override;
             int getValeur() override;
+            void exists(SymbolTable &st) override;
         private:
             Expr* lValue;
             Expr* rValue;
@@ -39,6 +42,7 @@ namespace AST{
             Mult(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
             std::string makeAssembly(SymbolTable &st) override;
             int getValeur() override;
+            void exists(SymbolTable &st) override;
         private:
             Expr* lValue;
             Expr* rValue;
@@ -49,6 +53,7 @@ namespace AST{
             Minus(Expr* value): value(value){};
             std::string makeAssembly(SymbolTable &st) override;
             int getValeur() override;
+            void exists(SymbolTable &st) override;
         private:
             Expr* value;
         };
@@ -58,6 +63,7 @@ namespace AST{
             Const(int value) : value(value){};
             std::string makeAssembly(SymbolTable &st) override;
             int getValeur() override;
+            void exists(SymbolTable &st) override;
         private:
             int value;
         };
@@ -67,6 +73,7 @@ namespace AST{
             Name(std::string name): name(name){};
             std::string makeAssembly(SymbolTable &st) override;
             int getValeur() override;
+            void exists(SymbolTable &st) override;
         private:
             std::string name;
         };
