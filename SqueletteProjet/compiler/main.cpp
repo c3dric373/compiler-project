@@ -38,16 +38,14 @@ int main(int argn, const char **argv) {
   AST::Prog* test =  visitor.visit(tree);
   bool error = test->create_symbol_table();
   if(!error){
-      std::string result = test->makeAssembly();
-      cout <<  result  ;
+      std::string resultAssembly = test->makeAssembly();
+      ofstream output;
+      output.open(filename_stripped + ".s");
+      output << resultAssembly;
   }else{
       cout<<test->getErrorMsg();
+      return 1;
   }
 
-
-  std::string resultAssembly = test->makeAssembly();
-  ofstream output;
-  output.open(filename_stripped + ".s");
-  output << resultAssembly;
   return 0;
 }
