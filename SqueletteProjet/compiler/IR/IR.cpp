@@ -1,5 +1,7 @@
 #include "IR.h"
 
+// Généré à partir de IR.h
+
 //nothing to add here
 IRInstr::IRInstr(BasicBlock* bb_, Operation op_, Type t_, vector<string> params_) : bb(bb_), op(op_), t(t_), params(params_) {}
 
