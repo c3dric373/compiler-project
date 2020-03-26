@@ -12,7 +12,7 @@
 
 class BasicBlock;
 class CFG;
-class DefFonction;
+#include "../AST/AST.h"
 
 
 //! The class for one 3-address instruction
@@ -114,9 +114,9 @@ class BasicBlock {
  */
 class CFG {
  public:
-	CFG(DefFonction* ast);
+	CFG(AST::Prog* ast);
 
-	DefFonction* ast; /**< The AST this CFG comes from */
+	AST::Prog* ast; /**< The AST this CFG comes from */
 	
 	void add_bb(BasicBlock* bb); 
 
