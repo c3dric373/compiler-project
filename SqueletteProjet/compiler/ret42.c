@@ -1,9 +1,7 @@
 int main(){
-    int a;
-    int b;
-    int c=d+e+2+f;
-    int d=c;
-    int b =2;
-    return 32;
+    int a = 3;
+    int b = 5+5;
+    int c = 5*b;
+    return c;
 }
 

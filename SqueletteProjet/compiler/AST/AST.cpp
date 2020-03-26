@@ -4,9 +4,6 @@ int INT_OFFSET = 4;
 int offset =0;
 
 
-std::string AST::Expr::Expr::makeAssembly(SymbolTable &st){
-    return "";
-}
 
 std::string AST::Expr::Add::makeAssembly(SymbolTable &st){
     // Return value of expression always in eax
@@ -50,20 +47,10 @@ std::string AST::Expr::Mult::makeAssembly(SymbolTable &st){
     return lValue_code + move_lValue + rValue_code + multiplication_code;
 }
 
-std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
-    std::string value_code = this->value->makeAssembly(st);
-    std::string neg_code = "\tNEG %eax\n";
-    return value_code + neg_code;
-}
 
-std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
-   int value = this->value;
-    std::string assembler_code = "\tmovl $" + std::to_string(value) + ", %eax\n";
-    return assembler_code;
-}
 
 std::string AST::Expr::Name::makeAssembly(SymbolTable &st){
-    int value = st.getOffset(0,name);
+    int value = st.getOffset(0,this->name);
     std::string code_move_variable = "\tmovl -" + std::to_string(value) + " (%rbp) " + ", %eax\n";
     return code_move_variable;
 }
@@ -88,27 +75,41 @@ std::string AST::Instr::Affct::makeAssembly(SymbolTable &st){
     // for constant creer varaible temp  dans st et pas de duplicat (!xys_offset), stocker a l'offset
 }
 
-
-
-int AST::Expr::Sub::getValeur(){
-   return 0;
+std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
+    std::string value_code = this->value->makeAssembly(st);
+    std::string neg_code = "\tNEG %eax\n";
+    return value_code + neg_code;
 }
+
+std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
+    int value = this->value;
+    std::string assembler_code = "\tmovl $" + std::to_string(value) + ", %eax\n";
+    return assembler_code;
+}
+
+std::string AST::Bloc::makeAssembly(SymbolTable& st){
+    std::string assembler_code = "";
+    for(auto& it : blocinstr){
+        assembler_code += it->makeAssembly(st);
+    }
+
+    return assembler_code;
+}
+
+std::string AST::Expr::Expr::makeAssembly(SymbolTable &st){
+    return "";
+}
+
 
 void AST::Expr::Sub::exists(SymbolTable &st) {
     this->lValue->exists(st);
     this->rValue->exists(st);
 }
+void AST::Expr::Const::exists(SymbolTable &st) {}
 
-int AST::Expr::Minus::getValeur(){
-   return 0;
-}
 
 void AST::Expr::Minus::exists(SymbolTable &st) {
     this->value->exists(st);
-}
-
-int AST::Expr::Mult::getValeur(){
-   return 0;
 }
 
 void AST::Expr::Mult::exists(SymbolTable &st) {
@@ -116,20 +117,13 @@ void AST::Expr::Mult::exists(SymbolTable &st) {
     this->rValue->exists(st);
 }
 
-int AST::Expr::Name::getValeur(){
-   return 0;
-}
 
 void AST::Expr::Name::exists(SymbolTable &st) {
     if(!st.exists(0,this->name)){
         st.setErrorTrue();
-        std::string error="errorr : variable "+this->name+" has not been declared\n";
+        std::string error="error : variable "+this->name+" has not been declared\n";
         st.addErrorMsg(error);
     }
-}
-
-int AST::Expr::Add::getValeur(){
-   return 0;
 }
 
 void AST::Expr::Add::exists(SymbolTable &st) {
@@ -137,46 +131,31 @@ void AST::Expr::Add::exists(SymbolTable &st) {
     this->rValue->exists(st);
 }
 
-int AST::Expr::Const::getValeur(){
-    return this->value;
-}
 
-void AST::Expr::Const::exists(SymbolTable &st) {
-}
 
-std::string AST::Bloc::makeAssembly(SymbolTable& st){
-    std::string assembler_code = "";
-      for(auto& it : blocinstr){
-          assembler_code += it->makeAssembly(st);
-      }
-
-    return assembler_code;
-}
 
 void AST::Bloc::pushInstr(Instr::Instr* instr){
     blocinstr.push_back(instr);
 }
 
 std::string AST::Prog::makeAssembly(){
-    std::string returnAssembly="";
-    if(this->table.getError()){
-        std::cout<<this->table.getErrorMsg();
-    }else{
-        std::string prolog = ".globl\tmain\nmain:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n";
-        Bloc* child = this->bloc;
-        std::string assembler_code = child->makeAssembly(this->table);
-        std::string assembler_code_return = this->returnValue->makeAssembly(this->table);
-        std::string epilog = assembler_code_return+"\tpopq %rbp\n\tret\n";
-        returnAssembly=prolog + assembler_code + epilog;
-    }
-    return returnAssembly;
+    std::string prolog = ".globl\tmain\nmain:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n";
+    Bloc* child = this->bloc;
+    std::string assembler_code = child->makeAssembly(this->table);
+    std::string assembler_code_return = this->returnValue->makeAssembly(this->table);
+    std::string epilog = assembler_code_return+"\tpopq %rbp\n\tret\n";
+    return prolog + assembler_code + epilog;
 }
 
-void AST::Prog::create_symbol_table(){
+bool AST::Prog::create_symbol_table(){
   this->table =  SymbolTable();
   Bloc* child = this->bloc;
   child->addToTable(table);
+  return this->table.getError();
+}
 
+std::string AST::Prog::getErrorMsg() {
+    return this->table.getErrorMsg();
 }
 
 void AST::Bloc::addToTable(SymbolTable &st) {
@@ -218,7 +197,28 @@ std::string AST::Instr::Decl::makeAssembly(SymbolTable& st){
 }
 
 
+int AST::Expr::Sub::getValeur(){
+    return 0;
+}
 
+int AST::Expr::Minus::getValeur(){
+    return 0;
+}
+int AST::Expr::Mult::getValeur(){
+    return 0;
+}
+
+int AST::Expr::Name::getValeur(){
+    return 0;
+}
+
+int AST::Expr::Add::getValeur(){
+    return 0;
+}
+
+int AST::Expr::Const::getValeur(){
+    return this->value;
+}
 
 
 
