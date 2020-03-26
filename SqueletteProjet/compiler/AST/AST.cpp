@@ -4,9 +4,6 @@ int INT_OFFSET = 4;
 int offset =0;
 
 
-std::string AST::Expr::Expr::makeAssembly(SymbolTable &st){
-    return "";
-}
 
 std::string AST::Expr::Add::makeAssembly(SymbolTable &st){
     // Return value of expression always in eax
@@ -50,17 +47,6 @@ std::string AST::Expr::Mult::makeAssembly(SymbolTable &st){
     return lValue_code + move_lValue + rValue_code + multiplication_code;
 }
 
-std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
-    std::string value_code = this->value->makeAssembly(st);
-    std::string neg_code = "\tNEG %eax\n";
-    return value_code + neg_code;
-}
-
-std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
-   int value = this->value;
-    std::string assembler_code = "\tmovl $" + std::to_string(value) + ", %eax\n";
-    return assembler_code;
-}
 
 std::string AST::Expr::Name::makeAssembly(SymbolTable &st){
     int value = st.getOffset(0,name);
@@ -88,9 +74,17 @@ std::string AST::Instr::Affct::makeAssembly(SymbolTable &st){
     // for constant creer varaible temp  dans st et pas de duplicat (!xys_offset), stocker a l'offset
 }
 
+std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
+    std::string value_code = this->value->makeAssembly(st);
+    std::string neg_code = "\tNEG %eax\n";
+    return value_code + neg_code;
+}
 
-
-
+std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
+    int value = this->value;
+    std::string assembler_code = "\tmovl $" + std::to_string(value) + ", %eax\n";
+    return assembler_code;
+}
 
 std::string AST::Bloc::makeAssembly(SymbolTable& st){
     std::string assembler_code = "";
@@ -100,6 +94,11 @@ std::string AST::Bloc::makeAssembly(SymbolTable& st){
 
     return assembler_code;
 }
+
+std::string AST::Expr::Expr::makeAssembly(SymbolTable &st){
+    return "";
+}
+
 
 void AST::Bloc::pushInstr(Instr::Instr* instr){
     blocinstr.push_back(instr);
