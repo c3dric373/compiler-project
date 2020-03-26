@@ -90,28 +90,7 @@ std::string AST::Instr::Affct::makeAssembly(SymbolTable &st){
 
 
 
-int AST::Expr::Sub::getValeur(){
-   return 0;
-}
 
-int AST::Expr::Minus::getValeur(){
-   return 0;
-}
-int AST::Expr::Mult::getValeur(){
-   return 0;
-}
-
-int AST::Expr::Name::getValeur(){
-   return 0;
-}
-
-int AST::Expr::Add::getValeur(){
-   return 0;
-}
-
-int AST::Expr::Const::getValeur(){
-    return this->value;
-}
 
 std::string AST::Bloc::makeAssembly(SymbolTable& st){
     std::string assembler_code = "";
@@ -166,7 +145,28 @@ std::string AST::Instr::Decl::makeAssembly(SymbolTable& st){
 }
 
 
+int AST::Expr::Sub::getValeur(){
+    return 0;
+}
 
+int AST::Expr::Minus::getValeur(){
+    return 0;
+}
+int AST::Expr::Mult::getValeur(){
+    return 0;
+}
+
+int AST::Expr::Name::getValeur(){
+    return 0;
+}
+
+int AST::Expr::Add::getValeur(){
+    return 0;
+}
+
+int AST::Expr::Const::getValeur(){
+    return this->value;
+}
 
 
 
