@@ -1,13 +1,14 @@
 #include "IR.h"
 
-IRInstr::IRInstr(BasicBlock* bb_, Operation op, Type t, vector<string> params){}
+//nothing to add here
+IRInstr::IRInstr(BasicBlock* bb_, Operation op_, Type t_, vector<string> params_) : bb(bb_), op(op_), t(t_), params(params_) {}
 
 void IRInstr::gen_asm(ostream &o){
 	 /* Exemple de ce qu'il faut mettre ici, la + longue méthode
 	switch(op) {
         case Operation::ldconst :
             indexDest = bb->cfg->get_var_index(params[0]);
-            out << "mov" << s << " $" << params[1] << "," << indexDest <<"(%rbp)" << endl;
+            o << "mov" << s << " $" << params[1] << "," << indexDest <<"(%rbp)" << endl;
             break;
         case Operation::add :
             indexDest = bb->cfg->get_var_index(params[0]);
@@ -15,19 +16,19 @@ void IRInstr::gen_asm(ostream &o){
             indexParam2 = bb->cfg->get_var_index(params[2]);
 
             if (params[1] == "!bp") {
-                out << "movq %rbp, %rax" << endl;
+                o << "movq %rbp, %rax" << endl;
             } else {
-                out << "movq " << indexParam1 << "(%rbp), %rax" << endl;
+                o << "movq " << indexParam1 << "(%rbp), %rax" << endl;
             }
-            out << "addq " << indexParam2 << "(%rbp), %rax" << endl;
-            out << "movq %rax, " << indexDest << "(%rbp)" << endl;
+            o << "addq " << indexParam2 << "(%rbp), %rax" << endl;
+            o << "movq %rax, " << indexDest << "(%rbp)" << endl;
             break;*/
 }
 
 //nothing to add here
 BasicBlock::BasicBlock(CFG* cfg, string entry_label : cfg(cfg), label(entry_label) {}
 
-void BasicBlock::gen_asm(ostream& out) {
+void BasicBlock::gen_asm(ostream& o) {
 
 }
 
