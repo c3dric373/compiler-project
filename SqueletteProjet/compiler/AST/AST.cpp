@@ -48,11 +48,6 @@ std::string AST::Expr::Mult::makeAssembly(SymbolTable &st){
 }
 
 
-std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
-    int value = this->value;
-    std::string assembler_code = "\tmovl $" + std::to_string(value) + ", %eax\n";
-    return assembler_code;
-}
 
 std::string AST::Expr::Name::makeAssembly(SymbolTable &st){
     int value = st.getOffset(0,this->name);
@@ -85,6 +80,7 @@ std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
     std::string neg_code = "\tNEG %eax\n";
     return value_code + neg_code;
 }
+
 
 std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
     int value = this->value;
