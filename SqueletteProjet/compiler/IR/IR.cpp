@@ -78,7 +78,15 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
 
 // TODO
 CFG::CFG(DefFonction* ast_) : nextFreeSymbolIndex(0), nextBBnumber(0), ast(ast_) {
+	auto firstBB = new BasicBlock(this, "essai");
+    add_bb(firstBB);	
 
+	// Create just one block 
+	// In the future, we must create one more
+	firstBB->exit_false = nullptr;
+    firstBB->exit_true = nullptr;
+
+	current_bb = firstBB;
 }
 
 void CFG::add_bb(BasicBlock* bb){
