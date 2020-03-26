@@ -1,9 +1,5 @@
 int main(){
-    int a;
-    int b;
-    int c=d+e+2+f;
-    int d=c;
-    int b =2;
+    int a = c;
     return 32;
 }
 
