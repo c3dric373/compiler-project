@@ -18,7 +18,7 @@ C'est la méthode create_new_tempvar de l'IR qui s'occupera d'insérer la variab
 
 */
 
-int INT_OFFSET = 4;
+int INTOFFSET = 4;
 
 IRInstr::IRInstr(BasicBlock* bb_, Operation op_, Type t_, vector<string> params_) : bb(bb_), op(op_), t(t_), params(params_) {}
 
@@ -27,18 +27,21 @@ void IRInstr::gen_asm(ostream &o){
 	 /* Exemple de ce qu'il faut mettre ici, la + longue méthode*/
 	switch(op) {
         case Operation::ldconst :
+			{
 			// for const : params = [ name | value ]
-            std::string regDestString = bb->cfg->IR_reg_to_asm(params[0]);
-            o << "movl $" << params[1] << ", " << regDestString << endl;
+            std::string regString = bb->cfg->IR_reg_to_asm(params[0]);
+            o << "movl $" << params[1] << ", " << regString << endl;
             break;
-		case operation::copy:
-			break;
-		case operation::sub:
-			break;
-		case operation::mul:
-			break;
+			}
+		case Operation::copy:
+			{break;}
+		case Operation::sub:
+			{break;}
+		case Operation::mul:
+			{break;}
         case Operation::add :
-            std::string regDestString = bb->cfg->IR_reg_to_asm(params[0]);
+			{            
+			std::string regDestString = bb->cfg->IR_reg_to_asm(params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(params[2]);
 
@@ -46,21 +49,23 @@ void IRInstr::gen_asm(ostream &o){
             o << "\taddl " << reg2String << ", %eax" << endl;
             o << "\tmovq %eax, " << regDestString << endl;
             break;
-		case operation::rmem:
-			break;
-		case operation::wmem:
-			break;
-		case operation::call:
-			break;
-		case operation::cmp_eq:
-			break;
-		case operation::cmp_lt:
-			break;
-		case operation::cmp_le:
-			break;
+			}
+		case Operation::rmem:
+			{break;}
+		case Operation::wmem:
+			{break;}
+		case Operation::call:
+			{break;}
+		case Operation::cmp_eq:
+			{break;}
+		case Operation::cmp_lt:
+			{break;}
+		case Operation::cmp_le:
+			{break;}
+	}
 }
 
-BasicBlock::BasicBlock(CFG* cfg, string entry_label : cfg(cfg), label(entry_label) {}
+BasicBlock::BasicBlock(CFG* cfg, string entry_label) : cfg(cfg), label(entry_label) {}
 
 void BasicBlock::gen_asm(ostream& o) {
 	cfg->gen_asm_prologue(o);
@@ -77,7 +82,7 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
 }
 
 // TODO
-CFG::CFG(AST::Prog* ast_) : nextFreeSymbolIndex(0), nextBBnumber(0), ast(ast_) {
+CFG::CFG(): nextFreeSymbolIndex(0), nextBBnumber(0){//AST::Bloc* ast_) : nextFreeSymbolIndex(0), nextBBnumber(0), ast(ast_) {
 	auto firstBB = new BasicBlock(this, "essai");
     add_bb(firstBB);	
 
@@ -101,8 +106,8 @@ void CFG::gen_asm(ostream& o){
 
 // take a variable and transform it to "-offset(%rbp)"
 std::string CFG::IR_reg_to_asm(string reg){
-	int offset = bb->cfg->get_var_index(reg);
-	std::string regString = offsetParam1 + "(%rbp)";
+	int offset = this->get_var_index(reg);
+	std::string regString = std::to_string(offset) + "(%rbp)";
 	return regString;
 }
 
@@ -119,21 +124,22 @@ void CFG::gen_asm_epilogue(ostream& o){
 }
 
 void CFG::add_to_symbol_table(string name, Type t){
-	nextFreeSymbolIndex -= INT_OFFSET;
+	nextFreeSymbolIndex -= INTOFFSET;
 	
 	SymbolType[name] = t;
     SymbolIndex[name] = nextFreeSymbolIndex;
 }
 
 std::string CFG::create_new_tempvar(Type t){
-	nextFreeSymbolIndex -= INT_OFFSET;
+	nextFreeSymbolIndex -= INTOFFSET;
 
 	// nextFreeSymbolIndex is negative, so we put -nextFreeSymbolIndex in the tmp name
 	std::string name_var_temp = "!tmp" + std::to_string(-nextFreeSymbolIndex);
 	
 	// Add new tmp var to the symbole table
-	SymbolType[name] = t;
-    SymbolIndex[name] = nextFreeSymbolIndex;
+	SymbolType[name_var_temp] = t;
+    SymbolIndex[name_var_temp] = nextFreeSymbolIndex;
+	return name_var_temp;
 }
 
 int CFG::get_var_index(string name){

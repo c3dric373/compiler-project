@@ -5,19 +5,20 @@
 #include <string>
 #include <iostream>
 #include <initializer_list>
+#include <map>
+//#include "../AST/AST.h"
 
 // Declarations from the parser -- replace with your own
 class Type;
-//#include "symbole.h"
-
 class BasicBlock;
 class CFG;
-#include "../AST/AST.h"
 
 using namespace std;
 
+//bullshit class just to compile
 class Type {
-	Type();
+	public:
+		Type(){};
 };
 
 //! The class for one 3-address instruction
@@ -119,9 +120,11 @@ class BasicBlock {
  */
 class CFG {
  public:
-	CFG(AST::Prog* ast);
+	CFG();
+	// voir pourquoi je ne trouve pas Bloc !!!
+	//CFG(Bloc* ast);
 
-	AST::Prog* ast; /**< The AST this CFG comes from */
+	//Bloc* ast; /**< The AST this CFG comes from */
 	
 	void add_bb(BasicBlock* bb); 
 
