@@ -4,25 +4,41 @@
 IRInstr::IRInstr(BasicBlock* bb_, Operation op_, Type t_, vector<string> params_) : bb(bb_), op(op_), t(t_), params(params_) {}
 
 void IRInstr::gen_asm(ostream &o){
-	 /* Exemple de ce qu'il faut mettre ici, la + longue méthode
+	 /* Exemple de ce qu'il faut mettre ici, la + longue méthode*/
 	switch(op) {
         case Operation::ldconst :
-            indexDest = bb->cfg->get_var_index(params[0]);
-            o << "mov" << s << " $" << params[1] << "," << indexDest <<"(%rbp)" << endl;
+			// for const : params = [ name | value ]
+            offset = bb->cfg->get_var_index(params[0]);
+            o << "movl $" << params[1] << "," << offset <<"(%rbp)" << endl;
             break;
+		case operation::copy:
+			break;
+		case operation::sub:
+			break;
+		case operation::mul:
+			break;
         case Operation::add :
-            indexDest = bb->cfg->get_var_index(params[0]);
-            indexParam1 = bb->cfg->get_var_index(params[1]);
-            indexParam2 = bb->cfg->get_var_index(params[2]);
+            offsetDest = bb->cfg->get_var_index(params[0]);
+            offsetParam1 = bb->cfg->get_var_index(params[1]);
+            offsetParam2 = bb->cfg->get_var_index(params[2]);
 
-            if (params[1] == "!bp") {
-                o << "movq %rbp, %rax" << endl;
-            } else {
-                o << "movq " << indexParam1 << "(%rbp), %rax" << endl;
-            }
-            o << "addq " << indexParam2 << "(%rbp), %rax" << endl;
-            o << "movq %rax, " << indexDest << "(%rbp)" << endl;
-            break;*/
+            o << "\tmovl "<< offsetParam1 << "(%rbp), %eax\n" << endl;
+            o << "\taddl " << offsetParam2 << "(%rbp), %eax\n" << endl;
+            o << "movq %eax, " << offsetDest << "(%rbp)" << endl;
+            break;
+		case operation::rmem:
+			break;
+		case operation::wmem:
+			break;
+		case operation::call:
+			break;
+		case operation::cmp_eq:
+			break;
+		case operation::cmp_lt:
+			break;
+		case operation::cmp_le:
+			break;
+
 }
 
 //nothing to add here
