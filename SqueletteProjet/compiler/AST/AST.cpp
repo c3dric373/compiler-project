@@ -121,7 +121,7 @@ void AST::Expr::Mult::exists(SymbolTable &st) {
 void AST::Expr::Name::exists(SymbolTable &st) {
     if(!st.exists(0,this->name)){
         st.setErrorTrue();
-        std::string error="errorr : variable "+this->name+" has not been declared\n";
+        std::string error="error : variable "+this->name+" has not been declared\n";
         st.addErrorMsg(error);
     }
 }
@@ -139,25 +139,23 @@ void AST::Bloc::pushInstr(Instr::Instr* instr){
 }
 
 std::string AST::Prog::makeAssembly(){
-    std::string returnAssembly="";
-    if(this->table.getError()){
-        std::cout<<this->table.getErrorMsg();
-    }else{
-        std::string prolog = ".globl\tmain\nmain:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n";
-        Bloc* child = this->bloc;
-        std::string assembler_code = child->makeAssembly(this->table);
-        std::string assembler_code_return = this->returnValue->makeAssembly(this->table);
-        std::string epilog = assembler_code_return+"\tpopq %rbp\n\tret\n";
-        returnAssembly=prolog + assembler_code + epilog;
-    }
-    return returnAssembly;
+    std::string prolog = ".globl\tmain\nmain:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n";
+    Bloc* child = this->bloc;
+    std::string assembler_code = child->makeAssembly(this->table);
+    std::string assembler_code_return = this->returnValue->makeAssembly(this->table);
+    std::string epilog = assembler_code_return+"\tpopq %rbp\n\tret\n";
+    return prolog + assembler_code + epilog;
 }
 
-void AST::Prog::create_symbol_table(){
+bool AST::Prog::create_symbol_table(){
   this->table =  SymbolTable();
   Bloc* child = this->bloc;
   child->addToTable(table);
+  return this->table.getError();
+}
 
+std::string AST::Prog::getErrorMsg() {
+    return this->table.getErrorMsg();
 }
 
 void AST::Bloc::addToTable(SymbolTable &st) {

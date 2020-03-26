@@ -133,7 +133,8 @@ namespace AST{
     public:
         Prog(Bloc* bloc, Expr::Expr* returnValue): bloc(bloc), returnValue(returnValue){};
         std::string makeAssembly();
-        void create_symbol_table();
+        bool create_symbol_table();
+        std::string getErrorMsg();
     private:
         Bloc* bloc;
         Expr::Expr* returnValue;
