@@ -1,7 +1,7 @@
 int main(){
-    int a = 1+55+3+10-5-32-31;
-    int b = 2+a;
-    int c= 3+a*b*5+c;
+    int a = 3;
+    int b = 5+5;
+    int c = 5*b;
     return c;
 }
 
