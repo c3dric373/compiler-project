@@ -3,7 +3,9 @@
 int INT_OFFSET = 4;
 int offset =0;
 
-
+//new attribute 
+std::vector<CFG*> cfgs;
+CFG* currentCFG;
 
 std::string AST::Expr::Add::makeAssembly(SymbolTable &st){
     // Return value of expression always in eax
@@ -82,9 +84,10 @@ std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
 }
 
 std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
-    int value = this->value;
-    std::string assembler_code = "\tmovl $" + std::to_string(value) + ", %eax\n";
-    return assembler_code;
+    string value = std::to_string(this->value);
+ 	std::string temp = currentCFG->create_new_tempvar(Type());
+    currentCFG->current_bb->add_IRInstr(IRInstr::ldconst, Type(), {temp, value});
+    return "";
 }
 
 std::string AST::Bloc::makeAssembly(SymbolTable& st){
@@ -131,20 +134,21 @@ void AST::Expr::Add::exists(SymbolTable &st) {
     this->rValue->exists(st);
 }
 
-
-
-
 void AST::Bloc::pushInstr(Instr::Instr* instr){
     blocinstr.push_back(instr);
 }
 
 std::string AST::Prog::makeAssembly(){
-    std::string prolog = ".globl\tmain\nmain:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n";
     Bloc* child = this->bloc;
+	CFG* cfg = new CFG();
+	currentCFG = cfg;
+	cfgs.push_back(cfg);
+
     std::string assembler_code = child->makeAssembly(this->table);
+
+	cfg->gen_asm(cout);
     std::string assembler_code_return = this->returnValue->makeAssembly(this->table);
-    std::string epilog = assembler_code_return+"\tpopq %rbp\n\tret\n";
-    return prolog + assembler_code + epilog;
+    return "";
 }
 
 bool AST::Prog::create_symbol_table(){

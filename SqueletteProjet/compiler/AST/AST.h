@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 #include "SymbolTable.h"
+#include "../IR/IR.h"
+
+
 namespace AST{
 
     namespace Expr{
@@ -138,7 +141,7 @@ namespace AST{
     private:
         Bloc* bloc;
         Expr::Expr* returnValue;
-        SymbolTable table; 
+        SymbolTable table;
     };
 }
 
