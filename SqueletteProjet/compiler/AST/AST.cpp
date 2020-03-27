@@ -38,12 +38,12 @@ std::string AST::Expr::Sub::makeAssembly(SymbolTable &st){
     std::string substraction_code = "\tsubl -" + std::to_string(start_offset1) +" (%rbp), %eax\n";
     return  lValue_code + move_lValue + rValue_code  + move_rValue +  moveLValue_eax + substraction_code;
 }
-void AST::Expr::Add::display(){
+void AST::Expr::Add::display() {
     std::cout << "(ADD " << std::flush;
     lValue->display();
     rValue->display();
     std::cout << ')' << std::flush;
-
+}
 std::string AST::Expr::Mult::makeAssembly(SymbolTable &st){
     // Return value of expression always in eax
     std::string lValue_code= this-> lValue->makeAssembly(st);
@@ -76,9 +76,7 @@ void AST::Expr::Mult::display(){
     std::cout << ')' << std::flush;
 }
 
-std::string AST::Expr::Minus::makeAssembly(){
-    return "";
-}
+
 
 std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
     std::string value_code = this->value->makeAssembly(st);
@@ -92,22 +90,21 @@ std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
     return assembler_code;
 }
 
-std::string AST::Bloc::makeAssembly(SymbolTable& st){
+std::string AST::Bloc::makeAssembly(SymbolTable& st) {
     std::string assembler_code = "";
-    for(auto& it : blocinstr){
+    for (auto &it : blocinstr) {
         assembler_code += it->makeAssembly(st);
     }
 
     return assembler_code;
+}
 void AST::Expr::Minus::display(){
     std::cout << "(MIN " << std::flush;
     value->display();
     std::cout << ')' << std::flush;
 }
 
-std::string AST::Expr::Expr::makeAssembly(SymbolTable &st){
-    return "";
-}
+
 void AST::Expr::Const::display(){
     std::cout << "(CONST " << value << ')' << std::flush;
 }
@@ -118,9 +115,9 @@ void AST::Expr::Sub::exists(SymbolTable &st) {
     this->rValue->exists(st);
 }
 void AST::Expr::Const::exists(SymbolTable &st) {}
-void AST::Expr::Name::display(){
+void AST::Expr::Name::display() {
     std::cout << "(NAME " << name << ')' << std::flush;
-
+}
 
 void AST::Expr::Minus::exists(SymbolTable &st) {
     this->value->exists(st);
@@ -181,19 +178,11 @@ void AST::Prog::display(){
     returnValue->display();
     std::cout << ")" << std::endl;
     }
-/*
-void AST::Prog::create_symbol_table(){
-  this->symbolTable = SymbolTable();
-  Bloc child = this->bloc; 
-  child.addToTable(this->symbolTable);
+
+
 
 std::string AST::Prog::getErrorMsg() {
     return this->table.getErrorMsg();
-}
-void AST::Bloc::addToTable(SymbolTable st){
-    for(auto& it : blocinstr){
-         it->addToTable(st);
-    }
 }
 
 
@@ -206,23 +195,25 @@ void AST::Instr::Def::addToTable(SymbolTable &st) {
         st.addSymbol(0, this->name, offset = offset + INT_OFFSET);
     }
     this->expr->exists(st);
-
-
     // offset comme atribue de la table de symbole
 }
 void AST::Instr::Decl::addToTable(SymbolTable &st) {
     for (auto &it : this->names) {
-        if(st.exists(0,it)){
+        if (st.exists(0, it)) {
             st.setErrorTrue();
-            std::string error="error : int "+it+" has already been defined\n";
+            std::string error = "error : int " + it + " has already been defined\n";
             st.addErrorMsg(error);
-        }else{
+        } else {
             st.addSymbol(0, it, offset = offset + INT_OFFSET);
         }
+    }
+}
 void Def::addToTable(SymbolTable st){
     st.addSymbol(0, this->name , offset = offset-INT_OFFSET);
     // offset comme atribue de la table de symbole 
-}*/
+}
+
+
 void AST::Instr::Decl::display(){
     std::cout << "(DECL " << std::flush;
     for(auto& it : names){
@@ -296,8 +287,9 @@ void AST::Expr::Not::display(){
     value->display();
     std::cout << ')' << std::flush;
 }
-std::string AST::Expr::Not::makeAssembly(){
-    return Expr::makeAssembly();
+std::string AST::Expr::Not::makeAssembly(SymbolTable &st){
+    //TODO
+    return Expr::makeAssembly(st);
 }
 
 
