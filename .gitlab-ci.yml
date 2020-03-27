@@ -19,8 +19,8 @@ test:
     script:
         - chmod 755 SqueletteProjet/compiler/ifcc
         - cd SqueletteProjet/tests/
-        - chmod 755 pld-wrapper.sh
-        - python3 pld-test.py tests/Init/
+        - sh test_if.sh
+        
     artifacts:
         paths:
             - SqueletteProjet/tests/pld-test-output
