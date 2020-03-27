@@ -9,6 +9,7 @@
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "visitor.h"
 
+
 using namespace antlr4;
 using namespace std;
 
@@ -18,6 +19,9 @@ int main(int argn, const char **argv) {
      ifstream lecture(argv[1]);
      in << lecture.rdbuf();
   }
+
+  std::string filename = (argv[1]);
+  std::string filename_stripped = filename.substr(0, filename.find(".", 0));
   ANTLRInputStream input(in.str());
   ifccLexer lexer(&input);
   CommonTokenStream tokens(&lexer);
@@ -32,10 +36,16 @@ int main(int argn, const char **argv) {
 
   Visitor visitor;
   AST::Prog* test =  visitor.visit(tree);
-	test->create_symbol_table();
+  bool error = test->create_symbol_table();
+  if(!error){
+      std::string resultAssembly = test->makeAssembly();
+      ofstream output;
+      output.open(filename_stripped + ".s");
+      output << resultAssembly;
+  }else{
+      cout<<test->getErrorMsg();
+      return 1;
+  }
 
-
-  std::string result = test->makeAssembly();
-  cout <<  result  ;
   return 0;
 }

@@ -10,6 +10,10 @@ namespace AST{
     namespace Expr{
         class Expr{
         public:
+            virtual int getValeur()=0;
+            virtual std::string makeAssembly(SymbolTable &st)=0;
+            virtual void exists(SymbolTable &st)=0;
+        private:
             virtual std::string makeAssembly();
             virtual void display();
             //virtual int getValeur();
@@ -17,6 +21,10 @@ namespace AST{
 
         class Add: public Expr{
        public:
+            Add(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
+            std::string makeAssembly(SymbolTable &st) override;
+            int getValeur() override;
+            void exists(SymbolTable &st) override;
             Add(Expr* lValue, Expr* rValue, unsigned line, unsigned column):
             lValue(lValue), rValue(rValue), line(line), column(column){};
             std::string makeAssembly() override;
@@ -30,6 +38,10 @@ namespace AST{
 
         class Sub: public Expr{
         public:
+            Sub(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
+            std::string makeAssembly(SymbolTable &st) override;
+            int getValeur() override;
+            void exists(SymbolTable &st) override;
             Sub(Expr* lValue, Expr* rValue, unsigned line, unsigned column):
             lValue(lValue), rValue(rValue), line(line), column(column){};
             std::string makeAssembly() override;
@@ -43,6 +55,10 @@ namespace AST{
 
         class Mult: public Expr{
         public:
+            Mult(Expr* lValue, Expr* rValue): lValue(lValue), rValue(rValue){};
+            std::string makeAssembly(SymbolTable &st) override;
+            int getValeur() override;
+            void exists(SymbolTable &st) override;
             Mult(Expr* lValue, Expr* rValue, unsigned line, unsigned column):
             lValue(lValue), rValue(rValue), line(line), column(column){};
             std::string makeAssembly() override;
@@ -56,6 +72,10 @@ namespace AST{
 
         class Minus: public Expr{
         public:
+            Minus(Expr* value): value(value){};
+            std::string makeAssembly(SymbolTable &st) override;
+            int getValeur() override;
+            void exists(SymbolTable &st) override;
             Minus(Expr* value, unsigned line, unsigned column):
             value(value), line(line), column(column){};
             std::string makeAssembly() override;
@@ -68,6 +88,10 @@ namespace AST{
 
         class Const: public Expr{
         public:
+            Const(int value) : value(value){};
+            std::string makeAssembly(SymbolTable &st) override;
+            int getValeur() override;
+            void exists(SymbolTable &st) override;
             Const(int value, unsigned line, unsigned column):
             value(value), line(line), column(column){};
             std::string makeAssembly() override;
@@ -80,6 +104,10 @@ namespace AST{
 
         class Name: public Expr{
         public:
+            Name(std::string name): name(name){};
+            std::string makeAssembly(SymbolTable &st) override;
+            int getValeur() override;
+            void exists(SymbolTable &st) override;
             Name(std::string name, unsigned line, unsigned column):
             name(name), line(line), column(column){};
             std::string makeAssembly() override;
@@ -258,6 +286,8 @@ namespace AST{
     public:
         Prog(Bloc* bloc, Expr::Expr* returnValue): bloc(bloc), returnValue(returnValue){};
         std::string makeAssembly();
+        bool create_symbol_table();
+        std::string getErrorMsg();
         void create_symbol_table();
         void display();
     private:
