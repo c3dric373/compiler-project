@@ -1,5 +1,12 @@
 # Guide d'utilisation des livrabes de mi-parcours PLD COMP H4222
 
+Important ! : Avant de pouvoir utiliser le compilateur ifcc , veuillez lancer le script `compile_docker.sh` présent dans le dossier compiler,
+tout en s'assurant que docker soit bien lancé.
+
+```
+sudo sh compile_docker.sh
+```
+
 ## Utiliser le "compilateur" ifcc dans le dossier compiler
 L'utilisation du compilateur est relativement simple :
 ```
