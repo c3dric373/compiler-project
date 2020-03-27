@@ -1,4 +1,4 @@
-TEST-CASE: pld-test-output/tests-Init-ret42
+TEST-CASE: pld-test-output/tests-Init-rendu
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-init-addsub4
 TEST OK
@@ -102,12 +102,20 @@ TEST-CASE: pld-test-output/tests-Init-analyse-statique-2variable_non_affecte_exp
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-analyse-statique-3variable_non_affecte_expr_complexe_mult1
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-minus-unaire-0_minus_var
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-minus-unaire-0_minus_after_plus
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-minus-unaire-0_minus_after_mult
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-minus-unaire-0_minus_ret
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-minus-unaire-0_minus_after_int
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-paranthese-2_mult
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-paranthese-1_add-associativite-gauche
 TEST OK
-TEST-CASE: pld-test-output/tests-Init-paranthese-0_pas-de-point-virgule
-TEST FAIL (your compiler accepts an invalid program)
 TEST-CASE: pld-test-output/tests-Init-paranthese-2_mult-associativite-droite
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-paranthese-1-MULT-associativite-droite
