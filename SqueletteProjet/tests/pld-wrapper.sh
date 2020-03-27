@@ -18,9 +18,18 @@
 DESTNAME=$1
 SOURCENAME=$2
 
-$(dirname $0)/../compiler/ifcc $SOURCENAME >$DESTNAME
-
+$(dirname $0)/../compiler/ifcc $SOURCENAME
 retcode=$?
+
+# Get the name of the produced assembly file
+STR=$( echo $SOURCENAME | sed "s/\..*//")
+STR1=".s"
+FILENAME="${STR}${STR1}"
+echo $DESTNAME
+padawan="asm-pld.s"
+mv $FILENAME $padawan
+
+
 
 # forward exit status of the compiler
 exit $retcode
