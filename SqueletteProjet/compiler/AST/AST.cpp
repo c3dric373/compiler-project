@@ -7,10 +7,6 @@ int offset = 0;
 //-------------------MakeAssembly-----------------------
 
 
-std::string AST::Instr::While::makeAssembly(SymbolTable &st) {
-    return std::string();
-}
-
 
 std::string AST::Expr::Add::makeAssembly(SymbolTable &st) {
     // Return value of expression always in eax
@@ -125,6 +121,9 @@ std::string AST::Instr::Affct::makeAssembly(SymbolTable &st) {
     // for constant creer varaible temp  dans st et pas de duplicat (!xys_offset), stocker a l'offset
 }
 
+std::string AST::Instr::While::makeAssembly(SymbolTable &st) {
+    return std::string();
+}
 
 std::string AST::Instr::If::makeAssembly(SymbolTable &st) {
     return std::string();
