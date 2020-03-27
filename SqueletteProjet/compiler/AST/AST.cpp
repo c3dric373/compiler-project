@@ -1,7 +1,6 @@
 #include "AST.h"
 
-int INT_OFFSET = -4;
-int DOUBLE_OFFSET = -8;
+int INT_OFFSET = 4;
 int offset =0;
 
 
@@ -43,12 +42,7 @@ std::string AST::Expr::Sub::makeAssembly(SymbolTable &st){
     std::string substraction_code = "\tsubl -" + std::to_string(start_offset1) +" (%rbp), %eax\n";
     return  lValue_code + move_lValue + rValue_code  + move_rValue +  moveLValue_eax + substraction_code;
 }
-void AST::Expr::Add::display() {
-    std::cout << "(ADD " << std::flush;
-    lValue->display();
-    rValue->display();
-    std::cout << ')' << std::flush;
-}
+
 std::string AST::Expr::Mult::makeAssembly(SymbolTable &st){
     // Return value of expression always in eax
     std::string lValue_code= this-> lValue->makeAssembly(st);
@@ -217,6 +211,13 @@ void AST::Expr::Minus::display(){
 
 void AST::Expr::Const::display(){
     std::cout << "(CONST " << value << ')' << std::flush;
+}
+
+void AST::Expr::Add::display() {
+    std::cout << "(ADD " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
 }
 
 
