@@ -219,7 +219,7 @@ namespace AST{
     namespace Instr{
         class Instr{
         public:
-            virtual std::string makeAssembly(SymbolTable st)=0;
+            virtual std::string makeAssembly(SymbolTable &st)=0;
             virtual void addToTable(SymbolTable &st)=0;
             virtual void display()=0;
         };
@@ -228,7 +228,7 @@ namespace AST{
         public:
             Decl(std::vector<std::string> names, unsigned line, unsigned column):
             names(names), line(line), column(column){};
-            std::string makeAssembly(SymbolTable st) override;
+            std::string makeAssembly(SymbolTable &st) override;
             virtual void display() override;
             void addToTable(SymbolTable& table) override ;
         private:
@@ -241,7 +241,7 @@ namespace AST{
         public:
             Def(std::string name, Expr::Expr* expr, unsigned line, unsigned column):
             name(name), expr(expr), line(line), column(column){};
-            std::string makeAssembly(SymbolTable st) override;
+            std::string makeAssembly(SymbolTable &st) override;
             virtual void display() override;
             void addToTable(SymbolTable& table) override;
         private:
@@ -255,7 +255,7 @@ namespace AST{
         public:
             Affct(std::string name, Expr::Expr* expr, unsigned line, unsigned column):
             name(name), expr(expr), line(line), column(column){};
-            std::string makeAssembly(SymbolTable st) override;
+            std::string makeAssembly(SymbolTable &st) override;
             virtual void display() override;
             void addToTable(SymbolTable& table) override ;
         private:
@@ -271,7 +271,7 @@ namespace AST{
             expr(expr), bloc(bloc){};
             virtual void display() override;
             void addToTable(SymbolTable& table)  ;
-            std::string makeAssembly(SymbolTable st) override;
+            std::string makeAssembly(SymbolTable &st) override;
 
         private:
             Expr::Expr* expr;
@@ -284,7 +284,7 @@ namespace AST{
                     expr(expr), bloc(bloc){};
             virtual void display() override;
             void addToTable(SymbolTable& table)  ;
-            std::string makeAssembly(SymbolTable st) override;
+            std::string makeAssembly(SymbolTable &st) override;
 
         private:
             Expr::Expr* expr;
