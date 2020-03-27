@@ -76,12 +76,6 @@ void AST::Expr::Mult::display(){
     std::cout << ')' << std::flush;
 }
 
-std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
-    int value = this->value;
-    std::string assembler_code = "\tmovl $" + std::to_string(value) + ", %eax\n";
-    return assembler_code;
-}
-
 std::string AST::Expr::Expr::makeAssembly(SymbolTable &st){
     return "";
 }
