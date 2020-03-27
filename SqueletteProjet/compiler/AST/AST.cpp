@@ -9,6 +9,11 @@ std::string AST::Expr::Expr::makeAssembly(SymbolTable &st){
     return "";
 }
 
+std::string AST::Instr::While::makeAssembly(SymbolTable st) {
+    return std::string();
+}
+
+
 std::string AST::Expr::Add::makeAssembly(SymbolTable &st){
     // Return value of expression always in eax
     std::string lValue_code= this-> lValue->makeAssembly(st);
@@ -98,16 +103,12 @@ std::string AST::Bloc::makeAssembly(SymbolTable& st) {
 
     return assembler_code;
 }
-void AST::Expr::Minus::display(){
-    std::cout << "(MIN " << std::flush;
-    value->display();
-    std::cout << ')' << std::flush;
+
+std::string AST::Expr::Not::makeAssembly(SymbolTable &st){
+    //TODO
+    return Expr::makeAssembly(st);
 }
 
-
-void AST::Expr::Const::display(){
-    std::cout << "(CONST " << value << ')' << std::flush;
-}
 
 
 void AST::Expr::Sub::exists(SymbolTable &st) {
@@ -171,15 +172,12 @@ bool AST::Prog::create_symbol_table(){
   child->addToTable(table);
   return this->table.getError();
 }
-void AST::Prog::display(){
-    std::cout << "(AST " << std::flush;
-    bloc->display();
-    std::cout << ", " << std::flush;
-    returnValue->display();
-    std::cout << ")" << std::endl;
+
+void AST::Bloc::addToTable(SymbolTable &st) {
+    for (auto &it : blocinstr) {
+        it->addToTable(st);
     }
-
-
+}
 
 std::string AST::Prog::getErrorMsg() {
     return this->table.getErrorMsg();
@@ -208,9 +206,17 @@ void AST::Instr::Decl::addToTable(SymbolTable &st) {
         }
     }
 }
-void Def::addToTable(SymbolTable st){
-    st.addSymbol(0, this->name , offset = offset-INT_OFFSET);
-    // offset comme atribue de la table de symbole 
+
+
+void AST::Expr::Minus::display(){
+    std::cout << "(MIN " << std::flush;
+    value->display();
+    std::cout << ')' << std::flush;
+}
+
+
+void AST::Expr::Const::display(){
+    std::cout << "(CONST " << value << ')' << std::flush;
 }
 
 
@@ -221,28 +227,69 @@ void AST::Instr::Decl::display(){
     }
     std::cout << ')' << std::flush;
 }
+
+std::string AST::Instr::Decl::makeAssembly(SymbolTable st) {
+    return std::string();
+}
+
 void AST::Instr::Def::display(){
     std::cout << "(DEF " << name << ' ' << std::flush;
     expr->display();
     std::cout << ')' << std::flush;
 }
+
+std::string AST::Instr::Def::makeAssembly(SymbolTable st) {
+    return std::string();
+}
+
+void AST::Prog::display(){
+    std::cout << "(AST " << std::flush;
+    bloc->display();
+    std::cout << ", " << std::flush;
+    returnValue->display();
+    std::cout << ")" << std::endl;
+}
+
 void AST::Instr::Affct::display(){
     std::cout << "(AFF " << name << ' ' << std::flush;
     expr->display();
     std::cout << ')' << std::flush;
 }
+
+std::string AST::Instr::Affct::makeAssembly(SymbolTable st) {
+    return std::string();
+}
+
+void AST::Instr::Affct::addToTable(SymbolTable &table) {
+}
+
 void AST::Instr::If::display(){
     std::cout << "(IF " << std::flush;
     expr->display();
     bloc->display();
     std::cout << ')' << std::flush;
 }
+
+void AST::Instr::If::addToTable(SymbolTable &table) {
+
+}
+
+std::string AST::Instr::If::makeAssembly(SymbolTable st) {
+    return std::string();
+}
+
 void AST::Instr::While::display(){
     std::cout << "(WHL " << std::flush;
     expr->display();
     bloc->display();
     std::cout << ')' << std::flush;
 }
+
+void AST::Instr::While::addToTable(SymbolTable &table) {
+
+}
+
+
 void AST::Instr::Instr::display(){
 
 }
@@ -252,6 +299,8 @@ void AST::Expr::Eq::display(){
     rValue->display();
     std::cout << ')' << std::flush;
 }
+
+
 void AST::Expr::Neq::display(){
     std::cout << "(NEQ " << std::flush;
     lValue->display();
@@ -287,10 +336,6 @@ void AST::Expr::Not::display(){
     value->display();
     std::cout << ')' << std::flush;
 }
-std::string AST::Expr::Not::makeAssembly(SymbolTable &st){
-    //TODO
-    return Expr::makeAssembly(st);
-}
 
 
 int AST::Expr::Sub::getValeur(){
@@ -316,5 +361,85 @@ int AST::Expr::Const::getValeur(){
     return this->value;
 }
 
+
+int AST::Expr::Eq::getValeur() {
+    return 0;
+}
+
+std::string AST::Expr::Eq::makeAssembly(SymbolTable &st) {
+    return std::string();
+}
+
+void AST::Expr::Eq::exists(SymbolTable &st) {
+
+}
+
+int AST::Expr::Leq::getValeur() {
+    return 0;
+}
+
+std::string AST::Expr::Leq::makeAssembly(SymbolTable &st) {
+    return std::string();
+}
+
+void AST::Expr::Leq::exists(SymbolTable &st) {
+
+}
+
+int AST::Expr::Geq::getValeur() {
+    return 0;
+}
+
+std::string AST::Expr::Geq::makeAssembly(SymbolTable &st) {
+    return std::string();
+}
+
+void AST::Expr::Geq::exists(SymbolTable &st) {
+
+}
+
+int AST::Expr::Low::getValeur() {
+    return 0;
+}
+
+std::string AST::Expr::Low::makeAssembly(SymbolTable &st) {
+    return std::string();
+}
+
+void AST::Expr::Low::exists(SymbolTable &st) {
+
+}
+
+int AST::Expr::Great::getValeur() {
+    return 0;
+}
+
+std::string AST::Expr::Great::makeAssembly(SymbolTable &st) {
+    return std::string();
+}
+
+void AST::Expr::Great::exists(SymbolTable &st) {
+
+}
+
+int AST::Expr::Neq::getValeur() {
+    return 0;
+}
+
+std::string AST::Expr::Neq::makeAssembly(SymbolTable &st) {
+    return std::string();
+}
+
+void AST::Expr::Neq::exists(SymbolTable &st) {
+
+}
+
+int AST::Expr::Not::getValeur() {
+    return 0;
+}
+
+void AST::Expr::Not::exists(SymbolTable &st) {
+
+}
 
 
