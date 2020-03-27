@@ -6,7 +6,7 @@
 #include <iostream>
 #include <initializer_list>
 #include <map>
-//#include "../AST/AST.h"
+#include "../AST/AST.h"
 
 // Declarations from the parser -- replace with your own
 class Type;
@@ -14,6 +14,7 @@ class BasicBlock;
 class CFG;
 
 using namespace std;
+
 
 //bullshit class just to compile
 class Type {
@@ -120,11 +121,9 @@ class BasicBlock {
  */
 class CFG {
  public:
-	CFG();
-	// voir pourquoi je ne trouve pas Bloc !!!
-	//CFG(Bloc* ast);
+	CFG(AST::Bloc* ast);
 
-	//Bloc* ast; /**< The AST this CFG comes from */
+	AST::Bloc* ast; /**< The AST this CFG comes from */
 	
 	void add_bb(BasicBlock* bb); 
 

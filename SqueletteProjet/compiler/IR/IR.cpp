@@ -82,7 +82,7 @@ void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> param
 }
 
 // TODO
-CFG::CFG(): nextFreeSymbolIndex(0), nextBBnumber(0){//AST::Bloc* ast_) : nextFreeSymbolIndex(0), nextBBnumber(0), ast(ast_) {
+CFG::CFG(AST::Bloc* ast_) : nextFreeSymbolIndex(0), nextBBnumber(0), ast(ast_) {
 	auto firstBB = new BasicBlock(this, "essai");
     add_bb(firstBB);	
 

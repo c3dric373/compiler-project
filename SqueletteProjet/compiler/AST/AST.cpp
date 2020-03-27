@@ -1,4 +1,5 @@
 #include "AST.h"
+#include "../IR/IR.h"
 
 int INT_OFFSET = 4;
 int offset =0;
@@ -84,8 +85,8 @@ std::string AST::Expr::Minus::makeAssembly(SymbolTable &st){
 }
 
 std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
-    string value = std::to_string(this->value);
- 	std::string temp = currentCFG->create_new_tempvar(Type());
+    std::string value = std::to_string(this->value);
+    std::string temp = currentCFG->create_new_tempvar(Type());
     currentCFG->current_bb->add_IRInstr(IRInstr::ldconst, Type(), {temp, value});
     return "";
 }
@@ -140,7 +141,7 @@ void AST::Bloc::pushInstr(Instr::Instr* instr){
 
 std::string AST::Prog::makeAssembly(){
     Bloc* child = this->bloc;
-	CFG* cfg = new CFG();
+	CFG* cfg = new CFG(child);
 	currentCFG = cfg;
 	cfgs.push_back(cfg);
 

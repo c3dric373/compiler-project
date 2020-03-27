@@ -4,8 +4,11 @@
 #include <iostream>
 #include <vector>
 #include "SymbolTable.h"
-#include "../IR/IR.h"
 
+class BasicBlock;
+class CFG;
+class IRInstr;
+class Type;
 
 namespace AST{
 
