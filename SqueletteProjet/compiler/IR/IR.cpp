@@ -30,7 +30,7 @@ void IRInstr::gen_asm(ostream &o){
 			{
 			// for const : params = [ name | value ]
             std::string regString = bb->cfg->IR_reg_to_asm(params[0]);
-            o << "movl $" << params[1] << ", " << regString << endl;
+            o << "\tmovl $" << params[1] << ", " << regString << endl;
             break;
 			}
 		case Operation::copy:
