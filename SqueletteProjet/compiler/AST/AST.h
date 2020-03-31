@@ -327,8 +327,6 @@ namespace AST{
         public:
             virtual std::string buildIR() = 0;
 
-            virtual void addToTable(SymbolTable &st) = 0;
-
             virtual void display() = 0;
         };
 
@@ -340,8 +338,6 @@ namespace AST{
             std::string buildIR() override;
 
             void display() override;
-
-            void addToTable(SymbolTable &table) override;
 
         private:
             std::vector<std::string> names;
@@ -357,8 +353,6 @@ namespace AST{
             std::string buildIR() override;
 
             void display() override;
-
-            void addToTable(SymbolTable &table) override;
 
         private:
             std::string name;
@@ -376,8 +370,6 @@ namespace AST{
 
             void display() override;
 
-            void addToTable(SymbolTable &table) override;
-
         private:
             std::string name;
             Expr::Expr *expr;
@@ -391,8 +383,6 @@ namespace AST{
                     expr(expr), bloc(bloc) {};
 
             void display() override;
-
-            void addToTable(SymbolTable &table) override;
 
             std::string buildIR() override;
 
@@ -408,8 +398,6 @@ namespace AST{
 
             void display() override;
 
-            void addToTable(SymbolTable &table) override;
-
             std::string buildIR() override;
 
         private:
@@ -423,8 +411,6 @@ namespace AST{
         std::string buildIR();
 
         void pushInstr(Instr::Instr *instr);
-
-        void addToTable(SymbolTable &st);
 
         void display();
 

@@ -179,39 +179,11 @@ void AST::Expr::Minus::buildReturnIR() {
 }
 
 //------------------SymbolTable------------------
-// faire attention : pour l'instant on n'a q'un CFG donbc qu'une fonction, mais lorsque 
-// l'on passera à plusieurs fonctions, il faudra créer une table des symboles par fonction
-// Donc créer un vecteur de table de symboles
  //####################################################################
  // NOT NEEDED ANYMORE !!!!!
  //####################################################################
 
-bool AST::Prog::create_symbol_table() {
-    this->table = SymbolTable();
-    Bloc *child = this->bloc;
-    child->addToTable(table);
-    return this->table.getError();
-}
-
-void AST::Bloc::addToTable(SymbolTable &st) {
-    for (auto &it : blocinstr) {
-        it->addToTable(st);
-    }
-}
-
-void AST::Instr::Def::addToTable(SymbolTable &st) {
-    if (st.exists(0, this->name)) {
-        st.setErrorTrue();
-        std::string error = "error : int " + this->name + " has already been defined\n";
-        st.addErrorMsg(error);
-    } else {
-        st.addSymbol(0, this->name, offset = offset + INT_OFFSET);
-    }
-    this->expr->exists(st);
-    // offset comme atribue de la table de symbole
-}
-
-void AST::Instr::Decl::addToTable(SymbolTable &st) {
+/*void AST::Instr::Decl::addToTable(SymbolTable &st) {
     for (auto &it : this->names) {
         if (st.exists(0, it)) {
             st.setErrorTrue();
@@ -222,12 +194,7 @@ void AST::Instr::Decl::addToTable(SymbolTable &st) {
         }
     }
 }
-
-void AST::Instr::While::addToTable(SymbolTable &table) {
-}
-
-void AST::Instr::If::addToTable(SymbolTable &table) {
-}
+*/
 
 std::string AST::Prog::getErrorMsg() {
     return this->table.getErrorMsg();
@@ -359,8 +326,6 @@ void AST::Instr::Affct::display() {
     std::cout << ')' << std::flush;
 }
 
-void AST::Instr::Affct::addToTable(SymbolTable &table) {
-}
 
 void AST::Instr::If::display() {
     std::cout << "(IF " << std::flush;

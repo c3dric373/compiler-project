@@ -108,11 +108,11 @@ void IRInstr::gen_asm(ostream &o){
 			}
 		case Operation::neg:
 			{
-			std::string essai = bb->cfg->IR_reg_to_asm(params[0]);
-			std::string essai1 = bb->cfg->IR_reg_to_asm(params[1]);
-			o << "\tmovl " << essai << ", %eax" << endl;			
+			std::string tmp_var = bb->cfg->IR_reg_to_asm(params[0]);
+			std::string dest_var = bb->cfg->IR_reg_to_asm(params[1]);
+			o << "\tmovl " << tmp_var << ", %eax" << endl;			
 			o << "\tNEG %eax" << endl;
-			o << "\tmovl %eax, " << essai1 << endl;
+			o << "\tmovl %eax, " << dest_var << endl;
 			break;
 			}
 	}
