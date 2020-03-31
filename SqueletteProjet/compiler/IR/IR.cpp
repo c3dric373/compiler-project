@@ -77,12 +77,12 @@ void IRInstr::gen_asm(ostream &o){
 			}
 		case Operation::rmem:
 			{
-			std::string regString = bb->cfg->IR_reg_to_asm(params[0]);
-            o << "\tmovl " << regString << ", %eax" << endl;
             break;
 			}
 		case Operation::wmem:
-			{break;}
+			{
+			break;
+			}
 		case Operation::call:
 			{break;}
 		case Operation::cmp_eq:
@@ -91,6 +91,21 @@ void IRInstr::gen_asm(ostream &o){
 			{break;}
 		case Operation::cmp_le:
 			{break;}
+		case Operation::ret:
+			{
+			// Récupère le paramètre
+			std::string param = params[0];
+			//Si le paramètre ne contient pas de ! c'est que c'est une variable
+			if (param.at(0) != '!') {
+				std::string regString = bb->cfg->IR_reg_to_asm(params[0]);
+		        o << "\tmovl " << regString << ", %eax" << endl;
+			}else {
+				// Le paramètre est une constante, on enlève le ! et on mets la constante dans %eax
+				std::string value = param.erase(0,1);
+				o << "\tmovl $" << value << ", %eax" << endl;
+			}
+			break;
+			}
 	}
 }
 

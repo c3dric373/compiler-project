@@ -22,6 +22,8 @@ namespace AST{
 
             virtual void exists(SymbolTable &st) = 0;
 
+			virtual void buildReturnIR() = 0;
+
             virtual void display() = 0;
         };
 
@@ -37,6 +39,8 @@ namespace AST{
 
             Add(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line), column(column) {};
+
+			void buildReturnIR() override;
 
             void display() override;
 
@@ -60,6 +64,8 @@ namespace AST{
             Sub(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line), column(column) {};
 
+			void buildReturnIR() override;
+
             void display() override;
 
         private:
@@ -82,6 +88,8 @@ namespace AST{
             Mult(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line), column(column) {};
 
+			void buildReturnIR() override;
+
             void display() override;
 
         private:
@@ -100,6 +108,8 @@ namespace AST{
             int getValeur() override;
 
             void exists(SymbolTable &st) override;
+
+			void buildReturnIR() override {};
 
             void display() override;
 
@@ -122,6 +132,8 @@ namespace AST{
             Const(int value, unsigned line, unsigned column) :
                     value(value), line(line), column(column) {};
 
+			void buildReturnIR() override;
+
             void display() override;
 
         private:
@@ -143,6 +155,8 @@ namespace AST{
             Name(std::string name, unsigned line, unsigned column) :
                     name(name), line(line), column(column) {};
 
+	    	void buildReturnIR() override;
+ 
             void display() override;
 
         private:
@@ -164,6 +178,8 @@ namespace AST{
 
             void exists(SymbolTable &st) override;
 
+			void buildReturnIR() override {};
+
             void display() override;
 
         private:
@@ -183,6 +199,8 @@ namespace AST{
             std::string buildIR() override;
 
             void exists(SymbolTable &st) override;
+
+			void buildReturnIR() override {};
 
             int getValeur() override;
 
@@ -204,6 +222,8 @@ namespace AST{
 
             int getValeur() override;
 
+			void buildReturnIR() override {};
+
             void display() override;
 
         private:
@@ -224,7 +244,9 @@ namespace AST{
 
             int getValeur() override;
 
-            void exists(SymbolTable &st) override;
+			void buildReturnIR() override {};
+
+            void exists(SymbolTable &st) override ;
 
         private:
             AST::Expr::Expr *lValue;
@@ -243,6 +265,8 @@ namespace AST{
             std::string buildIR() override;
 
             int getValeur() override;
+
+			void buildReturnIR() override {};
 
             void exists(SymbolTable &st) override;
 
@@ -264,6 +288,8 @@ namespace AST{
 
             int getValeur() override;
 
+			void buildReturnIR() override {};
+
             void exists(SymbolTable &st) override;
 
         private:
@@ -283,6 +309,8 @@ namespace AST{
             int getValeur() override;
 
             void display() override;
+
+			void buildReturnIR() override {};
 
             void exists(SymbolTable &st) override;
 

@@ -25,8 +25,8 @@ std::string AST::Prog::buildIR() {
     cfgs.push_back(cfg);
 
 	// Construit les CFGs
-    std::string assembler_code =child->buildIR();
-    std::string assembler_code_return = this->returnValue->buildIR();
+    child->buildIR();
+    this->returnValue->buildReturnIR();
     return "";
 }
 
@@ -81,7 +81,6 @@ std::string AST::Bloc::buildIR() {
     }
     return "";
 }
-
 
 std::string AST::Instr::Def::buildIR() {
 	// récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
@@ -152,6 +151,30 @@ std::string AST::Expr::Leq::buildIR() {
 
 void AST::Bloc::pushInstr(Instr::Instr *instr) {
     blocinstr.push_back(instr);
+}
+
+
+//------------------buildReturnIR------------------
+
+void AST::Expr::Add::buildReturnIR() {
+	this->buildIR();
+}
+
+void AST::Expr::Sub::buildReturnIR() {
+	this->buildIR();
+}
+
+void AST::Expr::Mult::buildReturnIR() {
+	this->buildIR();
+}
+
+void AST::Expr::Const::buildReturnIR() {
+	std::string value = std::to_string(this->value);
+	currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {"!"+value});
+}
+
+void AST::Expr::Name::buildReturnIR() {
+	currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {this->name});
 }
 
 //------------------SymbolTable------------------
