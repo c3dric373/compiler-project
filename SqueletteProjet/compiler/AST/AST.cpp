@@ -54,18 +54,14 @@ std::string AST::Expr::Mult::buildIR() {
 	return tmp_dest;
 }
 
-// TRICHE : JE PENSE PAS QU ON LE FASSE COMME CA !! J'AI NIQUÉ LE GAME LA
-// LE RMEM C'EST PAS SUR
 std::string AST::Expr::Name::buildIR() {
-	currentCFG->current_bb->add_IRInstr(IRInstr::rmem, Type(), {this->name});
     return this->name;
 }
 
 // A faire
 std::string AST::Expr::Minus::buildIR() {
-    std::string value_code = this->value->buildIR();
-    std::string neg_code = "\tNEG %eax\n";
-    return value_code + neg_code;
+	currentCFG->current_bb->add_IRInstr(IRInstr::neg, Type(), {});
+    return "";
 }
 
 std::string AST::Expr::Const::buildIR(){

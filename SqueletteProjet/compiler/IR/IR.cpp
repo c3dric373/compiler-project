@@ -106,6 +106,11 @@ void IRInstr::gen_asm(ostream &o){
 			}
 			break;
 			}
+		case Operation::neg:
+			{
+				o << "\tNEG %eax\n" << endl;
+			break;
+			}
 	}
 }
 
