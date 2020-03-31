@@ -60,8 +60,9 @@ std::string AST::Expr::Name::buildIR() {
 
 std::string AST::Expr::Minus::buildIR() {
  	std::string value_expr = this->value->buildIR();
-	currentCFG->current_bb->add_IRInstr(IRInstr::neg, Type(), {value_expr});
-    return value_expr;
+	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+	currentCFG->current_bb->add_IRInstr(IRInstr::neg, Type(), {value_expr, tmp_dest});
+    return tmp_dest;
 }
 
 std::string AST::Expr::Const::buildIR(){
