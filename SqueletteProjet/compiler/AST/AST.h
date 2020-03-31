@@ -109,7 +109,7 @@ namespace AST{
 
             void exists(SymbolTable &st) override;
 
-			void buildReturnIR() override {};
+			void buildReturnIR() override;
 
             void display() override;
 

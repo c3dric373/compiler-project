@@ -58,10 +58,10 @@ std::string AST::Expr::Name::buildIR() {
     return this->name;
 }
 
-// A faire
 std::string AST::Expr::Minus::buildIR() {
-	currentCFG->current_bb->add_IRInstr(IRInstr::neg, Type(), {});
-    return "";
+ 	std::string value_expr = this->value->buildIR();
+	currentCFG->current_bb->add_IRInstr(IRInstr::neg, Type(), {value_expr});
+    return value_expr;
 }
 
 std::string AST::Expr::Const::buildIR(){
@@ -171,6 +171,10 @@ void AST::Expr::Const::buildReturnIR() {
 
 void AST::Expr::Name::buildReturnIR() {
 	currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {this->name});
+}
+
+void AST::Expr::Minus::buildReturnIR() {
+	this->buildIR();
 }
 
 //------------------SymbolTable------------------
