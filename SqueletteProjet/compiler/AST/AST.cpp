@@ -10,27 +10,28 @@ CFG* currentCFG;
 
 //-------------------MakeAssembly-----------------------
 
-std::string AST::Expr::Add::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Add::BuidIR() {
     // Return value of expression always in eax
-    std::string lValue_code = this->lValue->makeAssembly(st);
+    /*std::string lValue_code = this->lValue->BuidIR();
     std::string name_var_temp = "!tmp" + std::to_string(offset);
     st.addSymbol(0, name_var_temp, offset += INT_OFFSET);
     int start_offset = offset;
     std::string move_lValue = "\tmovl %eax, -" + std::to_string(start_offset) + " (%rbp)\n";
-    std::string rValue_code = this->rValue->makeAssembly(st);
+    std::string rValue_code = this->rValue->BuidIR();
     std::string addition_code = "\taddl -" + std::to_string(start_offset) + " (%rbp) , %eax\n";
-    return lValue_code + move_lValue + rValue_code + addition_code;
+    return lValue_code + move_lValue + rValue_code + addition_code;*/
+return "";
 }
 
-std::string AST::Expr::Sub::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Sub::BuidIR() {
     // Return value of expression always in eax
     // Calculate rValue first in order to facilitate the result calculation
-    std::string lValue_code = this->lValue->makeAssembly(st);
+   /* std::string lValue_code = this->lValue->BuidIR();
     std::string name_var_temp = "!tmp" + std::to_string(offset);
     st.addSymbol(0, name_var_temp, offset += INT_OFFSET);
     int start_offset = offset;
     std::string move_lValue = "\tmovl %eax, -" + std::to_string(start_offset) + " (%rbp)\n";
-    std::string rValue_code = this->rValue->makeAssembly(st);
+    std::string rValue_code = this->rValue->BuidIR();
     std::string name_var_temp1 = "!tmp" + std::to_string(offset);
     st.addSymbol(0, name_var_temp1, offset += INT_OFFSET);
     int start_offset1 = offset;
@@ -38,117 +39,125 @@ std::string AST::Expr::Sub::makeAssembly(SymbolTable &st) {
     std::string moveLValue_eax = "\tmovl -" + std::to_string(start_offset) + " (%rbp), %eax\n";
     std::string substraction_code = "\tsubl -" + std::to_string(start_offset1) + " (%rbp), %eax\n";
     return lValue_code + move_lValue + rValue_code + move_rValue + moveLValue_eax + substraction_code;
+*/return "";
 }
 
-std::string AST::Expr::Mult::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Mult::BuidIR() {
     // Return value of expression always in eax
-    std::string lValue_code = this->lValue->makeAssembly(st);
+    /*std::string lValue_code = this->lValue->BuidIR();
     std::string name_var_temp = "!tmp" + std::to_string(offset);
     st.addSymbol(0, name_var_temp, offset += INT_OFFSET);
     int start_offset = offset;
     std::string move_lValue = "\tmovl %eax, -" + std::to_string(start_offset) + " (%rbp)\n";
-    std::string rValue_code = this->rValue->makeAssembly(st);
+    std::string rValue_code = this->rValue->BuidIR();
     std::string multiplication_code = "\timull -" + std::to_string(start_offset) + " (%rbp) , %eax\n";
-    return lValue_code + move_lValue + rValue_code + multiplication_code;
+    return lValue_code + move_lValue + rValue_code + multiplication_code;*/
+return "";
 }
 
-std::string AST::Expr::Name::makeAssembly(SymbolTable &st) {
-    int value = st.getOffset(0, this->name);
+std::string AST::Expr::Name::BuidIR() {
+    /*int value = st.getOffset(0, this->name);
     std::string code_move_variable = "\tmovl -" + std::to_string(value) + " (%rbp) " + ", %eax\n";
-    return code_move_variable;
+    return code_move_variable;*/
+return "";
 }
 
-std::string AST::Expr::Minus::makeAssembly(SymbolTable &st) {
-    std::string value_code = this->value->makeAssembly(st);
+std::string AST::Expr::Minus::BuidIR() {
+    std::string value_code = this->value->BuidIR();
     std::string neg_code = "\tNEG %eax\n";
     return value_code + neg_code;
 }
 
-std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
+std::string AST::Expr::Const::BuidIR(){
     std::string value = std::to_string(this->value);
     std::string temp = currentCFG->create_new_tempvar(Type());
     currentCFG->current_bb->add_IRInstr(IRInstr::ldconst, Type(), {temp, value});
-    return "";
+    return temp;
 }
 
-std::string AST::Bloc::makeAssembly(SymbolTable &st) {
+std::string AST::Bloc::BuidIR() {
     std::string assembler_code = "";
     for (auto &it : blocinstr) {
-        assembler_code += it->makeAssembly(st);
+        assembler_code += it->BuidIR();
     }
     return assembler_code;
 }
 
 
-std::string AST::Instr::Def::makeAssembly(SymbolTable &st) {
-    std::string valeur_code = this->expr->makeAssembly(st);
-    std::string symbol = this->name;
-    int offset = st.getOffset(0, symbol);
-    std::string assembler_code = "\tmovl %eax, -" + std::to_string(offset) + "(%rbp)\n";
-    return valeur_code + assembler_code;
-}
-
-std::string AST::Instr::Affct::makeAssembly(SymbolTable &st) {
-    std::string assembleur_expr = this->expr->makeAssembly(st);
-    std::string name = this->name;
-    int offset = st.getOffset(0, name);
-    std::string assembler_code = assembleur_expr + "\tmovl  %eax,  -" + std::to_string(offset) + "(%rbp)\n";
-    return assembler_code;
-}
-
-std::string AST::Instr::While::makeAssembly(SymbolTable &st) {
-    return std::string();
-}
-
-std::string AST::Instr::If::makeAssembly(SymbolTable &st) {
-    return std::string();
-}
-
-std::string AST::Expr::Not::makeAssembly(SymbolTable &st) {
-    return Expr::makeAssembly(st);
-}
-
-std::string AST::Expr::Expr::makeAssembly(SymbolTable &st) {
+std::string AST::Instr::Def::BuidIR() {
+	// récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
+	std::string name_expr = this->expr->BuidIR();
+	// Ajout de la variable name à la table des symboles de currentCFG
+	currentCFG->add_to_symbol_table(this->name, Type());
+	// Ajout de l'instruction au current_block 
+	currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(), {this->name, name_expr});
     return "";
 }
 
-std::string AST::Instr::Decl::makeAssembly(SymbolTable &st) {
+std::string AST::Instr::Affct::BuidIR() {
+    std::string name_expr = this->expr->BuidIR();
+    // Ajout de l'instruction au current_block 
+	currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(), {this->name, name_expr});
+	return "";
+}
+
+std::string AST::Instr::While::BuidIR() {
     return std::string();
 }
 
-std::string AST::Expr::Eq::makeAssembly(SymbolTable &st) {
+std::string AST::Instr::If::BuidIR() {
     return std::string();
 }
 
-std::string AST::Expr::Geq::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Not::BuidIR() {
+    return Expr::BuidIR();
+}
+
+std::string AST::Expr::Expr::BuidIR() {
+    return "";
+}
+
+std::string AST::Instr::Decl::BuidIR() {
+	for (auto &it : this->names) {
+		// Ajout de la variable it à la table des symboles de currentCFG
+		currentCFG->add_to_symbol_table(it, Type());
+	}
     return std::string();
 }
 
-std::string AST::Expr::Low::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Eq::BuidIR() {
     return std::string();
 }
 
-std::string AST::Expr::Great::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Geq::BuidIR() {
     return std::string();
 }
 
-std::string AST::Expr::Neq::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Low::BuidIR() {
     return std::string();
 }
 
-std::string AST::Prog::makeAssembly() {
+std::string AST::Expr::Great::BuidIR() {
+    return std::string();
+}
+
+std::string AST::Expr::Neq::BuidIR() {
+    return std::string();
+}
+
+std::string AST::Prog::BuidIR() {
     Bloc *child = this->bloc;
     CFG *cfg = new CFG(child);
     currentCFG = cfg;
     cfgs.push_back(cfg);
 
-    std::string assembler_code = child->makeAssembly(this->table);
+    std::string assembler_code =child->BuidIR();
 
     cfg->gen_asm(cout);
-    std::string assembler_code_return = this->returnValue->makeAssembly(this->table);
+    std::string assembler_code_return = this->returnValue->BuidIR();
     return "";
 }
-std::string AST::Expr::Leq::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Leq::BuidIR() {
     return std::string();
 }
 
@@ -158,6 +167,12 @@ void AST::Bloc::pushInstr(Instr::Instr *instr) {
 }
 
 //------------------SymbolTable------------------
+// faire attention : pour l'instant on n'a q'un CFG donbc qu'une fonction, mais lorsque 
+// l'on passera à plusieurs fonctions, il faudra créer une table des symboles par fonction
+// Donc créer un vecteur de table de symboles
+ //####################################################################
+ // NOT NEEDED ANYMORE !!!!!
+ //####################################################################
 
 bool AST::Prog::create_symbol_table() {
     this->table = SymbolTable();

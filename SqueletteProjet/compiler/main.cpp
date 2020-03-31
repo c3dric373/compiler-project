@@ -36,9 +36,9 @@ int main(int argn, const char **argv) {
 
   Visitor visitor;
   AST::Prog* test =  visitor.visit(tree);
-  bool error = test->create_symbol_table();
+  bool error = 0;//test->create_symbol_table();
   if(!error){
-      std::string resultAssembly = test->makeAssembly();
+      std::string resultAssembly = test->BuidIR();
       ofstream output;
       output.open(filename_stripped + ".s");
       output << resultAssembly;

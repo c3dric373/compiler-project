@@ -34,7 +34,13 @@ void IRInstr::gen_asm(ostream &o){
             break;
 			}
 		case Operation::copy:
-			{break;}
+			{
+			std::string reg_variable = bb->cfg->IR_reg_to_asm(params[0]);
+			std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(params[1]);
+			o << "\tmovl " << reg_tmp_var << ", %eax"<< endl;
+			o << "\tmovl %eax , " << reg_variable << endl;
+			break;
+			}
 		case Operation::sub:
 			{break;}
 		case Operation::mul:
@@ -126,8 +132,13 @@ void CFG::gen_asm_epilogue(ostream& o){
 void CFG::add_to_symbol_table(string name, Type t){
 	nextFreeSymbolIndex -= INTOFFSET;
 	
-	SymbolType[name] = t;
-    SymbolIndex[name] = nextFreeSymbolIndex;
+	if ( SymbolIndex.find(name) == SymbolIndex.end() ){
+		SymbolType[name] = t;
+		SymbolIndex[name] = nextFreeSymbolIndex;
+	}else {
+		std::string error = "error : int " + name + " has already been defined\n";
+		cout << error <<endl;
+	}
 }
 
 std::string CFG::create_new_tempvar(Type t){
