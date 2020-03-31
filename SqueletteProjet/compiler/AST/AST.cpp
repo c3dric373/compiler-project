@@ -10,8 +10,6 @@ CFG* currentCFG;
 
 //-------------------MakeAssembly-----------------------
 
-
-
 std::string AST::Expr::Add::makeAssembly(SymbolTable &st) {
     // Return value of expression always in eax
     std::string lValue_code = this->lValue->makeAssembly(st);
@@ -53,25 +51,11 @@ std::string AST::Expr::Mult::makeAssembly(SymbolTable &st) {
     std::string multiplication_code = "\timull -" + std::to_string(start_offset) + " (%rbp) , %eax\n";
     return lValue_code + move_lValue + rValue_code + multiplication_code;
 }
-//AST::Expr::Add::Add(AST::Expr::Expr* lValue, AST::Expr::Expr* rValue): lValue(lValue), rValue(rValue){}
-
-
 
 std::string AST::Expr::Name::makeAssembly(SymbolTable &st) {
     int value = st.getOffset(0, this->name);
     std::string code_move_variable = "\tmovl -" + std::to_string(value) + " (%rbp) " + ", %eax\n";
     return code_move_variable;
-}
-
-void AST::Expr::Mult::display() {
-    std::cout << "(MULT " << std::flush;
-    lValue->display();
-    rValue->display();
-    std::cout << ')' << std::flush;
-}
-
-std::string AST::Expr::Expr::makeAssembly(SymbolTable &st) {
-    return "";
 }
 
 std::string AST::Expr::Minus::makeAssembly(SymbolTable &st) {
@@ -87,24 +71,21 @@ std::string AST::Expr::Const::makeAssembly(SymbolTable &st){
     return "";
 }
 
-std::string AST::Bloc::makeAssembly(SymbolTable& st){
+std::string AST::Bloc::makeAssembly(SymbolTable &st) {
     std::string assembler_code = "";
     for (auto &it : blocinstr) {
         assembler_code += it->makeAssembly(st);
     }
-
     return assembler_code;
 }
 
 
 std::string AST::Instr::Def::makeAssembly(SymbolTable &st) {
     std::string valeur_code = this->expr->makeAssembly(st);
-    std::string name = this->name;
-    int offset = st.getOffset(0, name);
+    std::string symbol = this->name;
+    int offset = st.getOffset(0, symbol);
     std::string assembler_code = "\tmovl %eax, -" + std::to_string(offset) + "(%rbp)\n";
     return valeur_code + assembler_code;
-    // offset du rbp gcc -O0 variables c'est une case memoire la case est emmoire est dans lenregistremend dact de la fonction on lattrtape par loffset (distance par rapport au debuet de lenre => rbp, dabord ajouter offset a rbp et apres ecrire dans cette valeur, )
-    // for constant creer varaible temp  dans st et pas de duplicat (!xys_offset), stocker a l'offset
 }
 
 std::string AST::Instr::Affct::makeAssembly(SymbolTable &st) {
@@ -113,8 +94,6 @@ std::string AST::Instr::Affct::makeAssembly(SymbolTable &st) {
     int offset = st.getOffset(0, name);
     std::string assembler_code = assembleur_expr + "\tmovl  %eax,  -" + std::to_string(offset) + "(%rbp)\n";
     return assembler_code;
-    // offset du rbp gcc -O0 variables c'est une case memoire la case est emmoire est dans lenregistremend dact de la fonction on lattrtape par loffset (distance par rapport au debuet de lenre => rbp, dabord ajouter offset a rbp et apres ecrire dans cette valeur, )
-    // for constant creer varaible temp  dans st et pas de duplicat (!xys_offset), stocker a l'offset
 }
 
 std::string AST::Instr::While::makeAssembly(SymbolTable &st) {
@@ -129,6 +108,9 @@ std::string AST::Expr::Not::makeAssembly(SymbolTable &st) {
     return Expr::makeAssembly(st);
 }
 
+std::string AST::Expr::Expr::makeAssembly(SymbolTable &st) {
+    return "";
+}
 
 std::string AST::Instr::Decl::makeAssembly(SymbolTable &st) {
     return std::string();
@@ -273,6 +255,14 @@ void AST::Expr::Not::exists(SymbolTable &st) {
 }
 
 //-------------DISPLAY-----------------------
+
+
+void AST::Expr::Mult::display() {
+    std::cout << "(MULT " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
 
 void AST::Expr::Name::display() {
     std::cout << "(NAME " << name << ')' << std::flush;
