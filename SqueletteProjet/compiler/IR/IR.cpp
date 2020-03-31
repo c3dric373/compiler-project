@@ -35,16 +35,35 @@ void IRInstr::gen_asm(ostream &o){
 			}
 		case Operation::copy:
 			{
-			std::string reg_variable = bb->cfg->IR_reg_to_asm(params[0]);
-			std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(params[1]);
+			// copy params [0] into params [1]
+			std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(params[0]);
+			std::string reg_variable = bb->cfg->IR_reg_to_asm(params[1]);
 			o << "\tmovl " << reg_tmp_var << ", %eax"<< endl;
 			o << "\tmovl %eax , " << reg_variable << endl;
 			break;
 			}
 		case Operation::sub:
-			{break;}
+			{
+			std::string regDestString = bb->cfg->IR_reg_to_asm(params[0]);
+            std::string reg1String = bb->cfg->IR_reg_to_asm(params[1]);
+            std::string reg2String = bb->cfg->IR_reg_to_asm(params[2]);
+
+            o << "\tmovl "<< reg1String << " , %eax" << endl;
+            o << "\tsubl " << reg2String << ", %eax" << endl;
+            o << "\tmovl %eax, " << regDestString << endl;
+            break;
+			}
 		case Operation::mul:
-			{break;}
+			{
+			std::string regDestString = bb->cfg->IR_reg_to_asm(params[0]);
+            std::string reg1String = bb->cfg->IR_reg_to_asm(params[1]);
+            std::string reg2String = bb->cfg->IR_reg_to_asm(params[2]);
+
+            o << "\tmovl "<< reg1String << " , %eax" << endl;
+            o << "\timull " << reg2String << ", %eax" << endl;
+            o << "\tmovl %eax, " << regDestString << endl;
+            break;
+			}
         case Operation::add :
 			{            
 			std::string regDestString = bb->cfg->IR_reg_to_asm(params[0]);
@@ -57,7 +76,11 @@ void IRInstr::gen_asm(ostream &o){
             break;
 			}
 		case Operation::rmem:
-			{break;}
+			{
+			std::string regString = bb->cfg->IR_reg_to_asm(params[0]);
+            o << "\tmovl " << regString << ", %eax" << endl;
+            break;
+			}
 		case Operation::wmem:
 			{break;}
 		case Operation::call:

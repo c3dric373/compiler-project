@@ -34,13 +34,14 @@ std::string AST::Expr::Mult::BuidIR() {
 	return tmp_dest;
 }
 
+// TRICHE : JE PENSE PAS QU ON LE FASSE COMME CA !! J'AI NIQUÉ LE GAME LA
+// LE RMEM C'EST PAS SUR
 std::string AST::Expr::Name::BuidIR() {
-    /*int value = st.getOffset(0, this->name);
-    std::string code_move_variable = "\tmovl -" + std::to_string(value) + " (%rbp) " + ", %eax\n";
-    return code_move_variable;*/
-return "";
+	currentCFG->current_bb->add_IRInstr(IRInstr::rmem, Type(), {this->name});
+    return this->name;
 }
 
+// A faire
 std::string AST::Expr::Minus::BuidIR() {
     std::string value_code = this->value->BuidIR();
     std::string neg_code = "\tNEG %eax\n";
@@ -68,14 +69,14 @@ std::string AST::Instr::Def::BuidIR() {
 	// Ajout de la variable name à la table des symboles de currentCFG
 	currentCFG->add_to_symbol_table(this->name, Type());
 	// Ajout de l'instruction au current_block 
-	currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(), {this->name, name_expr});
+	currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(), {name_expr, this->name});
     return "";
 }
 
 std::string AST::Instr::Affct::BuidIR() {
     std::string name_expr = this->expr->BuidIR();
     // Ajout de l'instruction au current_block 
-	currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(), {this->name, name_expr});
+	currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(), {name_expr, this->name});
 	return "";
 }
 
@@ -131,10 +132,11 @@ std::string AST::Prog::BuidIR() {
 
     std::string assembler_code =child->BuidIR();
 
-    cfg->gen_asm(cout);
     std::string assembler_code_return = this->returnValue->BuidIR();
+	cfg->gen_asm(cout);
     return "";
 }
+
 std::string AST::Expr::Leq::BuidIR() {
     return std::string();
 }
