@@ -53,7 +53,7 @@ void IRInstr::gen_asm(ostream &o){
 
             o << "\tmovl "<< reg1String << " , %eax" << endl;
             o << "\taddl " << reg2String << ", %eax" << endl;
-            o << "\tmovq %eax, " << regDestString << endl;
+            o << "\tmovl %eax, " << regDestString << endl;
             break;
 			}
 		case Operation::rmem:

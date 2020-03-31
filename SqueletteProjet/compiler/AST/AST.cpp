@@ -11,48 +11,27 @@ CFG* currentCFG;
 //-------------------MakeAssembly-----------------------
 
 std::string AST::Expr::Add::BuidIR() {
-    // Return value of expression always in eax
-    /*std::string lValue_code = this->lValue->BuidIR();
-    std::string name_var_temp = "!tmp" + std::to_string(offset);
-    st.addSymbol(0, name_var_temp, offset += INT_OFFSET);
-    int start_offset = offset;
-    std::string move_lValue = "\tmovl %eax, -" + std::to_string(start_offset) + " (%rbp)\n";
-    std::string rValue_code = this->rValue->BuidIR();
-    std::string addition_code = "\taddl -" + std::to_string(start_offset) + " (%rbp) , %eax\n";
-    return lValue_code + move_lValue + rValue_code + addition_code;*/
-return "";
+	std::string tmp_expr1 = this->lValue->BuidIR();
+    std::string tmp_expr2 = this->rValue->BuidIR();
+	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+	currentCFG->current_bb->add_IRInstr(IRInstr::add, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
+	return tmp_dest;
 }
 
 std::string AST::Expr::Sub::BuidIR() {
-    // Return value of expression always in eax
-    // Calculate rValue first in order to facilitate the result calculation
-   /* std::string lValue_code = this->lValue->BuidIR();
-    std::string name_var_temp = "!tmp" + std::to_string(offset);
-    st.addSymbol(0, name_var_temp, offset += INT_OFFSET);
-    int start_offset = offset;
-    std::string move_lValue = "\tmovl %eax, -" + std::to_string(start_offset) + " (%rbp)\n";
-    std::string rValue_code = this->rValue->BuidIR();
-    std::string name_var_temp1 = "!tmp" + std::to_string(offset);
-    st.addSymbol(0, name_var_temp1, offset += INT_OFFSET);
-    int start_offset1 = offset;
-    std::string move_rValue = "\tmovl %eax, -" + std::to_string(start_offset1) + " (%rbp)\n";
-    std::string moveLValue_eax = "\tmovl -" + std::to_string(start_offset) + " (%rbp), %eax\n";
-    std::string substraction_code = "\tsubl -" + std::to_string(start_offset1) + " (%rbp), %eax\n";
-    return lValue_code + move_lValue + rValue_code + move_rValue + moveLValue_eax + substraction_code;
-*/return "";
+    std::string tmp_expr1 = this->lValue->BuidIR();
+    std::string tmp_expr2 = this->rValue->BuidIR();
+	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+	currentCFG->current_bb->add_IRInstr(IRInstr::sub, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
+	return tmp_dest;
 }
 
 std::string AST::Expr::Mult::BuidIR() {
-    // Return value of expression always in eax
-    /*std::string lValue_code = this->lValue->BuidIR();
-    std::string name_var_temp = "!tmp" + std::to_string(offset);
-    st.addSymbol(0, name_var_temp, offset += INT_OFFSET);
-    int start_offset = offset;
-    std::string move_lValue = "\tmovl %eax, -" + std::to_string(start_offset) + " (%rbp)\n";
-    std::string rValue_code = this->rValue->BuidIR();
-    std::string multiplication_code = "\timull -" + std::to_string(start_offset) + " (%rbp) , %eax\n";
-    return lValue_code + move_lValue + rValue_code + multiplication_code;*/
-return "";
+    std::string tmp_expr1 = this->lValue->BuidIR();
+    std::string tmp_expr2 = this->rValue->BuidIR();
+	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+	currentCFG->current_bb->add_IRInstr(IRInstr::mul, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
+	return tmp_dest;
 }
 
 std::string AST::Expr::Name::BuidIR() {
@@ -76,11 +55,10 @@ std::string AST::Expr::Const::BuidIR(){
 }
 
 std::string AST::Bloc::BuidIR() {
-    std::string assembler_code = "";
     for (auto &it : blocinstr) {
-        assembler_code += it->BuidIR();
+        it->BuidIR();
     }
-    return assembler_code;
+    return "";
 }
 
 
