@@ -8,27 +8,47 @@ int offset = 0;
 std::vector<CFG*> cfgs;
 CFG* currentCFG;
 
-//-------------------MakeAssembly-----------------------
+//-------------------generateIR-----------------------
 
-std::string AST::Expr::Add::BuidIR() {
-	std::string tmp_expr1 = this->lValue->BuidIR();
-    std::string tmp_expr2 = this->rValue->BuidIR();
+std::vector<CFG*> AST::Prog::generateIR(){
+	this->buildIR();
+	return cfgs;
+}
+
+//-------------------buildIR-----------------------
+
+std::string AST::Prog::buildIR() {
+	// Plus tard : déplacer ça dans ASP::Fonct
+    Bloc *child = this->bloc;
+    CFG *cfg = new CFG(child);
+    currentCFG = cfg;
+    cfgs.push_back(cfg);
+
+	// Construit les CFGs
+    std::string assembler_code =child->buildIR();
+    std::string assembler_code_return = this->returnValue->buildIR();
+    return "";
+}
+
+std::string AST::Expr::Add::buildIR() {
+	std::string tmp_expr1 = this->lValue->buildIR();
+    std::string tmp_expr2 = this->rValue->buildIR();
 	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
 	currentCFG->current_bb->add_IRInstr(IRInstr::add, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
 	return tmp_dest;
 }
 
-std::string AST::Expr::Sub::BuidIR() {
-    std::string tmp_expr1 = this->lValue->BuidIR();
-    std::string tmp_expr2 = this->rValue->BuidIR();
+std::string AST::Expr::Sub::buildIR() {
+    std::string tmp_expr1 = this->lValue->buildIR();
+    std::string tmp_expr2 = this->rValue->buildIR();
 	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
 	currentCFG->current_bb->add_IRInstr(IRInstr::sub, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
 	return tmp_dest;
 }
 
-std::string AST::Expr::Mult::BuidIR() {
-    std::string tmp_expr1 = this->lValue->BuidIR();
-    std::string tmp_expr2 = this->rValue->BuidIR();
+std::string AST::Expr::Mult::buildIR() {
+    std::string tmp_expr1 = this->lValue->buildIR();
+    std::string tmp_expr2 = this->rValue->buildIR();
 	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
 	currentCFG->current_bb->add_IRInstr(IRInstr::mul, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
 	return tmp_dest;
@@ -36,36 +56,36 @@ std::string AST::Expr::Mult::BuidIR() {
 
 // TRICHE : JE PENSE PAS QU ON LE FASSE COMME CA !! J'AI NIQUÉ LE GAME LA
 // LE RMEM C'EST PAS SUR
-std::string AST::Expr::Name::BuidIR() {
+std::string AST::Expr::Name::buildIR() {
 	currentCFG->current_bb->add_IRInstr(IRInstr::rmem, Type(), {this->name});
     return this->name;
 }
 
 // A faire
-std::string AST::Expr::Minus::BuidIR() {
-    std::string value_code = this->value->BuidIR();
+std::string AST::Expr::Minus::buildIR() {
+    std::string value_code = this->value->buildIR();
     std::string neg_code = "\tNEG %eax\n";
     return value_code + neg_code;
 }
 
-std::string AST::Expr::Const::BuidIR(){
+std::string AST::Expr::Const::buildIR(){
     std::string value = std::to_string(this->value);
     std::string temp = currentCFG->create_new_tempvar(Type());
     currentCFG->current_bb->add_IRInstr(IRInstr::ldconst, Type(), {temp, value});
     return temp;
 }
 
-std::string AST::Bloc::BuidIR() {
+std::string AST::Bloc::buildIR() {
     for (auto &it : blocinstr) {
-        it->BuidIR();
+        it->buildIR();
     }
     return "";
 }
 
 
-std::string AST::Instr::Def::BuidIR() {
+std::string AST::Instr::Def::buildIR() {
 	// récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
-	std::string name_expr = this->expr->BuidIR();
+	std::string name_expr = this->expr->buildIR();
 	// Ajout de la variable name à la table des symboles de currentCFG
 	currentCFG->add_to_symbol_table(this->name, Type());
 	// Ajout de l'instruction au current_block 
@@ -73,30 +93,30 @@ std::string AST::Instr::Def::BuidIR() {
     return "";
 }
 
-std::string AST::Instr::Affct::BuidIR() {
-    std::string name_expr = this->expr->BuidIR();
+std::string AST::Instr::Affct::buildIR() {
+    std::string name_expr = this->expr->buildIR();
     // Ajout de l'instruction au current_block 
 	currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(), {name_expr, this->name});
 	return "";
 }
 
-std::string AST::Instr::While::BuidIR() {
+std::string AST::Instr::While::buildIR() {
     return std::string();
 }
 
-std::string AST::Instr::If::BuidIR() {
+std::string AST::Instr::If::buildIR() {
     return std::string();
 }
 
-std::string AST::Expr::Not::BuidIR() {
-    return Expr::BuidIR();
+std::string AST::Expr::Not::buildIR() {
+    return Expr::buildIR();
 }
 
-std::string AST::Expr::Expr::BuidIR() {
+std::string AST::Expr::Expr::buildIR() {
     return "";
 }
 
-std::string AST::Instr::Decl::BuidIR() {
+std::string AST::Instr::Decl::buildIR() {
 	for (auto &it : this->names) {
 		// Ajout de la variable it à la table des symboles de currentCFG
 		currentCFG->add_to_symbol_table(it, Type());
@@ -104,40 +124,28 @@ std::string AST::Instr::Decl::BuidIR() {
     return std::string();
 }
 
-std::string AST::Expr::Eq::BuidIR() {
+std::string AST::Expr::Eq::buildIR() {
     return std::string();
 }
 
-std::string AST::Expr::Geq::BuidIR() {
+std::string AST::Expr::Geq::buildIR() {
     return std::string();
 }
 
-std::string AST::Expr::Low::BuidIR() {
+std::string AST::Expr::Low::buildIR() {
     return std::string();
 }
 
-std::string AST::Expr::Great::BuidIR() {
+std::string AST::Expr::Great::buildIR() {
     return std::string();
 }
 
-std::string AST::Expr::Neq::BuidIR() {
+std::string AST::Expr::Neq::buildIR() {
     return std::string();
 }
 
-std::string AST::Prog::BuidIR() {
-    Bloc *child = this->bloc;
-    CFG *cfg = new CFG(child);
-    currentCFG = cfg;
-    cfgs.push_back(cfg);
 
-    std::string assembler_code =child->BuidIR();
-
-    std::string assembler_code_return = this->returnValue->BuidIR();
-	cfg->gen_asm(cout);
-    return "";
-}
-
-std::string AST::Expr::Leq::BuidIR() {
+std::string AST::Expr::Leq::buildIR() {
     return std::string();
 }
 
