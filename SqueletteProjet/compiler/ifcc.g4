@@ -31,7 +31,7 @@ affct :
     ;
 
 ifinstr :
-     'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE #ifbloc
+     'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE bloc #ifbloc
     //|'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE 'else' OPENBRACE bloc CLOSEBRACE #ifelse
     ;
 

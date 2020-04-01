@@ -14,46 +14,46 @@ using namespace antlr4;
 using namespace std;
 
 int main(int argn, const char **argv) {
-  stringstream in;
-  if (argn==2) {
-     ifstream lecture(argv[1]);
-     in << lecture.rdbuf();
-  }
+    stringstream in;
+    if (argn == 2) {
+        ifstream lecture(argv[1]);
+        in << lecture.rdbuf();
+    }
 
-  std::string filename = (argv[1]);
-  std::string filename_stripped = filename.substr(0, filename.find(".", 0));
-  ANTLRInputStream input(in.str());
-  ifccLexer lexer(&input);
-  CommonTokenStream tokens(&lexer);
+    std::string filename = (argv[1]);
+    std::string filename_stripped = filename.substr(0, filename.find(".", 0));
+    ANTLRInputStream input(in.str());
+    ifccLexer lexer(&input);
+    CommonTokenStream tokens(&lexer);
 
-  tokens.fill();
+    tokens.fill();
 //  for (auto token : tokens.getTokens()) {
 //    std::cout << token->toString() << std::endl;
 //  }
 
     ifccParser parser(&tokens);
-    tree::ParseTree* tree = parser.axiom();
+    tree::ParseTree *tree = parser.axiom();
 
-  Visitor visitor;
-  AST::Prog* ast =  visitor.visit(tree);
-  bool error = 0;//ast->create_symbol_table();
-  stringstream resultAssembly;
+    Visitor visitor;
+    AST::Prog *ast = visitor.visit(tree);
+    bool error = 0;//ast->create_symbol_table();
+    stringstream resultAssembly;
 
-  if(!error){
-      std::vector<CFG*> cfgs = ast->generateIR();
+    if (!error) {
+        std::vector<CFG *> cfgs = ast->generateIR();
 
-       for (auto &it : cfgs) {
-        it->gen_asm(resultAssembly);
-      }
+        for (auto &it : cfgs) {
+            it->gen_asm(resultAssembly);
+        }
 
-      ofstream output;
-      output.open(filename_stripped + ".s");
-      output << resultAssembly.str();
-	  output.close();
-  }else{
-      cout << ast->getErrorMsg();
-      return 1;
-  }
+        ofstream output;
+        output.open(filename_stripped + ".s");
+        output << resultAssembly.str();
+        output.close();
+    } else {
+        cout << ast->getErrorMsg();
+        return 1;
+    }
 
-  return 0;
+    return 0;
 }

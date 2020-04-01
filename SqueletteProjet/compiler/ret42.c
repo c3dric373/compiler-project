@@ -1,7 +1,9 @@
 int main(){
     int a = 5;
-    int b = 9;
-    int c = 38+2+b;
-    return c;
+    if(a == 5){
+        a = 2;
+    }
+    int b=2;
+    return a +b;
 }
 

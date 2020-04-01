@@ -5,7 +5,7 @@ int INT_OFFSET = 4;
 int offset = 0;
 
 // new attribute
-// TODO maybe think about puttng them as attributes and not global variables
+// TODO maybe think about putting them as attributes and not global variables
 std::vector<CFG *> cfgs;
 CFG *currentCFG;
 
@@ -409,7 +409,7 @@ void AST::Expr::Not::display() {
 void AST::Expr::Eq::exists(SymbolTable &st) {
 }
 
-int AST::Expr::Leq::getValeur() {
+int AST::Expr::Leq::getValue() {
     return 0;
 }
 
@@ -417,52 +417,52 @@ void AST::Expr::Leq::exists(SymbolTable &st) {
 
 }
 
-int AST::Expr::Geq::getValeur() {
+int AST::Expr::Geq::getValue() {
     return 0;
 }
 
-int AST::Expr::Low::getValeur() {
+int AST::Expr::Low::getValue() {
     return 0;
 }
 
 
-int AST::Expr::Great::getValeur() {
+int AST::Expr::Great::getValue() {
     return 0;
 }
 
-int AST::Expr::Neq::getValeur() {
+int AST::Expr::Neq::getValue() {
     return 0;
 }
 
-int AST::Expr::Not::getValeur() {
+int AST::Expr::Not::getValue() {
     return 0;
 }
 
-int AST::Expr::Sub::getValeur() {
+int AST::Expr::Sub::getValue() {
     return 0;
 }
 
-int AST::Expr::Minus::getValeur() {
+int AST::Expr::Minus::getValue() {
     return 0;
 }
 
-int AST::Expr::Mult::getValeur() {
+int AST::Expr::Mult::getValue() {
     return 0;
 }
 
-int AST::Expr::Name::getValeur() {
+int AST::Expr::Name::getValue() {
     return 0;
 }
 
-int AST::Expr::Add::getValeur() {
+int AST::Expr::Add::getValue() {
     return 0;
 }
 
-int AST::Expr::Const::getValeur() {
+int AST::Expr::Const::getValue() {
     return this->value;
 }
 
 
-int AST::Expr::Eq::getValeur() {
+int AST::Expr::Eq::getValue() {
     return 0;
 }
