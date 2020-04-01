@@ -24,6 +24,10 @@ instr :
 
 expr :
 	 '('expr')'      #par
+	|'-' expr        #minus
+	|expr '*' expr   #mult
+	|expr '-' expr   #sub
+	|expr '+' expr   #add
 	|'!' expr        #not
     |expr '==' expr  #eq
     |expr '!=' expr  #neq
@@ -31,10 +35,6 @@ expr :
     |expr '>=' expr  #geq
     |expr '<' expr   #low
     |expr '>' expr   #geat
-	|'-' expr        #minus
-	|expr '*' expr   #mult
-	|expr '-' expr   #sub
-	|expr '+' expr   #add
 	|CONST           #const
 	|CONSTCHAR       #constchar
 	|NAME            #name
