@@ -11,18 +11,19 @@ bloc :
 	;
 
 instr :
-	 decl        #instrdecl
-	|def         #instrdef
-	|affct       #instraffct
-	|ifinstr     #instrif
-	|whileinstr  #instrwhile
+	 decl                       #instrdecl
+	|def                        #instrdef
+	|affct                      #instraffct
+	|ifinstr                    #instrif
+	|whileinstr                 #instrwhile
+	|OPENBRACE bloc CLOSEBRACE  #instrbloc
 ;
 
 decl :
 	'int' NAME (',' NAME)* ';' #declint
 	;
 
-def : 
+def :
 	'int' NAME '=' expr ';' #defexpr
     ;
 
