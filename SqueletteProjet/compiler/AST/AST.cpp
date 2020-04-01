@@ -4,54 +4,58 @@
 int INT_OFFSET = 4;
 int offset = 0;
 
-//new attribute 
-std::vector<CFG*> cfgs;
-CFG* currentCFG;
+// new attribute
+// TODO maybe think about puttng them as attributes and not global variables
+std::vector<CFG *> cfgs;
+CFG *currentCFG;
 
 //-------------------generateIR-----------------------
 
-std::vector<CFG*> AST::Prog::generateIR(){
-	this->buildIR();
-	return cfgs;
+std::vector<CFG *> AST::Prog::generateIR() {
+    this->buildIR();
+    return cfgs;
 }
 
 //-------------------buildIR-----------------------
 
 std::string AST::Prog::buildIR() {
-	// Plus tard : déplacer ça dans ASP::Fonct
+    // Plus tard : déplacer ça dans ASP::Fonct
     Bloc *child = this->bloc;
     CFG *cfg = new CFG(child);
     currentCFG = cfg;
     cfgs.push_back(cfg);
 
-	// Construit les CFGs
+    // Construit les CFGs
     child->buildIR();
     this->returnValue->buildReturnIR();
     return "";
 }
 
 std::string AST::Expr::Add::buildIR() {
-	std::string tmp_expr1 = this->lValue->buildIR();
+    std::string tmp_expr1 = this->lValue->buildIR();
     std::string tmp_expr2 = this->rValue->buildIR();
-	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
-	currentCFG->current_bb->add_IRInstr(IRInstr::add, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
-	return tmp_dest;
+    std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+    currentCFG->current_bb->add_IRInstr(IRInstr::add, Type(),
+                                        {tmp_dest, tmp_expr1, tmp_expr2});
+    return tmp_dest;
 }
 
 std::string AST::Expr::Sub::buildIR() {
     std::string tmp_expr1 = this->lValue->buildIR();
     std::string tmp_expr2 = this->rValue->buildIR();
-	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
-	currentCFG->current_bb->add_IRInstr(IRInstr::sub, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
-	return tmp_dest;
+    std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+    currentCFG->current_bb->add_IRInstr(IRInstr::sub, Type(),
+                                        {tmp_dest, tmp_expr1, tmp_expr2});
+    return tmp_dest;
 }
 
 std::string AST::Expr::Mult::buildIR() {
     std::string tmp_expr1 = this->lValue->buildIR();
     std::string tmp_expr2 = this->rValue->buildIR();
-	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
-	currentCFG->current_bb->add_IRInstr(IRInstr::mul, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
-	return tmp_dest;
+    std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+    currentCFG->current_bb->add_IRInstr(IRInstr::mul, Type(),
+                                        {tmp_dest, tmp_expr1, tmp_expr2});
+    return tmp_dest;
 }
 
 std::string AST::Expr::Name::buildIR() {
@@ -59,16 +63,18 @@ std::string AST::Expr::Name::buildIR() {
 }
 
 std::string AST::Expr::Minus::buildIR() {
- 	std::string value_expr = this->value->buildIR();
-	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
-	currentCFG->current_bb->add_IRInstr(IRInstr::neg, Type(), {value_expr, tmp_dest});
+    std::string value_expr = this->value->buildIR();
+    std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+    currentCFG->current_bb->add_IRInstr(IRInstr::neg, Type(),
+                                        {value_expr, tmp_dest});
     return tmp_dest;
 }
 
-std::string AST::Expr::Const::buildIR(){
+std::string AST::Expr::Const::buildIR() {
     std::string value = std::to_string(this->value);
     std::string temp = currentCFG->create_new_tempvar(Type());
-    currentCFG->current_bb->add_IRInstr(IRInstr::ldconst, Type(), {temp, value});
+    currentCFG->current_bb->add_IRInstr(IRInstr::ldconst, Type(),
+                                        {temp, value});
     return temp;
 }
 
@@ -80,20 +86,22 @@ std::string AST::Bloc::buildIR() {
 }
 
 std::string AST::Instr::Def::buildIR() {
-	// récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
-	std::string name_expr = this->expr->buildIR();
-	// Ajout de la variable name à la table des symboles de currentCFG
-	currentCFG->add_to_symbol_table(this->name, Type());
-	// Ajout de l'instruction au current_block 
-	currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(), {name_expr, this->name});
+    // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
+    std::string name_expr = this->expr->buildIR();
+    // Ajout de la variable name à la table des symboles de currentCFG
+    currentCFG->add_to_symbol_table(this->name, Type());
+    // Ajout de l'instruction au current_block
+    currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(),
+                                        {name_expr, this->name});
     return "";
 }
 
 std::string AST::Instr::Affct::buildIR() {
     std::string name_expr = this->expr->buildIR();
     // Ajout de l'instruction au current_block 
-	currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(), {name_expr, this->name});
-	return "";
+    currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(),
+                                        {name_expr, this->name});
+    return "";
 }
 
 std::string AST::Instr::While::buildIR() {
@@ -113,10 +121,10 @@ std::string AST::Expr::Expr::buildIR() {
 }
 
 std::string AST::Instr::Decl::buildIR() {
-	for (auto &it : this->names) {
-		// Ajout de la variable it à la table des symboles de currentCFG
-		currentCFG->add_to_symbol_table(it, Type());
-	}
+    for (auto &it : this->names) {
+        // Ajout de la variable it à la table des symboles de currentCFG
+        currentCFG->add_to_symbol_table(it, Type());
+    }
     return std::string();
 }
 
@@ -154,34 +162,34 @@ void AST::Bloc::pushInstr(Instr::Instr *instr) {
 //------------------buildReturnIR------------------
 
 void AST::Expr::Add::buildReturnIR() {
-	this->buildIR();
+    this->buildIR();
 }
 
 void AST::Expr::Sub::buildReturnIR() {
-	this->buildIR();
+    this->buildIR();
 }
 
 void AST::Expr::Mult::buildReturnIR() {
-	this->buildIR();
+    this->buildIR();
 }
 
 void AST::Expr::Const::buildReturnIR() {
-	std::string value = std::to_string(this->value);
-	currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {"!"+value});
+    std::string value = std::to_string(this->value);
+    currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {"!" + value});
 }
 
 void AST::Expr::Name::buildReturnIR() {
-	currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {this->name});
+    currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {this->name});
 }
 
 void AST::Expr::Minus::buildReturnIR() {
-	this->buildIR();
+    this->buildIR();
 }
 
 //------------------SymbolTable------------------
- //####################################################################
- // NOT NEEDED ANYMORE !!!!!
- //####################################################################
+//####################################################################
+// NOT NEEDED ANYMORE !!!!!
+//####################################################################
 
 /*void AST::Instr::Decl::addToTable(SymbolTable &st) {
     for (auto &it : this->names) {
@@ -223,7 +231,8 @@ void AST::Expr::Mult::exists(SymbolTable &st) {
 void AST::Expr::Name::exists(SymbolTable &st) {
     if (!st.exists(0, this->name)) {
         st.setErrorTrue();
-        std::string error = "error : variable " + this->name + " has not been declared\n";
+        std::string error =
+                "error : variable " + this->name + " has not been declared\n";
         st.addErrorMsg(error);
     }
 }

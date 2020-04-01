@@ -116,7 +116,7 @@ class BasicBlock {
 
 /* A few important comments:
 	 The entry block is the one with the same label as the AST function name.
-	   (it could be the first of bbs, or it could be defined by an attribute value)
+	   (it could be the first of basic_blocs, or it could be defined by an attribute value)
 	 The exit block is the one with both exit pointers equal to nullptr.
      (again it could be identified in a more explicit way)
 
@@ -151,7 +151,7 @@ class CFG {
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
 	
-	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
+	vector <BasicBlock*> basic_blocs; /**< all the basic blocks of this CFG*/
 };
 
 

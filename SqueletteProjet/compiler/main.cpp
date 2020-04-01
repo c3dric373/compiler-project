@@ -8,7 +8,7 @@
 #include "antlr4-generated/ifccParser.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "visitor.h"
-#include "../IR/IR.h"
+#include "IR/IR.h"
 
 using namespace antlr4;
 using namespace std;
@@ -35,12 +35,12 @@ int main(int argn, const char **argv) {
     tree::ParseTree* tree = parser.axiom();
 
   Visitor visitor;
-  AST::Prog* test =  visitor.visit(tree);
-  bool error = 0;//test->create_symbol_table();
+  AST::Prog* ast =  visitor.visit(tree);
+  bool error = 0;//ast->create_symbol_table();
   stringstream resultAssembly;
 
   if(!error){
-      std::vector<CFG*> cfgs = test->generateIR();
+      std::vector<CFG*> cfgs = ast->generateIR();
 
        for (auto &it : cfgs) {
         it->gen_asm(resultAssembly);
@@ -51,7 +51,7 @@ int main(int argn, const char **argv) {
       output << resultAssembly.str();
 	  output.close();
   }else{
-      cout<<test->getErrorMsg();
+      cout << ast->getErrorMsg();
       return 1;
   }
 
