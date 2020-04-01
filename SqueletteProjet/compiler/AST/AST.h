@@ -404,6 +404,19 @@ namespace AST{
             Expr::Expr *expr;
             AST::Bloc *bloc;
         };
+
+        class Bloc : public Instr {
+        public:
+            Bloc(AST::Bloc *bloc) :
+                    bloc(bloc) {};
+
+            void display() override;
+
+            std::string buildIR() override;
+
+        private:
+            AST::Bloc *bloc;
+        };
     }
 
     class Bloc {
