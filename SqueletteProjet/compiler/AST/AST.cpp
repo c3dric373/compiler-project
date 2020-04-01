@@ -128,6 +128,18 @@ std::string AST::Expr::Not::buildIR() {
     return Expr::buildIR();
 }
 
+std::string AST::Expr::And::buildIR(){
+    return "";
+}
+
+std::string AST::Expr::Or::buildIR(){
+    return "";
+}
+
+std::string AST::Expr::Xor::buildIR(){
+    return "";
+}
+
 std::string AST::Expr::Expr::buildIR() {
     return "";
 }
@@ -187,6 +199,18 @@ void AST::Expr::Sub::buildReturnIR() {
 
 void AST::Expr::Mult::buildReturnIR() {
     this->buildIR();
+}
+
+void AST::Expr::And::buildReturnIR(){
+
+}
+
+void AST::Expr::Or::buildReturnIR(){
+
+}
+
+void AST::Expr::Xor::buildReturnIR(){
+
 }
 
 void AST::Expr::Const::buildReturnIR() {
@@ -277,8 +301,16 @@ void AST::Expr::Neq::exists(SymbolTable &st) {
 void AST::Expr::Not::exists(SymbolTable &st) {
 }
 
-void AST::Expr::ConstChar::exists(SymbolTable& st){
+void AST::Expr::And::exists(SymbolTable& st){
+}
 
+void AST::Expr::Or::exists(SymbolTable& st){
+}
+
+void AST::Expr::Xor::exists(SymbolTable& st){
+}
+
+void AST::Expr::ConstChar::exists(SymbolTable& st){
 }
 
 //-------------DISPLAY-----------------------
@@ -333,6 +365,26 @@ void AST::Expr::Add::display() {
     std::cout << ')' << std::flush;
 }
 
+void AST::Expr::And::display(){
+    std::cout << "(AND " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
+
+void AST::Expr::Or::display(){
+    std::cout << "(OR " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
+
+void AST::Expr::Xor::display(){
+    std::cout << "(XOR " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
 
 void AST::Instr::DeclInt::display() {
     std::cout << "(DECI " << std::flush;
@@ -491,6 +543,18 @@ int AST::Expr::Minus::getValeur() {
 }
 
 int AST::Expr::Mult::getValeur() {
+    return 0;
+}
+
+int AST::Expr::And::getValeur(){
+    return 0;
+}
+
+int AST::Expr::Or::getValeur(){
+    return 0;
+}
+
+int AST::Expr::Xor::getValeur(){
     return 0;
 }
 
