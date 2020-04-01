@@ -11,36 +11,16 @@ bloc :
 	;
 
 instr :
-	 decl                       #instrdecl
-	|def                        #instrdef
-	|affct                      #instraffct
-	|ifinstr                    #instrif
-	|whileinstr                 #instrwhile
-	|OPENBRACE bloc CLOSEBRACE  #instrbloc
+	 'int' NAME (',' NAME)* ';'                               #declint
+	|'char' NAME (',' NAME)* ';'                              #declchar
+	|'int' NAME '=' expr ';'                                  #defint
+	|'char' NAME '=' expr ';'                                 #defchar
+	|NAME '=' expr ';'                                        #affexpr
+    |'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE     #ifbloc
+    |'while' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE  #whilebloc
+	|OPENBRACE bloc CLOSEBRACE                                #instrbloc
 ;
 
-decl :
-	'int' NAME (',' NAME)* ';'   #declint
-	|'char' NAME (',' NAME)* ';' #declchar
-	;
-
-def :
-	'int' NAME '=' expr ';' #defint
-	|'char' NAME '=' expr ';' #defchar
-    ;
-
-affct :
-	NAME '=' expr ';' #affexpr
-    ;
-
-ifinstr :
-     'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE #ifbloc
-    //|'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE 'else' OPENBRACE bloc CLOSEBRACE #ifelse
-    ;
-
-whileinstr :
-     'while' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE #whilebloc
-     ;
 
 expr :
 	 '('expr')'      #par
