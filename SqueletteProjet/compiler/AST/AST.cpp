@@ -78,6 +78,10 @@ std::string AST::Expr::Const::buildIR() {
     return temp;
 }
 
+std::string AST::Expr::ConstChar::buildIR(){
+    return "";
+}
+
 std::string AST::Bloc::buildIR() {
     for (auto &it : blocinstr) {
         it->buildIR();
@@ -190,6 +194,10 @@ void AST::Expr::Const::buildReturnIR() {
     currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {"!" + value});
 }
 
+void AST::Expr::ConstChar::buildReturnIR(){
+
+}
+
 void AST::Expr::Name::buildReturnIR() {
     currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {this->name});
 }
@@ -269,6 +277,10 @@ void AST::Expr::Neq::exists(SymbolTable &st) {
 void AST::Expr::Not::exists(SymbolTable &st) {
 }
 
+void AST::Expr::ConstChar::exists(SymbolTable& st){
+
+}
+
 //-------------DISPLAY-----------------------
 
 
@@ -308,6 +320,10 @@ void AST::Expr::Minus::display() {
 
 void AST::Expr::Const::display() {
     std::cout << "(CONST " << value << ')' << std::flush;
+}
+
+void AST::Expr::ConstChar::display(){
+    std::cout << "(CONSTC " << value << ')' << std::flush;
 }
 
 void AST::Expr::Add::display() {
@@ -490,6 +506,9 @@ int AST::Expr::Const::getValeur() {
     return this->value;
 }
 
+int AST::Expr::ConstChar::getValeur(){
+    return 0;
+}
 
 int AST::Expr::Eq::getValeur() {
     return 0;
