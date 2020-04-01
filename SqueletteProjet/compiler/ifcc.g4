@@ -49,10 +49,10 @@ expr :
     |expr '>=' expr  #geq
     |expr '<' expr   #low
     |expr '>' expr   #geat
+	|'-' expr        #minus
 	|expr '*' expr   #mult
 	|expr '-' expr   #sub
 	|expr '+' expr   #add
-	|'-' expr        #minus
 	|CONST           #const
 	|NAME            #name
 ;
