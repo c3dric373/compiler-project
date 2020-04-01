@@ -85,7 +85,7 @@ std::string AST::Bloc::buildIR() {
     return "";
 }
 
-std::string AST::Instr::Def::buildIR() {
+std::string AST::Instr::DefInt::buildIR() {
     // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
     std::string name_expr = this->expr->buildIR();
     // Ajout de la variable name à la table des symboles de currentCFG
@@ -93,6 +93,10 @@ std::string AST::Instr::Def::buildIR() {
     // Ajout de l'instruction au current_block
     currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(),
                                         {name_expr, this->name});
+    return "";
+}
+
+std::string AST::Instr::DefChar::buildIR(){
     return "";
 }
 
@@ -124,12 +128,16 @@ std::string AST::Expr::Expr::buildIR() {
     return "";
 }
 
-std::string AST::Instr::Decl::buildIR() {
+std::string AST::Instr::DeclInt::buildIR() {
     for (auto &it : this->names) {
         // Ajout de la variable it à la table des symboles de currentCFG
         currentCFG->add_to_symbol_table(it, Type());
     }
     return std::string();
+}
+
+std::string AST::Instr::DeclChar::buildIR(){
+    return "";
 }
 
 std::string AST::Expr::Eq::buildIR() {
@@ -310,20 +318,33 @@ void AST::Expr::Add::display() {
 }
 
 
-void AST::Instr::Decl::display() {
-    std::cout << "(DECL " << std::flush;
+void AST::Instr::DeclInt::display() {
+    std::cout << "(DECI " << std::flush;
     for (auto &it : names) {
         std::cout << it << ' ' << std::flush;
     }
     std::cout << ')' << std::flush;
 }
 
-void AST::Instr::Def::display() {
-    std::cout << "(DEF " << name << ' ' << std::flush;
+void AST::Instr::DeclChar::display(){
+    std::cout << "(DECC " << std::flush;
+    for (auto &it : names) {
+        std::cout << it << ' ' << std::flush;
+    }
+    std::cout << ')' << std::flush;
+}
+
+void AST::Instr::DefInt::display() {
+    std::cout << "(DEFI " << name << ' ' << std::flush;
     expr->display();
     std::cout << ')' << std::flush;
 }
 
+void AST::Instr::DefChar::display(){
+    std::cout << "(DEFC " << name << ' ' << std::flush;
+    expr->display();
+    std::cout << ')' << std::flush;
+}
 
 void AST::Prog::display() {
     std::cout << "(AST " << std::flush;
