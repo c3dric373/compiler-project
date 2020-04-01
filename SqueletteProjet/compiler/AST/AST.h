@@ -142,6 +142,29 @@ namespace AST{
             unsigned column; // even more: the column in this line
         };
 
+        class ConstChar : public Expr {
+        public:
+            ConstChar(char value) : value(value) {};
+
+            std::string buildIR() override;
+
+            int getValeur() override;
+
+            void exists(SymbolTable &st) override;
+
+            ConstChar(char value, unsigned line, unsigned column) :
+                    value(value), line(line), column(column) {};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+        private:
+            char value;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
         class Name : public Expr {
         public:
             Name(std::string name) : name(name) {};
