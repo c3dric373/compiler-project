@@ -1,146 +1,147 @@
 #include "AST.h"
+#include "../IR/IR.h"
 
 int INT_OFFSET = 4;
 int offset = 0;
 
+//new attribute 
+std::vector<CFG*> cfgs;
+CFG* currentCFG;
 
-//-------------------MakeAssembly-----------------------
+//-------------------generateIR-----------------------
 
-std::string AST::Expr::Add::makeAssembly(SymbolTable &st) {
-    // Return value of expression always in eax
-    std::string lValue_code = this->lValue->makeAssembly(st);
-    std::string name_var_temp = "!tmp" + std::to_string(offset);
-    st.addSymbol(0, name_var_temp, offset += INT_OFFSET);
-    int start_offset = offset;
-    std::string move_lValue = "\tmovl %eax, -" + std::to_string(start_offset) + " (%rbp)\n";
-    std::string rValue_code = this->rValue->makeAssembly(st);
-    std::string addition_code = "\taddl -" + std::to_string(start_offset) + " (%rbp) , %eax\n";
-    return lValue_code + move_lValue + rValue_code + addition_code;
+std::vector<CFG*> AST::Prog::generateIR(){
+	this->buildIR();
+	return cfgs;
 }
 
-std::string AST::Expr::Sub::makeAssembly(SymbolTable &st) {
-    // Return value of expression always in eax
-    // Calculate rValue first in order to facilitate the result calculation
-    std::string lValue_code = this->lValue->makeAssembly(st);
-    std::string name_var_temp = "!tmp" + std::to_string(offset);
-    st.addSymbol(0, name_var_temp, offset += INT_OFFSET);
-    int start_offset = offset;
-    std::string move_lValue = "\tmovl %eax, -" + std::to_string(start_offset) + " (%rbp)\n";
-    std::string rValue_code = this->rValue->makeAssembly(st);
-    std::string name_var_temp1 = "!tmp" + std::to_string(offset);
-    st.addSymbol(0, name_var_temp1, offset += INT_OFFSET);
-    int start_offset1 = offset;
-    std::string move_rValue = "\tmovl %eax, -" + std::to_string(start_offset1) + " (%rbp)\n";
-    std::string moveLValue_eax = "\tmovl -" + std::to_string(start_offset) + " (%rbp), %eax\n";
-    std::string substraction_code = "\tsubl -" + std::to_string(start_offset1) + " (%rbp), %eax\n";
-    return lValue_code + move_lValue + rValue_code + move_rValue + moveLValue_eax + substraction_code;
-}
+//-------------------buildIR-----------------------
 
-std::string AST::Expr::Mult::makeAssembly(SymbolTable &st) {
-    // Return value of expression always in eax
-    std::string lValue_code = this->lValue->makeAssembly(st);
-    std::string name_var_temp = "!tmp" + std::to_string(offset);
-    st.addSymbol(0, name_var_temp, offset += INT_OFFSET);
-    int start_offset = offset;
-    std::string move_lValue = "\tmovl %eax, -" + std::to_string(start_offset) + " (%rbp)\n";
-    std::string rValue_code = this->rValue->makeAssembly(st);
-    std::string multiplication_code = "\timull -" + std::to_string(start_offset) + " (%rbp) , %eax\n";
-    return lValue_code + move_lValue + rValue_code + multiplication_code;
-}
-
-std::string AST::Expr::Name::makeAssembly(SymbolTable &st) {
-    int value = st.getOffset(0, this->name);
-    std::string code_move_variable = "\tmovl -" + std::to_string(value) + " (%rbp) " + ", %eax\n";
-    return code_move_variable;
-}
-
-std::string AST::Expr::Const::makeAssembly(SymbolTable &st) {
-    int val = this->value;
-    std::string assembler_code = "\tmovl $" + std::to_string(val) + ", %eax\n";
-    return assembler_code;
-}
-
-std::string AST::Expr::Minus::makeAssembly(SymbolTable &st) {
-    std::string value_code = this->value->makeAssembly(st);
-    std::string neg_code = "\tNEG %eax\n";
-    return value_code + neg_code;
-}
-
-std::string AST::Bloc::makeAssembly(SymbolTable &st) {
-    std::string assembler_code;
-    for (auto &it : blocinstr) {
-        assembler_code += it->makeAssembly(st);
-    }
-    return assembler_code;
-}
-
-std::string AST::Prog::makeAssembly() {
-    std::string prolog = ".globl\tmain\nmain:\n\tpushq %rbp\n\tmovq %rsp, %rbp\n";
+std::string AST::Prog::buildIR() {
+	// Plus tard : déplacer ça dans ASP::Fonct
     Bloc *child = this->bloc;
-    std::string assembler_code = child->makeAssembly(this->table);
-    std::string assembler_code_return = this->returnValue->makeAssembly(this->table);
-    std::string epilog = assembler_code_return + "\tpopq %rbp\n\tret\n";
-    return prolog + assembler_code + epilog;
-}
+    CFG *cfg = new CFG(child);
+    currentCFG = cfg;
+    cfgs.push_back(cfg);
 
-
-std::string AST::Instr::Def::makeAssembly(SymbolTable &st) {
-    std::string valeur_code = this->expr->makeAssembly(st);
-    std::string symbol = this->name;
-    int offset = st.getOffset(0, symbol);
-    std::string assembler_code = "\tmovl %eax, -" + std::to_string(offset) + "(%rbp)\n";
-    return valeur_code + assembler_code;
-}
-
-std::string AST::Instr::Affct::makeAssembly(SymbolTable &st) {
-    std::string assembleur_expr = this->expr->makeAssembly(st);
-    std::string name = this->name;
-    int offset = st.getOffset(0, name);
-    std::string assembler_code = assembleur_expr + "\tmovl  %eax,  -" + std::to_string(offset) + "(%rbp)\n";
-    return assembler_code;
-}
-
-std::string AST::Instr::While::makeAssembly(SymbolTable &st) {
-    return std::string();
-}
-
-std::string AST::Instr::If::makeAssembly(SymbolTable &st) {
-    return std::string();
-}
-
-std::string AST::Expr::Not::makeAssembly(SymbolTable &st) {
-    return Expr::makeAssembly(st);
-}
-
-std::string AST::Expr::Expr::makeAssembly(SymbolTable &st) {
+	// Construit les CFGs
+    child->buildIR();
+    this->returnValue->buildReturnIR();
     return "";
 }
 
-std::string AST::Instr::Decl::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Add::buildIR() {
+	std::string tmp_expr1 = this->lValue->buildIR();
+    std::string tmp_expr2 = this->rValue->buildIR();
+	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+	currentCFG->current_bb->add_IRInstr(IRInstr::add, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
+	return tmp_dest;
+}
+
+std::string AST::Expr::Sub::buildIR() {
+    std::string tmp_expr1 = this->lValue->buildIR();
+    std::string tmp_expr2 = this->rValue->buildIR();
+	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+	currentCFG->current_bb->add_IRInstr(IRInstr::sub, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
+	return tmp_dest;
+}
+
+std::string AST::Expr::Mult::buildIR() {
+    std::string tmp_expr1 = this->lValue->buildIR();
+    std::string tmp_expr2 = this->rValue->buildIR();
+	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+	currentCFG->current_bb->add_IRInstr(IRInstr::mul, Type(), {tmp_dest, tmp_expr1, tmp_expr2});
+	return tmp_dest;
+}
+
+std::string AST::Expr::Name::buildIR() {
+    return this->name;
+}
+
+std::string AST::Expr::Minus::buildIR() {
+ 	std::string value_expr = this->value->buildIR();
+	std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+	currentCFG->current_bb->add_IRInstr(IRInstr::neg, Type(), {value_expr, tmp_dest});
+    return tmp_dest;
+}
+
+std::string AST::Expr::Const::buildIR(){
+    std::string value = std::to_string(this->value);
+    std::string temp = currentCFG->create_new_tempvar(Type());
+    currentCFG->current_bb->add_IRInstr(IRInstr::ldconst, Type(), {temp, value});
+    return temp;
+}
+
+std::string AST::Bloc::buildIR() {
+    for (auto &it : blocinstr) {
+        it->buildIR();
+    }
+    return "";
+}
+
+std::string AST::Instr::Def::buildIR() {
+	// récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
+	std::string name_expr = this->expr->buildIR();
+	// Ajout de la variable name à la table des symboles de currentCFG
+	currentCFG->add_to_symbol_table(this->name, Type());
+	// Ajout de l'instruction au current_block 
+	currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(), {name_expr, this->name});
+    return "";
+}
+
+std::string AST::Instr::Affct::buildIR() {
+    std::string name_expr = this->expr->buildIR();
+    // Ajout de l'instruction au current_block 
+	currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(), {name_expr, this->name});
+	return "";
+}
+
+std::string AST::Instr::While::buildIR() {
     return std::string();
 }
 
-std::string AST::Expr::Eq::makeAssembly(SymbolTable &st) {
+std::string AST::Instr::If::buildIR() {
     return std::string();
 }
 
-std::string AST::Expr::Geq::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Not::buildIR() {
+    return Expr::buildIR();
+}
+
+std::string AST::Expr::Expr::buildIR() {
+    return "";
+}
+
+std::string AST::Instr::Decl::buildIR() {
+	for (auto &it : this->names) {
+		// Ajout de la variable it à la table des symboles de currentCFG
+		currentCFG->add_to_symbol_table(it, Type());
+	}
     return std::string();
 }
 
-std::string AST::Expr::Low::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Eq::buildIR() {
     return std::string();
 }
 
-std::string AST::Expr::Great::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Geq::buildIR() {
     return std::string();
 }
 
-std::string AST::Expr::Neq::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Low::buildIR() {
     return std::string();
 }
 
-std::string AST::Expr::Leq::makeAssembly(SymbolTable &st) {
+std::string AST::Expr::Great::buildIR() {
+    return std::string();
+}
+
+std::string AST::Expr::Neq::buildIR() {
+    return std::string();
+}
+
+
+std::string AST::Expr::Leq::buildIR() {
     return std::string();
 }
 
@@ -149,34 +150,40 @@ void AST::Bloc::pushInstr(Instr::Instr *instr) {
     blocinstr.push_back(instr);
 }
 
+
+//------------------buildReturnIR------------------
+
+void AST::Expr::Add::buildReturnIR() {
+	this->buildIR();
+}
+
+void AST::Expr::Sub::buildReturnIR() {
+	this->buildIR();
+}
+
+void AST::Expr::Mult::buildReturnIR() {
+	this->buildIR();
+}
+
+void AST::Expr::Const::buildReturnIR() {
+	std::string value = std::to_string(this->value);
+	currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {"!"+value});
+}
+
+void AST::Expr::Name::buildReturnIR() {
+	currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {this->name});
+}
+
+void AST::Expr::Minus::buildReturnIR() {
+	this->buildIR();
+}
+
 //------------------SymbolTable------------------
+ //####################################################################
+ // NOT NEEDED ANYMORE !!!!!
+ //####################################################################
 
-bool AST::Prog::create_symbol_table() {
-    this->table = SymbolTable();
-    Bloc *child = this->bloc;
-    child->addToTable(table);
-    return this->table.getError();
-}
-
-void AST::Bloc::addToTable(SymbolTable &st) {
-    for (auto &it : blocinstr) {
-        it->addToTable(st);
-    }
-}
-
-void AST::Instr::Def::addToTable(SymbolTable &st) {
-    if (st.exists(0, this->name)) {
-        st.setErrorTrue();
-        std::string error = "error : int " + this->name + " has already been defined\n";
-        st.addErrorMsg(error);
-    } else {
-        st.addSymbol(0, this->name, offset = offset + INT_OFFSET);
-    }
-    this->expr->exists(st);
-    // offset comme atribue de la table de symbole
-}
-
-void AST::Instr::Decl::addToTable(SymbolTable &st) {
+/*void AST::Instr::Decl::addToTable(SymbolTable &st) {
     for (auto &it : this->names) {
         if (st.exists(0, it)) {
             st.setErrorTrue();
@@ -187,12 +194,7 @@ void AST::Instr::Decl::addToTable(SymbolTable &st) {
         }
     }
 }
-
-void AST::Instr::While::addToTable(SymbolTable &table) {
-}
-
-void AST::Instr::If::addToTable(SymbolTable &table) {
-}
+*/
 
 std::string AST::Prog::getErrorMsg() {
     return this->table.getErrorMsg();
@@ -324,8 +326,6 @@ void AST::Instr::Affct::display() {
     std::cout << ')' << std::flush;
 }
 
-void AST::Instr::Affct::addToTable(SymbolTable &table) {
-}
 
 void AST::Instr::If::display() {
     std::cout << "(IF " << std::flush;

@@ -5,7 +5,12 @@
 #include <vector>
 #include "SymbolTable.h"
 
-namespace AST {
+class BasicBlock;
+class CFG;
+class IRInstr;
+class Type;
+
+namespace AST{
     class Bloc;
 
     namespace Expr {
@@ -13,9 +18,11 @@ namespace AST {
         public:
             virtual int getValeur() = 0;
 
-            virtual std::string makeAssembly(SymbolTable &st) = 0;
+            virtual std::string buildIR() = 0;
 
             virtual void exists(SymbolTable &st) = 0;
+
+			virtual void buildReturnIR() = 0;
 
             virtual void display() = 0;
         };
@@ -24,7 +31,7 @@ namespace AST {
         public:
             Add(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             int getValeur() override;
 
@@ -32,6 +39,8 @@ namespace AST {
 
             Add(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line), column(column) {};
+
+			void buildReturnIR() override;
 
             void display() override;
 
@@ -46,7 +55,7 @@ namespace AST {
         public:
             Sub(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             int getValeur() override;
 
@@ -54,6 +63,8 @@ namespace AST {
 
             Sub(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line), column(column) {};
+
+			void buildReturnIR() override;
 
             void display() override;
 
@@ -68,7 +79,7 @@ namespace AST {
         public:
             Mult(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             int getValeur() override;
 
@@ -76,6 +87,8 @@ namespace AST {
 
             Mult(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line), column(column) {};
+
+			void buildReturnIR() override;
 
             void display() override;
 
@@ -90,11 +103,13 @@ namespace AST {
         public:
             Minus(Expr *value, unsigned line, unsigned column) : value(value), line(line), column(column) {};
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             int getValeur() override;
 
             void exists(SymbolTable &st) override;
+
+			void buildReturnIR() override;
 
             void display() override;
 
@@ -108,7 +123,7 @@ namespace AST {
         public:
             Const(int value) : value(value) {};
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             int getValeur() override;
 
@@ -116,6 +131,8 @@ namespace AST {
 
             Const(int value, unsigned line, unsigned column) :
                     value(value), line(line), column(column) {};
+
+			void buildReturnIR() override;
 
             void display() override;
 
@@ -129,7 +146,7 @@ namespace AST {
         public:
             Name(std::string name) : name(name) {};
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             int getValeur() override;
 
@@ -138,6 +155,8 @@ namespace AST {
             Name(std::string name, unsigned line, unsigned column) :
                     name(name), line(line), column(column) {};
 
+	    	void buildReturnIR() override;
+ 
             void display() override;
 
         private:
@@ -155,9 +174,11 @@ namespace AST {
 
             int getValeur() override;
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             void exists(SymbolTable &st) override;
+
+			void buildReturnIR() override {};
 
             void display() override;
 
@@ -175,9 +196,11 @@ namespace AST {
 
             void display() override;
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             void exists(SymbolTable &st) override;
+
+			void buildReturnIR() override {};
 
             int getValeur() override;
 
@@ -193,11 +216,13 @@ namespace AST {
             Leq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue) {};
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             void exists(SymbolTable &st) override;
 
             int getValeur() override;
+
+			void buildReturnIR() override {};
 
             void display() override;
 
@@ -215,11 +240,13 @@ namespace AST {
 
             virtual void display() override;
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             int getValeur() override;
 
-            void exists(SymbolTable &st) override;
+			void buildReturnIR() override {};
+
+            void exists(SymbolTable &st) override ;
 
         private:
             AST::Expr::Expr *lValue;
@@ -235,9 +262,11 @@ namespace AST {
 
             void display() override;
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             int getValeur() override;
+
+			void buildReturnIR() override {};
 
             void exists(SymbolTable &st) override;
 
@@ -255,9 +284,11 @@ namespace AST {
 
             void display() override;
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             int getValeur() override;
+
+			void buildReturnIR() override {};
 
             void exists(SymbolTable &st) override;
 
@@ -273,11 +304,13 @@ namespace AST {
             Not(Expr *value, unsigned line, unsigned column) :
                     value(value), line(line), column(column) {};
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             int getValeur() override;
 
             void display() override;
+
+			void buildReturnIR() override {};
 
             void exists(SymbolTable &st) override;
 
@@ -292,9 +325,7 @@ namespace AST {
     namespace Instr {
         class Instr {
         public:
-            virtual std::string makeAssembly(SymbolTable &st) = 0;
-
-            virtual void addToTable(SymbolTable &st) = 0;
+            virtual std::string buildIR() = 0;
 
             virtual void display() = 0;
         };
@@ -304,11 +335,9 @@ namespace AST {
             Decl(std::vector<std::string> names, unsigned line, unsigned column) :
                     names(names), line(line), column(column) {};
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             void display() override;
-
-            void addToTable(SymbolTable &table) override;
 
         private:
             std::vector<std::string> names;
@@ -321,11 +350,9 @@ namespace AST {
             Def(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
                     name(name), expr(expr), line(line), column(column) {};
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             void display() override;
-
-            void addToTable(SymbolTable &table) override;
 
         private:
             std::string name;
@@ -339,11 +366,9 @@ namespace AST {
             Affct(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
                     name(name), expr(expr), line(line), column(column) {};
 
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
             void display() override;
-
-            void addToTable(SymbolTable &table) override;
 
         private:
             std::string name;
@@ -359,9 +384,7 @@ namespace AST {
 
             void display() override;
 
-            void addToTable(SymbolTable &table) override;
-
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
         private:
             Expr::Expr *expr;
@@ -375,9 +398,7 @@ namespace AST {
 
             void display() override;
 
-            void addToTable(SymbolTable &table) override;
-
-            std::string makeAssembly(SymbolTable &st) override;
+            std::string buildIR() override;
 
         private:
             Expr::Expr *expr;
@@ -387,11 +408,9 @@ namespace AST {
 
     class Bloc {
     public:
-        std::string makeAssembly(SymbolTable &st);
+        std::string buildIR();
 
         void pushInstr(Instr::Instr *instr);
-
-        void addToTable(SymbolTable &st);
 
         void display();
 
@@ -403,17 +422,19 @@ namespace AST {
     public:
         Prog(Bloc *bloc, Expr::Expr *returnValue) : bloc(bloc), returnValue(returnValue) {};
 
-        std::string makeAssembly();
+        std::string buildIR();
 
         bool create_symbol_table();
+	
+	std::vector<CFG*> generateIR();
 
         std::string getErrorMsg();
 
         void display();
 
     private:
-        Bloc *bloc;
-        Expr::Expr *returnValue;
+        Bloc* bloc;
+        Expr::Expr* returnValue;
         SymbolTable table;
     };
 }
