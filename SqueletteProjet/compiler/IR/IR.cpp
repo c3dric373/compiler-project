@@ -135,7 +135,7 @@ BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params) {
 
 CFG::CFG(AST::Bloc *ast_) : nextFreeSymbolIndex(0), nextBBnumber(0), ast(ast_) {
     auto firstBB = new BasicBlock(this, "essai");
-    add_bb(firstBB);
+    this->add_bb(firstBB);
 
     // Create just one block
     // In the future, we must create one more

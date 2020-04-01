@@ -6,14 +6,12 @@ main:
 .LFB0:
 	pushq	%rbp
 	movq	%rsp, %rbp
-	movl	$5, -4(%rbp)
-	cmpl	$5, -4(%rbp)
-	jne	.L2
-	movl	$3, -4(%rbp)
-.L2:
+	movl	$5, -8(%rbp)
+	movl	$2, -4(%rbp)
+	movl	-8(%rbp), %edx
 	movl	-4(%rbp), %eax
+	addl	%edx, %eax
 	popq	%rbp
-	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
 .LFE0:
