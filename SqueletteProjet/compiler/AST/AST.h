@@ -330,9 +330,9 @@ namespace AST{
             virtual void display() = 0;
         };
 
-        class Decl : public Instr {
+        class DeclInt : public Instr {
         public:
-            Decl(std::vector<std::string> names, unsigned line, unsigned column) :
+            DeclInt(std::vector<std::string> names, unsigned line, unsigned column) :
                     names(names), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -345,9 +345,40 @@ namespace AST{
             unsigned column; // even more: the column in this line
         };
 
-        class Def : public Instr {
+        class DeclChar : public Instr {
         public:
-            Def(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
+            DeclChar(std::vector<std::string> names, unsigned line, unsigned column) :
+                    names(names), line(line), column(column) {};
+
+            std::string buildIR() override;
+
+            void display() override;
+
+        private:
+            std::vector<std::string> names;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class DefInt : public Instr {
+        public:
+            DefInt(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
+                    name(name), expr(expr), line(line), column(column) {};
+
+            std::string buildIR() override;
+
+            void display() override;
+
+        private:
+            std::string name;
+            Expr::Expr *expr;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class DefChar : public Instr {
+        public:
+            DefChar(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
                     name(name), expr(expr), line(line), column(column) {};
 
             std::string buildIR() override;
