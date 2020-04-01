@@ -20,11 +20,13 @@ instr :
 ;
 
 decl :
-	'int' NAME (',' NAME)* ';' #declint
+	'int' NAME (',' NAME)* ';'   #declint
+	|'char' NAME (',' NAME)* ';' #declchar
 	;
 
 def :
-	'int' NAME '=' expr ';' #defexpr
+	'int' NAME '=' expr ';' #defint
+	|'char' NAME '=' expr ';' #defchar
     ;
 
 affct :
