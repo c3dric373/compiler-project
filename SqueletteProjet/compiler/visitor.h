@@ -137,6 +137,12 @@ public:
     return (AST::Expr::Expr*)new AST::Expr::Const(std::stoi(ctx->CONST()->getText()), line, column);
   }
 
+    virtual antlrcpp::Any visitConstchar(ifccParser::ConstcharContext *ctx) override {
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Expr::Expr*)new AST::Expr::ConstChar(ctx->CONSTCHAR()->getText()[1], line, column);
+    }
+
   virtual antlrcpp::Any visitName(ifccParser::NameContext *ctx) override {
       unsigned line = ctx->getStart()->getLine();
       unsigned column = ctx->getStart()->getCharPositionInLine();
