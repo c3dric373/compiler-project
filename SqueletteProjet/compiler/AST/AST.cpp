@@ -112,6 +112,10 @@ std::string AST::Instr::If::buildIR() {
     return std::string();
 }
 
+std::string AST::Instr::Bloc::buildIR(){
+    return "";
+}
+
 std::string AST::Expr::Not::buildIR() {
     return Expr::buildIR();
 }
@@ -351,6 +355,9 @@ void AST::Instr::While::display() {
     std::cout << ')' << std::flush;
 }
 
+void AST::Instr::Bloc::display(){
+    bloc->display();
+}
 
 void AST::Instr::Instr::display() {
 
