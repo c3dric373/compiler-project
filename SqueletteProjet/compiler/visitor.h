@@ -68,8 +68,18 @@ public:
     }
     unsigned line = ctx->getStart()->getLine();
     unsigned column = ctx->getStart()->getCharPositionInLine();
-    return (AST::Instr::Instr*)(new AST::Instr::Decl(names, line, column));
+    return (AST::Instr::Instr*)(new AST::Instr::DeclInt(names, line, column));
   }
+
+    virtual antlrcpp::Any visitDeclchar(ifccParser::DeclcharContext *ctx) override {
+        auto names = std::vector<std::string>();
+        for(auto& it : ctx->NAME()){
+            names.push_back(it->getText());
+        }
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)(new AST::Instr::DeclChar(names, line, column));
+    }
 
   virtual antlrcpp::Any visitAffexpr(ifccParser::AffexprContext *ctx) override {
     AST::Expr::Expr* astExpr = visit(ctx->expr());
@@ -78,12 +88,19 @@ public:
     return (AST::Instr::Instr*)(new AST::Instr::Affct(ctx->NAME()->getText(), astExpr, line, column));
   }
 
-  virtual antlrcpp::Any visitDefexpr(ifccParser::DefexprContext *ctx) override {
+  virtual antlrcpp::Any visitDefint(ifccParser::DefintContext *ctx) override {
     AST::Expr::Expr* astExpr = visit(ctx->expr());
       unsigned line = ctx->getStart()->getLine();
       unsigned column = ctx->getStart()->getCharPositionInLine();
-    return (AST::Instr::Instr*)(new AST::Instr::Def(ctx->NAME()->getText(), astExpr, line, column));
+    return (AST::Instr::Instr*)(new AST::Instr::DefInt(ctx->NAME()->getText(), astExpr, line, column));
   }
+
+    virtual antlrcpp::Any visitDefchar(ifccParser::DefcharContext *ctx) override {
+        AST::Expr::Expr* astExpr = visit(ctx->expr());
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)(new AST::Instr::DefChar(ctx->NAME()->getText(), astExpr, line, column));
+    }
 
   virtual antlrcpp::Any visitIfbloc(ifccParser::IfblocContext *ctx) override {
       AST::Expr::Expr* astExpr = visit(ctx->expr());
