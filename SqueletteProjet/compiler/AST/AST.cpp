@@ -111,14 +111,14 @@ std::string AST::Instr::While::buildIR() {
 std::string AST::Instr::If::buildIR() {
     // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
     this->expr->buildIR();
-    auto bb_true = new BasicBlock(currentCFG,"if_true");
+    auto bb_true = new BasicBlock(currentCFG,currentCFG->new_BB_name());
     currentCFG->current_bb->exit_true = bb_true;
-    auto bb_false = new BasicBlock(currentCFG,"if_false");
+    auto bb_false = new BasicBlock(currentCFG,currentCFG->new_BB_name());
     currentCFG->current_bb->exit_false = bb_false;
     currentCFG->current_bb = bb_true;
     currentCFG->add_bb(bb_true);
-    currentCFG->add_bb(bb_false);
     this->bloc->buildIR();
+    currentCFG->add_bb(bb_false);
     currentCFG->current_bb = bb_false;
     return std::string();
 }
@@ -199,6 +199,7 @@ void AST::Expr::Const::buildReturnIR() {
 }
 
 void AST::Expr::Name::buildReturnIR() {
+    auto ntm = currentCFG->current_bb;
     currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {this->name});
 }
 

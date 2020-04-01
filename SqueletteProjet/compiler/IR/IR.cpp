@@ -84,9 +84,10 @@ void IRInstr::gen_asm(ostream &o) {
         case Operation::cmp_eq: {
             std::string lValue = bb->cfg->IR_reg_to_asm(params[0]);
             std::string rValue = bb->cfg->IR_reg_to_asm(params[1]);
-            o << "\tcmpl " << lValue << " , " << rValue << endl;
-            o << "\tjne" << bb->exit_false->label << endl;
-            o << "jmp" << bb->exit_true->label << endl;
+            o << "\tmovl " <<  lValue << ", %eax" << endl;
+            o << "\tcmpl  %eax, " << rValue << endl;
+            o << "\tjne " << bb->exit_false->label << endl;
+            o << "\tjmp " << bb->exit_true->label << endl;
         }
         case Operation::cmp_lt: {
             break;
@@ -123,13 +124,14 @@ BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg),
                                                        label(entry_label) {}
 
 void BasicBlock::gen_asm(ostream &o) {
-    cfg->gen_asm_prologue(o);
-
+    std::string label = this-> label;
+    if(label != "essai"){
+        o << this->label << ": " << endl;
+    }
     for (auto instr : instrs) {
         instr->gen_asm(o);
     }
 
-    cfg->gen_asm_epilogue(o);
 }
 
 void
@@ -154,9 +156,11 @@ void CFG::add_bb(BasicBlock *bb) {
 }
 
 void CFG::gen_asm(ostream &o) {
+    gen_asm_prologue(o);
     for (auto bb : basic_blocs) {
         bb->gen_asm(o);
     }
+    gen_asm_epilogue(o);
 }
 
 // take a variable and transform it to "-offset(%rbp)"
@@ -168,16 +172,10 @@ std::string CFG::IR_reg_to_asm(string reg) {
 
 void CFG::gen_asm_prologue(ostream &o) {
     std::string label = this->current_bb->label;
-    if(label == "main"){
         o << ".globl\tmain" << endl;
         o << "main:" << endl;
         o << "\tpushq %rbp" << endl;
         o << "\tmovq %rsp, %rbp" << endl;
-    }
-    else{
-        o << label << ":" << endl;
-    }
-
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {
@@ -219,7 +217,7 @@ Type CFG::get_var_type(string name) {
 }
 
 std::string CFG::new_BB_name() {
-    return "BBnumber_" + std::to_string(nextBBnumber++);
+    return ".L" + std::to_string(nextBBnumber++);
 }
 
 
