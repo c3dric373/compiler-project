@@ -36,26 +36,6 @@ public:
 
   //INSTRUCTIONS
 
-  virtual antlrcpp::Any visitInstrdecl(ifccParser::InstrdeclContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitInstrdef(ifccParser::InstrdefContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitInstraffct(ifccParser::InstraffctContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitInstrif(ifccParser::InstrifContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-    virtual antlrcpp::Any visitInstrwhile(ifccParser::InstrwhileContext *ctx) override {
-        return visitChildren(ctx);
-    }
-
     virtual antlrcpp::Any visitInstrbloc(ifccParser::InstrblocContext *ctx) override {
         AST::Bloc* astBloc = visit(ctx->bloc());
         return (AST::Instr::Instr*)(new AST::Instr::Bloc(astBloc));
