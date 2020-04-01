@@ -35,6 +35,9 @@ expr :
     |expr '>=' expr  #geq
     |expr '<' expr   #low
     |expr '>' expr   #geat
+    |expr '&' expr   #and
+    |expr '^' expr   #xor
+    |expr '|' expr   #or
 	|CONST           #const
 	|CONSTCHAR       #constchar
 	|NAME            #name
