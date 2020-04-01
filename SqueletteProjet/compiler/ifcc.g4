@@ -36,6 +36,7 @@ expr :
 	|expr '-' expr   #sub
 	|expr '+' expr   #add
 	|CONST           #const
+	|CONSTCHAR       #constchar
 	|NAME            #name
 ;
 
@@ -46,6 +47,7 @@ OPENBRACE : '{';
 CLOSEBRACE : '}';
 RETURN : 'return' ;
 CONST : [0-9]+ ;
+CONSTCHAR : '\'' [a-zA-Z_0-9] '\'' ;
 NAME: [a-zA-Z_]+[a-zA-Z_0-9]* ;//chiffres lettres underscore et blanc souligne ou blanc souligne tout seul
 COMMENT1 : '/*' .*? '*/' -> skip ;
 COMMENT2 : '//' .*? '\n' -> skip ;
