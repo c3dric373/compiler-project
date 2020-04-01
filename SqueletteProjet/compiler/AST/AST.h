@@ -119,6 +119,78 @@ namespace AST{
             unsigned column; // even more: the column in this line
         };
 
+        class And : public Expr {
+        public:
+            And(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
+
+            std::string buildIR() override;
+
+            int getValeur() override;
+
+            void exists(SymbolTable &st) override;
+
+            And(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
+                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+        private:
+            Expr *lValue;
+            Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Or : public Expr {
+        public:
+            Or(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
+
+            std::string buildIR() override;
+
+            int getValeur() override;
+
+            void exists(SymbolTable &st) override;
+
+            Or(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
+                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+        private:
+            Expr *lValue;
+            Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Xor : public Expr {
+        public:
+            Xor(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
+
+            std::string buildIR() override;
+
+            int getValeur() override;
+
+            void exists(SymbolTable &st) override;
+
+            Xor(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
+                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+        private:
+            Expr *lValue;
+            Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
         class Const : public Expr {
         public:
             Const(int value) : value(value) {};
