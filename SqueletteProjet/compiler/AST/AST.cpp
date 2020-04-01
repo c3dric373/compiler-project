@@ -71,10 +71,10 @@ std::string AST::Expr::Minus::buildIR() {
 }
 
 std::string AST::Expr::Const::buildIR() {
-    std::string value = std::to_string(this->value);
+    std::string value_expr = std::to_string(this->value);
     std::string temp = currentCFG->create_new_tempvar(Type());
     currentCFG->current_bb->add_IRInstr(IRInstr::ldconst, Type(),
-                                        {temp, value});
+                                        {temp, value_expr});
     return temp;
 }
 
@@ -109,8 +109,32 @@ std::string AST::Instr::While::buildIR() {
 }
 
 std::string AST::Instr::If::buildIR() {
+    // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
+    this->expr->buildIR();
+    auto bb_true = new BasicBlock(currentCFG,"if_true");
+    currentCFG->current_bb->exit_true = bb_true;
+    auto bb_false = new BasicBlock(currentCFG,"if_false");
+    currentCFG->current_bb->exit_false = bb_false;
+    currentCFG->current_bb = bb_true;
+    currentCFG->add_bb(bb_true);
+    currentCFG->add_bb(bb_false);
+    this->bloc->buildIR();
+    currentCFG->current_bb = bb_false;
     return std::string();
 }
+
+std::string AST::Expr::Eq::buildIR() {
+    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
+    std::string name_lValue = this->lValue->buildIR();
+    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
+    std::string name_rValue = this->rValue->buildIR();
+    // Ajout de l'instruction au current_block
+    currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
+                                        {name_lValue, name_rValue});
+    return "";
+
+}
+
 
 std::string AST::Expr::Not::buildIR() {
     return Expr::buildIR();
@@ -125,10 +149,6 @@ std::string AST::Instr::Decl::buildIR() {
         // Ajout de la variable it à la table des symboles de currentCFG
         currentCFG->add_to_symbol_table(it, Type());
     }
-    return std::string();
-}
-
-std::string AST::Expr::Eq::buildIR() {
     return std::string();
 }
 

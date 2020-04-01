@@ -82,7 +82,11 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::cmp_eq: {
-            break;
+            std::string lValue = bb->cfg->IR_reg_to_asm(params[0]);
+            std::string rValue = bb->cfg->IR_reg_to_asm(params[1]);
+            o << "\tcmpl " << lValue << " , " << rValue << endl;
+            o << "\tjne" << bb->exit_false->label << endl;
+            o << "jmp" << bb->exit_true->label << endl;
         }
         case Operation::cmp_lt: {
             break;
@@ -163,10 +167,17 @@ std::string CFG::IR_reg_to_asm(string reg) {
 }
 
 void CFG::gen_asm_prologue(ostream &o) {
-    o << ".globl\tmain" << endl;
-    o << "main:" << endl;
-    o << "\tpushq %rbp" << endl;
-    o << "\tmovq %rsp, %rbp" << endl;
+    std::string label = this->current_bb->label;
+    if(label == "main"){
+        o << ".globl\tmain" << endl;
+        o << "main:" << endl;
+        o << "\tpushq %rbp" << endl;
+        o << "\tmovq %rsp, %rbp" << endl;
+    }
+    else{
+        o << label << ":" << endl;
+    }
+
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {

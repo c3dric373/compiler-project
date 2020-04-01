@@ -4,14 +4,20 @@
 	.type	main, @function
 main:
 .LFB0:
+	.cfi_startproc
 	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
 	movq	%rsp, %rbp
-	movl	$5, -8(%rbp)
-	movl	$2, -4(%rbp)
-	movl	-8(%rbp), %edx
+	.cfi_def_cfa_register 6
+	movl	$5, -4(%rbp)
+	cmpl	$5, -4(%rbp)
+	jne	.L2
+	movl	$3, -4(%rbp)
+.L2:
 	movl	-4(%rbp), %eax
-	addl	%edx, %eax
 	popq	%rbp
+	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
 .LFE0:
