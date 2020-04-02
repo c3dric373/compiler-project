@@ -132,9 +132,9 @@ namespace AST {
         public:
             And(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
@@ -156,9 +156,9 @@ namespace AST {
         public:
             Or(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
@@ -180,9 +180,9 @@ namespace AST {
         public:
             Xor(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
@@ -227,9 +227,9 @@ namespace AST {
         public:
             ConstChar(char value) : value(value) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
@@ -301,6 +301,7 @@ namespace AST {
                     lValue(lValue), rValue(rValue) {};
 
             void display() override;
+
 
             std::string buildIR(bool not_flag) override;
 

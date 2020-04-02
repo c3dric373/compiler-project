@@ -78,7 +78,7 @@ std::string AST::Expr::Const::buildIR(bool not_flag) {
     return temp;
 }
 
-std::string AST::Expr::ConstChar::buildIR(){
+std::string AST::Expr::ConstChar::buildIR(bool not_flag){
     return "";
 }
 
@@ -242,7 +242,7 @@ std::string AST::Expr::Expr::buildIR(bool not_flag) {
     return "";
 }
 
-std::string AST::Instr::Decl::buildIR() {
+std::string AST::Instr::DeclInt::buildIR() {
     for (auto &it : this->names) {
         // Ajout de la variable it à la table des symboles de currentCFG
         currentCFG->add_to_symbol_table(it, Type());
@@ -428,6 +428,10 @@ void AST::Expr::ConstChar::display(){
     std::cout << "(CONSTC " << value << ')' << std::flush;
 }
 
+int AST::Expr::ConstChar::getValue() {
+    return 0;
+}
+
 void AST::Expr::Add::display() {
     std::cout << "(ADD " << std::flush;
     lValue->display();
@@ -442,6 +446,15 @@ void AST::Expr::And::display(){
     std::cout << ')' << std::flush;
 }
 
+std::string AST::Expr::And::buildIR(bool not_flag) {
+    return std::string();
+}
+
+int AST::Expr::And::getValue() {
+    return 0;
+}
+
+
 void AST::Expr::Or::display(){
     std::cout << "(OR " << std::flush;
     lValue->display();
@@ -449,11 +462,27 @@ void AST::Expr::Or::display(){
     std::cout << ')' << std::flush;
 }
 
+std::string AST::Expr::Or::buildIR(bool not_flag) {
+    return std::string();
+}
+
+int AST::Expr::Or::getValue() {
+    return 0;
+}
+
 void AST::Expr::Xor::display(){
     std::cout << "(XOR " << std::flush;
     lValue->display();
     rValue->display();
     std::cout << ')' << std::flush;
+}
+
+std::string AST::Expr::Xor::buildIR(bool not_flag) {
+    return std::string();
+}
+
+int AST::Expr::Xor::getValue() {
+    return 0;
 }
 
 void AST::Instr::DeclInt::display() {
@@ -470,6 +499,10 @@ void AST::Instr::DeclChar::display(){
         std::cout << it << ' ' << std::flush;
     }
     std::cout << ')' << std::flush;
+}
+
+std::string AST::Instr::DeclChar::buildIR() {
+    return std::string();
 }
 
 void AST::Instr::DefInt::display() {
@@ -516,6 +549,10 @@ void AST::Instr::While::display() {
 
 void AST::Instr::Bloc::display(){
     bloc->display();
+}
+
+std::string AST::Instr::Bloc::buildIR() {
+    return std::string();
 }
 
 void AST::Instr::Instr::display() {
@@ -628,9 +665,6 @@ int AST::Expr::Const::getValue() {
     return this->value;
 }
 
-int AST::Expr::ConstChar::getValeur(){
-    return 0;
-}
 
 int AST::Expr::Eq::getValue() {
     return 0;
