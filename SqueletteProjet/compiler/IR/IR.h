@@ -31,6 +31,7 @@ public:
     /** The instructions themselves -- feel free to subclass instead */
     typedef enum {
         ldconst,
+        jmp,
         copy,
         add,
         sub,

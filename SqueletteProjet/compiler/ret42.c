@@ -1,12 +1,7 @@
 int main(){
-    int a = 5;
-    int  b,c;
-    if(a != 2){
-        c = 2;
-        if(c != 1) {
-            b =3;
-        }
-        int d = 5;
+    int a = 1;
+    while (a < 5){
+         a  = a +1;
     }
-    return c;
+    return a;
 }
