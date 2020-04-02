@@ -1,21 +1,24 @@
-	.file	"ret43.c"
-	.text
-	.globl	main
-	.type	main, @function
+.globl	main
 main:
-.LFB0:
-	.cfi_startproc
-	pushq	%rbp
-	movq	%rsp, %rbp
-	movl	$1, -4(%rbp)
-	cmpl	$1, -4(%rbp)
-	jne	.L2
-	movl	$2, -8(%rbp)
-.L2:
-	movl	-8(%rbp), %eax
-	popq	%rbp
+	pushq %rbp
+	movq %rsp, %rbp
+	movl $1, -4(%rbp)
+	movl -4(%rbp), %eax
+	movl %eax , -8(%rbp)
+	movl $1, -16(%rbp)
+	movl -8(%rbp), %eax
+	cmp  %eax, -16(%rbp)
+	sete %dl
+	mov %dl, -20(%rbp)
+	movl -20(%rbp), %eax
+	test %eax, %eax
+	je .L0
+	jmp .L1
+.L0: 
+	movl $2, -24(%rbp)
+	movl -24(%rbp), %eax
+	movl %eax , -12(%rbp)
+.L1: 
+	movl -12(%rbp), %eax
+	popq %rbp
 	ret
-.LFE0:
-	.size	main, .-main
-	.ident	"GCC: (Arch Linux 9.3.0-1) 9.3.0"
-	.section	.note.GNU-stack,"",@progbits

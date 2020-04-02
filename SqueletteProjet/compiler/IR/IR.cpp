@@ -82,10 +82,11 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::if_: {
-            std::string dest_location = bb->cfg->IR_reg_to_asm(params[0]);
-            o << "\tmovl " <<  dest_location << ", %eax" << endl;
-            o << "\ttest %eax, %eax"<< endl;
-            o << "\tjnz " << bb->exit_true->label << endl;
+            std::string expr = bb->cfg->IR_reg_to_asm(params[0]);
+            o << "\tmovl " <<  expr << ", %eax" << endl;
+            o << "\tmovl  $1, %ebx" << endl;
+            o << "\tcmp %eax, %ebx"<< endl;
+            o << "\tje " << bb->exit_true->label << endl;
             o << "\tjmp " << bb->exit_false->label << endl;
             break;
         }

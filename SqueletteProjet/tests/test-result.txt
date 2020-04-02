@@ -113,35 +113,35 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-minus-unaire-0_minus_after_int
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-combine_all
-TEST OK
-TEST-CASE: pld-test-output/tests-Init-if-cmpgreaterequal-0_simple_cmp_great_eq
-TEST OK
-TEST-CASE: pld-test-output/tests-Init-if-cmpgreaterequal-1_nested_cmp_great_eq
-TEST OK
-TEST-CASE: pld-test-output/tests-Init-if-neq-1_nested_neq
-TEST OK
-TEST-CASE: pld-test-output/tests-Init-if-neq-0_neq_simple
-TEST OK
-TEST-CASE: pld-test-output/tests-Init-if-cmpgreater-0_simple_cmp_great
-TEST OK
-TEST-CASE: pld-test-output/tests-Init-if-cmpgreater-1_nested_cmp_great
-TEST OK
-TEST-CASE: pld-test-output/tests-Init-if-cmpeq-0_simple_cmp_eq
-TEST OK
-TEST-CASE: pld-test-output/tests-Init-if-cmpeq-1_nested_cmp_eq_false
-TEST OK
-TEST-CASE: pld-test-output/tests-Init-if-cmpeq-0_cmp_great_false
 TEST FAIL (different results at execution)
+TEST-CASE: pld-test-output/tests-Init-if-cmpgreaterequal-0_simple_cmp_great_eq
+TEST FAIL (different results at execution)
+TEST-CASE: pld-test-output/tests-Init-if-cmpgreaterequal-1_nested_cmp_great_eq
+TEST FAIL (different results at execution)
+TEST-CASE: pld-test-output/tests-Init-if-neq-1_nested_neq
+TEST FAIL (different results at execution)
+TEST-CASE: pld-test-output/tests-Init-if-neq-0_neq_simple
+TEST FAIL (different results at execution)
+TEST-CASE: pld-test-output/tests-Init-if-cmpgreater-0_simple_cmp_great
+TEST FAIL (different results at execution)
+TEST-CASE: pld-test-output/tests-Init-if-cmpgreater-1_nested_cmp_great
+TEST FAIL (different results at execution)
+TEST-CASE: pld-test-output/tests-Init-if-cmpeq-0_simple_cmp_eq
+TEST FAIL (different results at execution)
+TEST-CASE: pld-test-output/tests-Init-if-cmpeq-1_nested_cmp_eq_false
+TEST FAIL (different results at execution)
+TEST-CASE: pld-test-output/tests-Init-if-cmpeq-0_cmp_great_false
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-cmpeq-nestedIf_cmpeq
-TEST OK
+TEST FAIL (different results at execution)
 TEST-CASE: pld-test-output/tests-Init-if-cmplowerequal-0_simple_cmp_lower_eq
-TEST OK
+TEST FAIL (different results at execution)
 TEST-CASE: pld-test-output/tests-Init-if-cmplowerequal-1_nested_cmp_lower_eq
-TEST OK
+TEST FAIL (different results at execution)
 TEST-CASE: pld-test-output/tests-Init-if-cmplower-1_nested_cmp_lower
-TEST OK
+TEST FAIL (different results at execution)
 TEST-CASE: pld-test-output/tests-Init-if-cmplower-0_simple_cmp_lower
-TEST OK
+TEST FAIL (different results at execution)
 TEST-CASE: pld-test-output/tests-Init-paranthese-2_mult
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-paranthese-1_add-associativite-gauche
