@@ -1,16 +1,23 @@
-	.file	"ret42.c"
-	.text
-	.globl	main
-	.type	main, @function
+.globl	main
 main:
-.LFB0:
-	pushq	%rbp
-	movq	%rsp, %rbp
-	movl	$1, -4(%rbp)
-	movl	-4(%rbp), %eax
-	popq	%rbp
+	pushq %rbp
+	movq %rsp, %rbp
+	movl $5, -4(%rbp)
+	movl -4(%rbp), %eax
+	movl %eax , -8(%rbp)
+	movl $9, -16(%rbp)
+	movl -16(%rbp), %eax
+	cmp  %eax, -8(%rbp)
+	setbe %dl
+	mov %dl, -20(%rbp)
+	cmp $1, -20(%rbp)
+	jne .L0
+	jmp .L1
+.L0: 
+	movl $2, -24(%rbp)
+	movl -24(%rbp), %eax
+	movl %eax , -12(%rbp)
+.L1: 
+	movl -12(%rbp), %eax
+	popq %rbp
 	ret
-.LFE0:
-	.size	main, .-main
-	.ident	"GCC: (Arch Linux 9.3.0-1) 9.3.0"
-	.section	.note.GNU-stack,"",@progbits

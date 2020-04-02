@@ -83,8 +83,7 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::if_: {
             std::string dest_location = bb->cfg->IR_reg_to_asm(params[0]);
-            o << "\tmovl " <<  dest_location << ", %eax" << endl;
-            o << "\tcmpl  %eax, $1" << endl;
+            o << "\tcmp $1, " << dest_location  << endl;
             o << "\tje " << bb->exit_true->label << endl;
             o << "\tjmp " << bb->exit_false->label << endl;
             break;
@@ -96,13 +95,13 @@ void IRInstr::gen_asm(ostream &o) {
             bool equal = params[3]=="eq";
 
             o << "\tmovl " <<  lValue << ", %eax" << endl;
-            o << "\tcmpl  %eax, " << rValue << endl;
+            o << "\tcmp  %eax, " << rValue << endl;
             if(equal){
-                o << "\tsete dl" << endl;
+                o << "\tsete %dl" << endl;
             }else{
-                o << "\tsetne dl" << endl;
+                o << "\tsetne %dl" << endl;
                 }
-            o << "\tmovl, dl" << dest_location << endl;
+            o << "\tmov %dl, " << dest_location << endl;
             break;
         }
 
@@ -112,14 +111,14 @@ void IRInstr::gen_asm(ostream &o) {
             std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
             bool equal = params[3]=="eq";
 
-            o << "\tmovl " <<  lValue << ", %eax" << endl;
-            o << "\tcmpl  %eax, " << rValue << endl;
+            o << "\tmovl " <<  rValue << ", %eax" << endl;
+            o << "\tcmp  %eax, " << lValue << endl;
             if(equal){
-                o << "\tsetbe dl" << endl;
+                o << "\tsetbe %dl" << endl;
             }else{
-                o << "\tsetb dl" << endl;
+                o << "\tsetb %dl" << endl;
             }
-            o << "\tmovl, dl" << dest_location << endl;
+            o << "\tmov %dl, " << dest_location << endl;
             break;
 
         }
@@ -130,13 +129,13 @@ void IRInstr::gen_asm(ostream &o) {
             bool equal = params[3]=="eq";
 
             o << "\tmovl " <<  lValue << ", %eax" << endl;
-            o << "\tcmpl  %eax, " << rValue << endl;
+            o << "\tcmp  %eax, " << rValue << endl;
             if(equal){
-                o << "\tsetae dl" << endl;
+                o << "\tsetae %dl" << endl;
             }else{
-                o << "\tsetna dl" << endl;
+                o << "\tsetna %dl" << endl;
             }
-            o << "\tmovl, dl" << dest_location << endl;
+            o << "\tmov %dl, " << dest_location << endl;
             break;
 
         }

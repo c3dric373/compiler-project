@@ -148,9 +148,9 @@ std::string AST::Instr::If::buildIR() {
     currentCFG->current_bb->exit_true = bb_true;
     auto bb_false = new BasicBlock(currentCFG, currentCFG->new_BB_name());
     currentCFG->current_bb->exit_false = bb_false;
-    currentCFG->current_bb = bb_true;
     currentCFG->current_bb->add_IRInstr(IRInstr::if_, Type(),
                                         {res});
+    currentCFG->current_bb = bb_true;
     currentCFG->add_bb(bb_true);
     this->bloc->buildIR();
     currentCFG->add_bb(bb_false);
@@ -170,10 +170,10 @@ std::string AST::Expr::Eq::buildIR(bool not_flag) {
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
-                                            {name_lValue, name_rValue, "neq"});
+                                            {tmp_dest,name_lValue, name_rValue, "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
-                                            {name_lValue, name_rValue, "eq"});
+                                            {tmp_dest,name_lValue, name_rValue, "eq"});
     }
     return tmp_dest;
 
@@ -184,15 +184,17 @@ std::string AST::Expr::Neq::buildIR(bool not_flag) {
     std::string name_lValue = this->lValue->buildIR(not_flag);
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_rValue = this->rValue->buildIR(not_flag);
-    // Ajout de l'instruction au current_block
+    // create tmp var to store result of expression
+    std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+    // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
-                                            {name_lValue, name_rValue, "eq"});
+                                            {tmp_dest,name_lValue, name_rValue, "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
-                                            {name_lValue, name_rValue, "neq"});
+                                            {tmp_dest,name_lValue, name_rValue, "eq"});
     }
-    return "";
+    return tmp_dest;
 }
 
 
@@ -201,15 +203,17 @@ std::string AST::Expr::Geq::buildIR(bool not_flag) {
     std::string name_lValue = this->lValue->buildIR(not_flag);
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_rValue = this->rValue->buildIR(not_flag);
-    // Ajout de l'instruction au current_block
+    // create tmp var to store result of expression
+    std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+    // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {name_lValue, name_rValue, "neq"});
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
+                                            {tmp_dest,name_lValue, name_rValue, "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
-                                            {name_lValue, name_rValue, "eq"});
+                                            {tmp_dest,name_lValue, name_rValue, "eq"});
     }
-    return std::string();
+    return tmp_dest;
 }
 
 std::string AST::Expr::Great::buildIR(bool not_flag) {
@@ -217,15 +221,17 @@ std::string AST::Expr::Great::buildIR(bool not_flag) {
     std::string name_lValue = this->lValue->buildIR(not_flag);
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_rValue = this->rValue->buildIR(not_flag);
-    // Ajout de l'instruction au current_block
+    // create tmp var to store result of expression
+    std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+    // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {name_lValue, name_rValue, "eq"});
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
+                                            {tmp_dest,name_lValue, name_rValue, "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
-                                            {name_lValue, name_rValue, "neq"});
+                                            {tmp_dest,name_lValue, name_rValue, "eq"});
     }
-    return std::string();
+    return tmp_dest;
 }
 
 std::string AST::Expr::Low::buildIR(bool not_flag) {
@@ -233,33 +239,37 @@ std::string AST::Expr::Low::buildIR(bool not_flag) {
     std::string name_lValue = this->lValue->buildIR(not_flag);
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_rValue = this->rValue->buildIR(not_flag);
-    // Ajout de l'instruction au current_block
+    // create tmp var to store result of expression
+    std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+    // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
-                                            {name_rValue, name_lValue, "eq"});
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
+                                            {tmp_dest,name_lValue, name_rValue, "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {name_lValue, name_rValue, "neq"});
+                                            {tmp_dest,name_lValue, name_rValue, "eq"});
     }
-    return std::string();
+    return tmp_dest;
 }
 
 
 std::string AST::Expr::Leq::buildIR(bool not_flag) {
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
+    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_lValue = this->lValue->buildIR(not_flag);
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_rValue = this->rValue->buildIR(not_flag);
-    // Ajout de l'instruction au current_block
+    // create tmp var to store result of expression
+    std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+    // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
-                                            {name_rValue, name_lValue, "neq"});
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
+                                            {tmp_dest,name_lValue, name_rValue, "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {name_lValue, name_rValue, "eq"});
+                                            {tmp_dest,name_lValue, name_rValue, "eq"});
     }
-
-    return std::string();
+    return tmp_dest;
 }
 
 
