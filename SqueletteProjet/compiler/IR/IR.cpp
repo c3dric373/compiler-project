@@ -101,12 +101,12 @@ void IRInstr::gen_asm(ostream &o) {
             std::string lValue = bb->cfg->IR_reg_to_asm(params[0]);
             std::string rValue = bb->cfg->IR_reg_to_asm(params[1]);
             bool equal = params[2]=="eq";
-            o << "\tmovl " <<  lValue << ", %eax" << endl;
-            o << "\tcmpl "  << rValue  << ", %eax"<< endl;
+            o << "\tmovl " <<  rValue << ", %eax" << endl;
+            o << "\tcmpl " << lValue << ", %eax" << endl;
             if(equal){
-                o << "\tjle " << bb->exit_true->label << endl;
+                o << "\tjge " << bb->exit_true->label << endl;
             }else{
-                o << "\tjl " << bb->exit_true->label << endl;
+                o << "\tjg " << bb->exit_true->label << endl;
             }
             o << "\tjmp " << bb->exit_false->label << endl;
             break;
@@ -117,7 +117,7 @@ void IRInstr::gen_asm(ostream &o) {
             std::string rValue = bb->cfg->IR_reg_to_asm(params[1]);
             bool equal = params[2]=="eq";
             o << "\tmovl " <<  lValue << ", %eax" << endl;
-            o << "\tcmpl  %eax, " << rValue << endl;
+            o << "\tcmpl " << rValue << ", %eax" << endl;
             if(equal){
                 o << "\tjge " << bb->exit_true->label << endl;
             }else{

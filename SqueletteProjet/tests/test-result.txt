@@ -117,9 +117,9 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-neq-0_neq_simple
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-cmpgreater-0_simple_cmp_great
-TEST FAIL (different results at execution)
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-cmpgreater-1_nested_cmp_great
-TEST FAIL (different results at execution)
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-cmpeq-0_simple_cmp_eq
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-cmpeq-1_nested_cmp_eq_false
@@ -129,9 +129,9 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-cmpeq-nestedIf_cmpeq
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-cmplower-1_nested_cmp_lower
-TEST FAIL (different results at execution)
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-cmplower-0_simple_cmp_lower
-TEST FAIL (different results at execution)
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-paranthese-2_mult
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-paranthese-1_add-associativite-gauche
