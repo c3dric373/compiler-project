@@ -5,19 +5,23 @@ main:
 	movl $5, -4(%rbp)
 	movl -4(%rbp), %eax
 	movl %eax , -8(%rbp)
-	movl $9, -16(%rbp)
-	movl -16(%rbp), %eax
-	cmp  %eax, -8(%rbp)
-	setbe %dl
-	mov %dl, -20(%rbp)
-	cmp $1, -20(%rbp)
-	jne .L0
+	movl $1, -12(%rbp)
+	movl -12(%rbp), %eax
+	movl %eax , -16(%rbp)
+	movl $1, -20(%rbp)
+	movl -8(%rbp), %eax
+	cmp  %eax, -20(%rbp)
+	sete %dl
+	mov %dl, -24(%rbp)
+	movl -24(%rbp), %eax
+	cmp  %eax, 0
+    jmp .L1
+	jz .L0
 	jmp .L1
 .L0: 
-	movl $2, -24(%rbp)
-	movl -24(%rbp), %eax
-	movl %eax , -12(%rbp)
+	movl $2, -28(%rbp)
+	movl -28(%rbp), %eax
+	movl %eax , -16(%rbp)
 .L1: 
-	movl -12(%rbp), %eax
 	popq %rbp
 	ret
