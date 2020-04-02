@@ -88,6 +88,7 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\tcmpl  %eax, " << rValue << endl;
             o << "\tjne " << bb->exit_false->label << endl;
             o << "\tjmp " << bb->exit_true->label << endl;
+            break;
         }
 
         case Operation::cmp_low: {
@@ -102,6 +103,8 @@ void IRInstr::gen_asm(ostream &o) {
                 o << "\tjl " << bb->exit_true->label << endl;
             }
             o << "\tjmp " << bb->exit_false->label << endl;
+            break;
+
         }
         case Operation::cmp_great: {
             std::string lValue = bb->cfg->IR_reg_to_asm(params[0]);
@@ -115,6 +118,8 @@ void IRInstr::gen_asm(ostream &o) {
                 o << "\tjg " << bb->exit_true->label << endl;
             }
             o << "\tjmp " << bb->exit_false->label << endl;
+            break;
+
         }
         case Operation::ret: {
             // Récupère le paramètre
