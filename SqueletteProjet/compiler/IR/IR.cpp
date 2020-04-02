@@ -81,49 +81,62 @@ void IRInstr::gen_asm(ostream &o) {
         case Operation::call: {
             break;
         }
+        case Operation::if_: {
+            std::string dest_location = bb->cfg->IR_reg_to_asm(params[0]);
+            o << "\tmovl " <<  dest_location << ", %eax" << endl;
+            o << "\tcmpl  %eax, $1" << endl;
+            o << "\tje " << bb->exit_true->label << endl;
+            o << "\tjmp " << bb->exit_false->label << endl;
+            break;
+        }
         case Operation::cmp_eq: {
-            std::string lValue = bb->cfg->IR_reg_to_asm(params[0]);
-            std::string rValue = bb->cfg->IR_reg_to_asm(params[1]);
-            bool equal = params[2]=="eq";
+            std::string dest_location = bb->cfg->IR_reg_to_asm(params[0]);
+            std::string lValue = bb->cfg->IR_reg_to_asm(params[1]);
+            std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
+            bool equal = params[3]=="eq";
 
             o << "\tmovl " <<  lValue << ", %eax" << endl;
             o << "\tcmpl  %eax, " << rValue << endl;
             if(equal){
-                o << "\tje " << bb->exit_true->label << endl;
+                o << "\tsete dl" << endl;
             }else{
-                o << "\tjne " << bb->exit_true->label << endl;
-            }
-            o << "\tjmp " << bb->exit_false->label << endl;
+                o << "\tsetne dl" << endl;
+                }
+            o << "\tmovl, dl" << dest_location << endl;
             break;
         }
 
         case Operation::cmp_low: {
-            std::string lValue = bb->cfg->IR_reg_to_asm(params[0]);
-            std::string rValue = bb->cfg->IR_reg_to_asm(params[1]);
-            bool equal = params[2]=="eq";
-            o << "\tmovl " <<  rValue << ", %eax" << endl;
-            o << "\tcmpl " << lValue << ", %eax" << endl;
+            std::string dest_location = bb->cfg->IR_reg_to_asm(params[0]);
+            std::string lValue = bb->cfg->IR_reg_to_asm(params[1]);
+            std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
+            bool equal = params[3]=="eq";
+
+            o << "\tmovl " <<  lValue << ", %eax" << endl;
+            o << "\tcmpl  %eax, " << rValue << endl;
             if(equal){
-                o << "\tjge " << bb->exit_true->label << endl;
+                o << "\tsetbe dl" << endl;
             }else{
-                o << "\tjg " << bb->exit_true->label << endl;
+                o << "\tsetb dl" << endl;
             }
-            o << "\tjmp " << bb->exit_false->label << endl;
+            o << "\tmovl, dl" << dest_location << endl;
             break;
 
         }
         case Operation::cmp_great: {
-            std::string lValue = bb->cfg->IR_reg_to_asm(params[0]);
-            std::string rValue = bb->cfg->IR_reg_to_asm(params[1]);
-            bool equal = params[2]=="eq";
+            std::string dest_location = bb->cfg->IR_reg_to_asm(params[0]);
+            std::string lValue = bb->cfg->IR_reg_to_asm(params[1]);
+            std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
+            bool equal = params[3]=="eq";
+
             o << "\tmovl " <<  lValue << ", %eax" << endl;
-            o << "\tcmpl " << rValue << ", %eax" << endl;
+            o << "\tcmpl  %eax, " << rValue << endl;
             if(equal){
-                o << "\tjge " << bb->exit_true->label << endl;
+                o << "\tsetae dl" << endl;
             }else{
-                o << "\tjg " << bb->exit_true->label << endl;
+                o << "\tsetna dl" << endl;
             }
-            o << "\tjmp " << bb->exit_false->label << endl;
+            o << "\tmovl, dl" << dest_location << endl;
             break;
 
         }

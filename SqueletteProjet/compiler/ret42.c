@@ -1,7 +1,5 @@
 int main(){
-    int a = 1;
-    while (a < 5){
-         a  = a +1;
-    }
+    
+    int a =  3 > 2;
     return a;
 }
