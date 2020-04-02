@@ -84,19 +84,25 @@ void IRInstr::gen_asm(ostream &o) {
         case Operation::cmp_eq: {
             std::string lValue = bb->cfg->IR_reg_to_asm(params[0]);
             std::string rValue = bb->cfg->IR_reg_to_asm(params[1]);
+            bool equal = params[2]=="eq";
+
             o << "\tmovl " <<  lValue << ", %eax" << endl;
             o << "\tcmpl  %eax, " << rValue << endl;
-            o << "\tjne " << bb->exit_false->label << endl;
-            o << "\tjmp " << bb->exit_true->label << endl;
+            if(equal){
+                o << "\tje " << bb->exit_true->label << endl;
+            }else{
+                o << "\tjne " << bb->exit_true->label << endl;
+            }
+            o << "\tjmp " << bb->exit_false->label << endl;
             break;
         }
 
         case Operation::cmp_low: {
             std::string lValue = bb->cfg->IR_reg_to_asm(params[0]);
             std::string rValue = bb->cfg->IR_reg_to_asm(params[1]);
-            bool equal = bb->cfg->IR_reg_to_asm(params[2])=="eq";
+            bool equal = params[2]=="eq";
             o << "\tmovl " <<  lValue << ", %eax" << endl;
-            o << "\tcmpl  %eax, " << rValue << endl;
+            o << "\tcmpl "  << rValue  << ", %eax"<< endl;
             if(equal){
                 o << "\tjle " << bb->exit_true->label << endl;
             }else{
@@ -109,7 +115,7 @@ void IRInstr::gen_asm(ostream &o) {
         case Operation::cmp_great: {
             std::string lValue = bb->cfg->IR_reg_to_asm(params[0]);
             std::string rValue = bb->cfg->IR_reg_to_asm(params[1]);
-            bool equal = bb->cfg->IR_reg_to_asm(params[2])=="eq";
+            bool equal = params[2]=="eq";
             o << "\tmovl " <<  lValue << ", %eax" << endl;
             o << "\tcmpl  %eax, " << rValue << endl;
             if(equal){
