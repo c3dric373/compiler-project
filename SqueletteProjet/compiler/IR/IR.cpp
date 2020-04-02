@@ -84,7 +84,7 @@ void IRInstr::gen_asm(ostream &o) {
         case Operation::if_: {
             std::string dest_location = bb->cfg->IR_reg_to_asm(params[0]);
             o << "\tcmp $1, " << dest_location  << endl;
-            o << "\tje " << bb->exit_true->label << endl;
+            o << "\tjne " << bb->exit_true->label << endl;
             o << "\tjmp " << bb->exit_false->label << endl;
             break;
         }
