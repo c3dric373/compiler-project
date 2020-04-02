@@ -6,18 +6,18 @@ main:
 	movl -4(%rbp), %eax
 	movl %eax , -8(%rbp)
 	movl $2, -20(%rbp)
-	movl -20(%rbp), %eax
-	cmpl -8(%rbp), %eax
-	jge .L0
+	movl -8(%rbp), %eax
+	cmpl  %eax, -20(%rbp)
+	jne .L0
 	jmp .L1
 .L0: 
 	movl $2, -24(%rbp)
 	movl -24(%rbp), %eax
 	movl %eax , -16(%rbp)
 	movl $1, -28(%rbp)
-	movl -28(%rbp), %eax
-	cmpl -16(%rbp), %eax
-	jge .L2
+	movl -16(%rbp), %eax
+	cmpl  %eax, -28(%rbp)
+	jne .L2
 	jmp .L3
 .L2: 
 	movl $3, -32(%rbp)

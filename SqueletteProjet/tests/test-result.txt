@@ -119,7 +119,7 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-cmpgreaterequal-1_nested_cmp_great_eq
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-neq-1_nested_neq
-TEST FAIL (different results at execution)
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-neq-0_neq_simple
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-if-cmpgreater-0_simple_cmp_great

@@ -129,8 +129,13 @@ std::string AST::Expr::Eq::buildIR(bool not_flag) {
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_rValue = this->rValue->buildIR(not_flag);
     // Ajout de l'instruction au current_block
-    currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
-                                        {name_lValue, name_rValue,"eq"});
+    if(not_flag){
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
+                                            {name_lValue, name_rValue,"neq"});
+    }else{
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
+                                            {name_lValue, name_rValue,"eq"});
+    }
     return "";
 
 }
@@ -142,11 +147,11 @@ std::string AST::Expr::Neq::buildIR(bool not_flag) {
     std::string name_rValue = this->rValue->buildIR(not_flag);
     // Ajout de l'instruction au current_block
     if(not_flag){
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
-                                            {name_lValue, name_rValue,"neq"});
-    }else{
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
                                             {name_lValue, name_rValue,"eq"});
+    }else{
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
+                                            {name_lValue, name_rValue,"neq"});
     }
     return "";
 }
