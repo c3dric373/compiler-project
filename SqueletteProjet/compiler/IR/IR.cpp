@@ -149,6 +149,11 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\tmovl %eax, " << dest_var << endl;
             break;
         }
+        case Operation::jmp: {
+            std::string basic_block = params[0];
+            o << "\t jmp " << basic_block << endl;
+            break;
+        }
     }
 }
 
