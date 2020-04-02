@@ -135,6 +135,39 @@ std::string AST::Expr::Eq::buildIR() {
 
 }
 
+std::string AST::Expr::Geq::buildIR() {
+    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
+    std::string name_lValue = this->lValue->buildIR();
+    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
+    std::string name_rValue = this->rValue->buildIR();
+    // Ajout de l'instruction au current_block
+    currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
+                                        {name_lValue, name_rValue,"eq"});
+    return std::string();
+}
+
+std::string AST::Expr::Low::buildIR() {
+    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
+    std::string name_lValue = this->lValue->buildIR();
+    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
+    std::string name_rValue = this->rValue->buildIR();
+    // Ajout de l'instruction au current_block
+    currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
+                                        {name_lValue, name_rValue,"eq"});
+    return std::string();
+}
+
+std::string AST::Expr::Great::buildIR() {
+    return std::string();
+}
+
+std::string AST::Expr::Neq::buildIR() {
+    return std::string();
+}
+
+std::string AST::Expr::Leq::buildIR() {
+    return std::string();
+}
 
 std::string AST::Expr::Not::buildIR() {
     return Expr::buildIR();
@@ -149,27 +182,6 @@ std::string AST::Instr::Decl::buildIR() {
         // Ajout de la variable it à la table des symboles de currentCFG
         currentCFG->add_to_symbol_table(it, Type());
     }
-    return std::string();
-}
-
-std::string AST::Expr::Geq::buildIR() {
-    return std::string();
-}
-
-std::string AST::Expr::Low::buildIR() {
-    return std::string();
-}
-
-std::string AST::Expr::Great::buildIR() {
-    return std::string();
-}
-
-std::string AST::Expr::Neq::buildIR() {
-    return std::string();
-}
-
-
-std::string AST::Expr::Leq::buildIR() {
     return std::string();
 }
 

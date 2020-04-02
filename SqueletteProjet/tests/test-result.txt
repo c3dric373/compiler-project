@@ -112,6 +112,12 @@ TEST-CASE: pld-test-output/tests-Init-minus-unaire-0_minus_ret
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-minus-unaire-0_minus_after_int
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-if-cmpgreater-0_simple_cmp_great
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-if-cmpeq-0_simple_cmp_eq
+TEST FAIL (your compiler rejects a valid program)
+TEST-CASE: pld-test-output/tests-Init-if-cmpeq-nestedIf_cmpeq
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-paranthese-2_mult
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-paranthese-1_add-associativite-gauche

@@ -39,8 +39,9 @@ public:
         wmem,
         call,
         cmp_eq,
-        cmp_lt,
-        cmp_le,
+        cmp_neq,
+        cmp_low,
+        cmp_great,
         ret,
         neg
     } Operation;
