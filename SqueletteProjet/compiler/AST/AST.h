@@ -21,7 +21,7 @@ namespace AST {
         public:
             virtual int getValue() = 0;
 
-            virtual std::string buildIR() = 0;
+            virtual std::string buildIR(bool not_flag) = 0;
 
             virtual void exists(SymbolTable &st) = 0;
 
@@ -34,7 +34,7 @@ namespace AST {
         public:
             Add(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             int getValue() override;
 
@@ -59,7 +59,7 @@ namespace AST {
         public:
             Sub(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             int getValue() override;
 
@@ -85,7 +85,7 @@ namespace AST {
             Mult(Expr *lValue, Expr *rValue) : lValue(lValue),
                                                rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             int getValue() override;
 
@@ -112,7 +112,7 @@ namespace AST {
                                                                  line(line),
                                                                  column(column) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             int getValue() override;
 
@@ -132,7 +132,7 @@ namespace AST {
         public:
             Const(int value) : value(value) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             int getValue() override;
 
@@ -155,7 +155,7 @@ namespace AST {
         public:
             Name(std::string name) : name(name) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             int getValue() override;
 
@@ -184,7 +184,7 @@ namespace AST {
 
             int getValue() override;
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             void exists(SymbolTable &st) override;
 
@@ -207,7 +207,7 @@ namespace AST {
 
             void display() override;
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             void exists(SymbolTable &st) override;
 
@@ -228,7 +228,7 @@ namespace AST {
                 unsigned column) :
                     lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             void exists(SymbolTable &st) override;
 
@@ -253,7 +253,7 @@ namespace AST {
 
             virtual void display() override;
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             int getValue() override;
 
@@ -276,7 +276,7 @@ namespace AST {
 
             void display() override;
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             int getValue() override;
 
@@ -299,7 +299,7 @@ namespace AST {
 
             void display() override;
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             int getValue() override;
 
@@ -319,7 +319,7 @@ namespace AST {
             Not(Expr *value, unsigned line, unsigned column) :
                     value(value), line(line), column(column) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             int getValue() override;
 
