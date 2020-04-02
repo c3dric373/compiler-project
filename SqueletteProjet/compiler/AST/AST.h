@@ -6,23 +6,26 @@
 #include "SymbolTable.h"
 
 class BasicBlock;
+
 class CFG;
+
 class IRInstr;
+
 class Type;
 
-namespace AST{
+namespace AST {
     class Bloc;
 
     namespace Expr {
         class Expr {
         public:
-            virtual int getValeur() = 0;
+            virtual int getValue() = 0;
 
-            virtual std::string buildIR() = 0;
+            virtual std::string buildIR(bool not_flag) = 0;
 
             virtual void exists(SymbolTable &st) = 0;
 
-			virtual void buildReturnIR() = 0;
+            virtual void buildReturnIR() = 0;
 
             virtual void display() = 0;
         };
@@ -31,16 +34,17 @@ namespace AST{
         public:
             Add(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
             Add(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
-			void buildReturnIR() override;
+            void buildReturnIR() override;
 
             void display() override;
 
@@ -55,16 +59,17 @@ namespace AST{
         public:
             Sub(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
             Sub(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
-			void buildReturnIR() override;
+            void buildReturnIR() override;
 
             void display() override;
 
@@ -77,18 +82,20 @@ namespace AST{
 
         class Mult : public Expr {
         public:
-            Mult(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
+            Mult(Expr *lValue, Expr *rValue) : lValue(lValue),
+                                               rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
             Mult(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
-			void buildReturnIR() override;
+            void buildReturnIR() override;
 
             void display() override;
 
@@ -101,15 +108,17 @@ namespace AST{
 
         class Minus : public Expr {
         public:
-            Minus(Expr *value, unsigned line, unsigned column) : value(value), line(line), column(column) {};
+            Minus(Expr *value, unsigned line, unsigned column) : value(value),
+                                                                 line(line),
+                                                                 column(column) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
-			void buildReturnIR() override;
+            void buildReturnIR() override;
 
             void display() override;
 
@@ -123,9 +132,9 @@ namespace AST{
         public:
             And(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
@@ -147,9 +156,9 @@ namespace AST{
         public:
             Or(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
@@ -171,9 +180,9 @@ namespace AST{
         public:
             Xor(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
@@ -195,16 +204,16 @@ namespace AST{
         public:
             Const(int value) : value(value) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
             Const(int value, unsigned line, unsigned column) :
                     value(value), line(line), column(column) {};
 
-			void buildReturnIR() override;
+            void buildReturnIR() override;
 
             void display() override;
 
@@ -218,9 +227,9 @@ namespace AST{
         public:
             ConstChar(char value) : value(value) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
@@ -241,17 +250,17 @@ namespace AST{
         public:
             Name(std::string name) : name(name) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void exists(SymbolTable &st) override;
 
             Name(std::string name, unsigned line, unsigned column) :
                     name(name), line(line), column(column) {};
 
-	    	void buildReturnIR() override;
- 
+            void buildReturnIR() override;
+
             void display() override;
 
         private:
@@ -264,16 +273,17 @@ namespace AST{
 
         class Eq : public Expr {
         public:
-            Eq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line, unsigned column) :
+            Eq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
+               unsigned column) :
                     lValue(lValue), rValue(rValue) {};
 
-            int getValeur() override;
+            int getValue() override;
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             void exists(SymbolTable &st) override;
 
-			void buildReturnIR() override {};
+            void buildReturnIR() override {};
 
             void display() override;
 
@@ -286,18 +296,20 @@ namespace AST{
 
         class Neq : public Expr {
         public:
-            Neq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line, unsigned column) :
+            Neq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
+                unsigned column) :
                     lValue(lValue), rValue(rValue) {};
 
             void display() override;
 
-            std::string buildIR() override;
+
+            std::string buildIR(bool not_flag) override;
 
             void exists(SymbolTable &st) override;
 
-			void buildReturnIR() override {};
+            void buildReturnIR() override {};
 
-            int getValeur() override;
+            int getValue() override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -308,16 +320,17 @@ namespace AST{
 
         class Leq : public Expr {
         public:
-            Leq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line, unsigned column) :
+            Leq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
+                unsigned column) :
                     lValue(lValue), rValue(rValue) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
             void exists(SymbolTable &st) override;
 
-            int getValeur() override;
+            int getValue() override;
 
-			void buildReturnIR() override {};
+            void buildReturnIR() override {};
 
             void display() override;
 
@@ -330,18 +343,19 @@ namespace AST{
 
         class Low : public Expr {
         public:
-            Low(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line, unsigned column) :
+            Low(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
+                unsigned column) :
                     lValue(lValue), rValue(rValue) {};
 
             virtual void display() override;
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
-			void buildReturnIR() override {};
+            void buildReturnIR() override {};
 
-            void exists(SymbolTable &st) override ;
+            void exists(SymbolTable &st) override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -352,16 +366,17 @@ namespace AST{
 
         class Geq : public Expr {
         public:
-            Geq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line, unsigned column) :
+            Geq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
+                unsigned column) :
                     lValue(lValue), rValue(rValue) {};
 
             void display() override;
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
-			void buildReturnIR() override {};
+            void buildReturnIR() override {};
 
             void exists(SymbolTable &st) override;
 
@@ -374,16 +389,17 @@ namespace AST{
 
         class Great : public Expr {
         public:
-            Great(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line, unsigned column) :
+            Great(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue,
+                  unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue) {};
 
             void display() override;
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
-			void buildReturnIR() override {};
+            void buildReturnIR() override {};
 
             void exists(SymbolTable &st) override;
 
@@ -399,13 +415,13 @@ namespace AST{
             Not(Expr *value, unsigned line, unsigned column) :
                     value(value), line(line), column(column) {};
 
-            std::string buildIR() override;
+            std::string buildIR(bool not_flag) override;
 
-            int getValeur() override;
+            int getValue() override;
 
             void display() override;
 
-			void buildReturnIR() override {};
+            void buildReturnIR() override {};
 
             void exists(SymbolTable &st) override;
 
@@ -489,7 +505,8 @@ namespace AST{
 
         class Affct : public Instr {
         public:
-            Affct(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
+            Affct(std::string name, Expr::Expr *expr, unsigned line,
+                  unsigned column) :
                     name(name), expr(expr), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -559,21 +576,22 @@ namespace AST{
 
     class Prog {
     public:
-        Prog(Bloc *bloc, Expr::Expr *returnValue) : bloc(bloc), returnValue(returnValue) {};
+        Prog(Bloc *bloc, Expr::Expr *returnValue) : bloc(bloc),
+                                                    returnValue(returnValue) {};
 
         std::string buildIR();
 
         bool create_symbol_table();
-	
-	std::vector<CFG*> generateIR();
+
+        std::vector<CFG *> generateIR();
 
         std::string getErrorMsg();
 
         void display();
 
     private:
-        Bloc* bloc;
-        Expr::Expr* returnValue;
+        Bloc *bloc;
+        Expr::Expr *returnValue;
         SymbolTable table;
     };
 }
