@@ -11,36 +11,23 @@ bloc :
 	;
 
 instr :
-	 decl        #instrdecl
-	|def         #instrdef
-	|affct       #instraffct
-	|ifinstr     #instrif
-	|whileinstr  #instrwhile
+	 'int' NAME (',' NAME)* ';'                               #declint
+	|'char' NAME (',' NAME)* ';'                              #declchar
+	|'int' NAME '=' expr ';'                                  #defint
+	|'char' NAME '=' expr ';'                                 #defchar
+	|NAME '=' expr ';'                                        #affexpr
+    |'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE     #ifbloc
+    |'while' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE  #whilebloc
+	|OPENBRACE bloc CLOSEBRACE                                #instrbloc
 ;
 
-decl :
-	'int' NAME (',' NAME)* ';' #declint
-	;
-
-def : 
-	'int' NAME '=' expr ';' #defexpr
-    ;
-
-affct :
-	NAME '=' expr ';' #affexpr
-    ;
-
-ifinstr :
-     'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE  #ifbloc
-    //|'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE 'else' OPENBRACE bloc CLOSEBRACE #ifelse
-    ;
-
-whileinstr :
-     'while' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE #whilebloc
-     ;
 
 expr :
 	 '('expr')'      #par
+	|'-' expr        #minus
+	|expr '*' expr   #mult
+	|expr '-' expr   #sub
+	|expr '+' expr   #add
 	|'!' expr        #not
     |expr '==' expr  #eq
     |expr '!=' expr  #neq
@@ -48,11 +35,11 @@ expr :
     |expr '>=' expr  #geq
     |expr '<' expr   #low
     |expr '>' expr   #geat
-	|expr '*' expr   #mult
-	|expr '-' expr   #sub
-	|expr '+' expr   #add
-	|'-' expr        #minus
+    |expr '&' expr   #and
+    |expr '^' expr   #xor
+    |expr '|' expr   #or
 	|CONST           #const
+	|CONSTCHAR       #constchar
 	|NAME            #name
 ;
 
@@ -63,6 +50,7 @@ OPENBRACE : '{';
 CLOSEBRACE : '}';
 RETURN : 'return' ;
 CONST : [0-9]+ ;
+CONSTCHAR : '\'' [a-zA-Z_0-9] '\'' ;
 NAME: [a-zA-Z_]+[a-zA-Z_0-9]* ;//chiffres lettres underscore et blanc souligne ou blanc souligne tout seul
 COMMENT1 : '/*' .*? '*/' -> skip ;
 COMMENT2 : '//' .*? '\n' -> skip ;

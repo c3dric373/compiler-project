@@ -128,6 +128,78 @@ namespace AST {
             unsigned column; // even more: the column in this line
         };
 
+        class And : public Expr {
+        public:
+            And(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
+
+            std::string buildIR() override;
+
+            int getValeur() override;
+
+            void exists(SymbolTable &st) override;
+
+            And(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
+                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+        private:
+            Expr *lValue;
+            Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Or : public Expr {
+        public:
+            Or(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
+
+            std::string buildIR() override;
+
+            int getValeur() override;
+
+            void exists(SymbolTable &st) override;
+
+            Or(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
+                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+        private:
+            Expr *lValue;
+            Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Xor : public Expr {
+        public:
+            Xor(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
+
+            std::string buildIR() override;
+
+            int getValeur() override;
+
+            void exists(SymbolTable &st) override;
+
+            Xor(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
+                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+        private:
+            Expr *lValue;
+            Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
         class Const : public Expr {
         public:
             Const(int value) : value(value) {};
@@ -147,6 +219,29 @@ namespace AST {
 
         private:
             int value;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class ConstChar : public Expr {
+        public:
+            ConstChar(char value) : value(value) {};
+
+            std::string buildIR() override;
+
+            int getValeur() override;
+
+            void exists(SymbolTable &st) override;
+
+            ConstChar(char value, unsigned line, unsigned column) :
+                    value(value), line(line), column(column) {};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+        private:
+            char value;
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
@@ -345,10 +440,9 @@ namespace AST {
             virtual void display() = 0;
         };
 
-        class Decl : public Instr {
+        class DeclInt : public Instr {
         public:
-            Decl(std::vector<std::string> names, unsigned line, unsigned column)
-                    :
+            DeclInt(std::vector<std::string> names, unsigned line, unsigned column) :
                     names(names), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -361,10 +455,40 @@ namespace AST {
             unsigned column; // even more: the column in this line
         };
 
-        class Def : public Instr {
+        class DeclChar : public Instr {
         public:
-            Def(std::string name, Expr::Expr *expr, unsigned line,
-                unsigned column) :
+            DeclChar(std::vector<std::string> names, unsigned line, unsigned column) :
+                    names(names), line(line), column(column) {};
+
+            std::string buildIR() override;
+
+            void display() override;
+
+        private:
+            std::vector<std::string> names;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class DefInt : public Instr {
+        public:
+            DefInt(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
+                    name(name), expr(expr), line(line), column(column) {};
+
+            std::string buildIR() override;
+
+            void display() override;
+
+        private:
+            std::string name;
+            Expr::Expr *expr;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class DefChar : public Instr {
+        public:
+            DefChar(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
                     name(name), expr(expr), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -420,6 +544,19 @@ namespace AST {
 
         private:
             Expr::Expr *expr;
+            AST::Bloc *bloc;
+        };
+
+        class Bloc : public Instr {
+        public:
+            Bloc(AST::Bloc *bloc) :
+                    bloc(bloc) {};
+
+            void display() override;
+
+            std::string buildIR() override;
+
+        private:
             AST::Bloc *bloc;
         };
     }

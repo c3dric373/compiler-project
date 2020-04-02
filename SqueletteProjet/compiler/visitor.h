@@ -36,24 +36,9 @@ public:
 
   //INSTRUCTIONS
 
-  virtual antlrcpp::Any visitInstrdecl(ifccParser::InstrdeclContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitInstrdef(ifccParser::InstrdefContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitInstraffct(ifccParser::InstraffctContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitInstrif(ifccParser::InstrifContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-    virtual antlrcpp::Any visitInstrwhile(ifccParser::InstrwhileContext *ctx) override {
-        return visitChildren(ctx);
+    virtual antlrcpp::Any visitInstrbloc(ifccParser::InstrblocContext *ctx) override {
+        AST::Bloc* astBloc = visit(ctx->bloc());
+        return (AST::Instr::Instr*)(new AST::Instr::Bloc(astBloc));
     }
 
   virtual antlrcpp::Any visitDeclint(ifccParser::DeclintContext *ctx) override {
@@ -63,8 +48,18 @@ public:
     }
     unsigned line = ctx->getStart()->getLine();
     unsigned column = ctx->getStart()->getCharPositionInLine();
-    return (AST::Instr::Instr*)(new AST::Instr::Decl(names, line, column));
+    return (AST::Instr::Instr*)(new AST::Instr::DeclInt(names, line, column));
   }
+
+    virtual antlrcpp::Any visitDeclchar(ifccParser::DeclcharContext *ctx) override {
+        auto names = std::vector<std::string>();
+        for(auto& it : ctx->NAME()){
+            names.push_back(it->getText());
+        }
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)(new AST::Instr::DeclChar(names, line, column));
+    }
 
   virtual antlrcpp::Any visitAffexpr(ifccParser::AffexprContext *ctx) override {
     AST::Expr::Expr* astExpr = visit(ctx->expr());
@@ -73,12 +68,19 @@ public:
     return (AST::Instr::Instr*)(new AST::Instr::Affct(ctx->NAME()->getText(), astExpr, line, column));
   }
 
-  virtual antlrcpp::Any visitDefexpr(ifccParser::DefexprContext *ctx) override {
+  virtual antlrcpp::Any visitDefint(ifccParser::DefintContext *ctx) override {
     AST::Expr::Expr* astExpr = visit(ctx->expr());
       unsigned line = ctx->getStart()->getLine();
       unsigned column = ctx->getStart()->getCharPositionInLine();
-    return (AST::Instr::Instr*)(new AST::Instr::Def(ctx->NAME()->getText(), astExpr, line, column));
+    return (AST::Instr::Instr*)(new AST::Instr::DefInt(ctx->NAME()->getText(), astExpr, line, column));
   }
+
+    virtual antlrcpp::Any visitDefchar(ifccParser::DefcharContext *ctx) override {
+        AST::Expr::Expr* astExpr = visit(ctx->expr());
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)(new AST::Instr::DefChar(ctx->NAME()->getText(), astExpr, line, column));
+    }
 
   virtual antlrcpp::Any visitIfbloc(ifccParser::IfblocContext *ctx) override {
       AST::Expr::Expr* astExpr = visit(ctx->expr());
@@ -125,6 +127,30 @@ public:
     return (AST::Expr::Expr*)new AST::Expr::Mult(astLeftExpr, astRightExpr, line, column);
   }
 
+    virtual antlrcpp::Any visitAnd(ifccParser::AndContext *ctx) override {
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Expr::Expr*)new AST::Expr::And(astLeftExpr, astRightExpr, line, column);
+    }
+
+    virtual antlrcpp::Any visitOr(ifccParser::OrContext *ctx) override {
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Expr::Expr*)new AST::Expr::Or(astLeftExpr, astRightExpr, line, column);
+    }
+
+    virtual antlrcpp::Any visitXor(ifccParser::XorContext *ctx) override {
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Expr::Expr*)new AST::Expr::Xor(astLeftExpr, astRightExpr, line, column);
+    }
+
   virtual antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override {
     return visit(ctx->expr());
   }
@@ -134,6 +160,12 @@ public:
       unsigned column = ctx->getStart()->getCharPositionInLine();
     return (AST::Expr::Expr*)new AST::Expr::Const(std::stoi(ctx->CONST()->getText()), line, column);
   }
+
+    virtual antlrcpp::Any visitConstchar(ifccParser::ConstcharContext *ctx) override {
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Expr::Expr*)new AST::Expr::ConstChar(ctx->CONSTCHAR()->getText()[1], line, column);
+    }
 
   virtual antlrcpp::Any visitName(ifccParser::NameContext *ctx) override {
       unsigned line = ctx->getStart()->getLine();

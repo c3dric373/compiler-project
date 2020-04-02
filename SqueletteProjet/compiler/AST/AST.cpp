@@ -78,6 +78,10 @@ std::string AST::Expr::Const::buildIR(bool not_flag) {
     return temp;
 }
 
+std::string AST::Expr::ConstChar::buildIR(){
+    return "";
+}
+
 std::string AST::Bloc::buildIR() {
     for (auto &it : blocinstr) {
         it->buildIR();
@@ -85,7 +89,7 @@ std::string AST::Bloc::buildIR() {
     return "";
 }
 
-std::string AST::Instr::Def::buildIR() {
+std::string AST::Instr::DefInt::buildIR() {
     // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
     std::string name_expr = this->expr->buildIR(false);
     // Ajout de la variable name à la table des symboles de currentCFG
@@ -93,6 +97,10 @@ std::string AST::Instr::Def::buildIR() {
     // Ajout de l'instruction au current_block
     currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(),
                                         {name_expr, this->name});
+    return "";
+}
+
+std::string AST::Instr::DefChar::buildIR(){
     return "";
 }
 
@@ -262,9 +270,25 @@ void AST::Expr::Mult::buildReturnIR() {
     this->buildIR(true);
 }
 
+void AST::Expr::And::buildReturnIR(){
+
+}
+
+void AST::Expr::Or::buildReturnIR(){
+
+}
+
+void AST::Expr::Xor::buildReturnIR(){
+
+}
+
 void AST::Expr::Const::buildReturnIR() {
     std::string value = std::to_string(this->value);
     currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {"!" + value});
+}
+
+void AST::Expr::ConstChar::buildReturnIR(){
+
 }
 
 void AST::Expr::Name::buildReturnIR() {
@@ -347,6 +371,18 @@ void AST::Expr::Neq::exists(SymbolTable &st) {
 void AST::Expr::Not::exists(SymbolTable &st) {
 }
 
+void AST::Expr::And::exists(SymbolTable& st){
+}
+
+void AST::Expr::Or::exists(SymbolTable& st){
+}
+
+void AST::Expr::Xor::exists(SymbolTable& st){
+}
+
+void AST::Expr::ConstChar::exists(SymbolTable& st){
+}
+
 //-------------DISPLAY-----------------------
 
 
@@ -388,6 +424,10 @@ void AST::Expr::Const::display() {
     std::cout << "(CONST " << value << ')' << std::flush;
 }
 
+void AST::Expr::ConstChar::display(){
+    std::cout << "(CONSTC " << value << ')' << std::flush;
+}
+
 void AST::Expr::Add::display() {
     std::cout << "(ADD " << std::flush;
     lValue->display();
@@ -395,21 +435,54 @@ void AST::Expr::Add::display() {
     std::cout << ')' << std::flush;
 }
 
+void AST::Expr::And::display(){
+    std::cout << "(AND " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
 
-void AST::Instr::Decl::display() {
-    std::cout << "(DECL " << std::flush;
+void AST::Expr::Or::display(){
+    std::cout << "(OR " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
+
+void AST::Expr::Xor::display(){
+    std::cout << "(XOR " << std::flush;
+    lValue->display();
+    rValue->display();
+    std::cout << ')' << std::flush;
+}
+
+void AST::Instr::DeclInt::display() {
+    std::cout << "(DECI " << std::flush;
     for (auto &it : names) {
         std::cout << it << ' ' << std::flush;
     }
     std::cout << ')' << std::flush;
 }
 
-void AST::Instr::Def::display() {
-    std::cout << "(DEF " << name << ' ' << std::flush;
+void AST::Instr::DeclChar::display(){
+    std::cout << "(DECC " << std::flush;
+    for (auto &it : names) {
+        std::cout << it << ' ' << std::flush;
+    }
+    std::cout << ')' << std::flush;
+}
+
+void AST::Instr::DefInt::display() {
+    std::cout << "(DEFI " << name << ' ' << std::flush;
     expr->display();
     std::cout << ')' << std::flush;
 }
 
+void AST::Instr::DefChar::display(){
+    std::cout << "(DEFC " << name << ' ' << std::flush;
+    expr->display();
+    std::cout << ')' << std::flush;
+}
 
 void AST::Prog::display() {
     std::cout << "(AST " << std::flush;
@@ -441,6 +514,9 @@ void AST::Instr::While::display() {
     std::cout << ')' << std::flush;
 }
 
+void AST::Instr::Bloc::display(){
+    bloc->display();
+}
 
 void AST::Instr::Instr::display() {
 
@@ -552,6 +628,9 @@ int AST::Expr::Const::getValue() {
     return this->value;
 }
 
+int AST::Expr::ConstChar::getValeur(){
+    return 0;
+}
 
 int AST::Expr::Eq::getValue() {
     return 0;
