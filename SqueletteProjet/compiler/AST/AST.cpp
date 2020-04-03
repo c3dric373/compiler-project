@@ -149,7 +149,7 @@ std::string AST::Instr::IfElse::buildIR(){
     currentCFG->add_bb(bb_if);
     this->ifBloc->buildIR();
     auto bb_continuation = new BasicBlock(currentCFG, currentCFG->new_BB_name());
-    bb_else->add_IRInstr(IRInstr::jmp,Type(), {bb_continuation->label})
+    bb_if->add_IRInstr(IRInstr::jmp,Type(), {bb_continuation->label});
 
 
     // else bloc
@@ -157,6 +157,8 @@ std::string AST::Instr::IfElse::buildIR(){
     currentCFG->add_bb(bb_else);
     this->elseBloc->buildIR();
     currentCFG->current_bb = bb_continuation;
+    currentCFG->add_bb(bb_continuation);
+
     return std::string();
 }
 
