@@ -76,6 +76,15 @@ std::string AST::Expr::And::buildIR(bool not_flag) {
 }
 
 
+std::string AST::Expr::Xor::buildIR(bool not_flag) {
+    std::string tmp_expr1 = this->lValue->buildIR(not_flag);
+    std::string tmp_expr2 = this->rValue->buildIR(not_flag);
+    std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+    currentCFG->current_bb->add_IRInstr(IRInstr::xor_, Type(),
+                                        {tmp_dest, tmp_expr1, tmp_expr2});
+    return tmp_dest;
+}
+
 std::string AST::Expr::Add::buildIR(bool not_flag) {
     std::string tmp_expr1 = this->lValue->buildIR(not_flag);
     std::string tmp_expr2 = this->rValue->buildIR(not_flag);
@@ -548,9 +557,6 @@ void AST::Expr::Xor::display() {
     std::cout << ')' << std::flush;
 }
 
-std::string AST::Expr::Xor::buildIR(bool not_flag) {
-    return std::string();
-}
 
 int AST::Expr::Xor::getValue() {
     return 0;
