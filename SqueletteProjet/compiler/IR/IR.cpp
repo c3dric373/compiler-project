@@ -83,9 +83,7 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::if_: {
             std::string expr = bb->cfg->IR_reg_to_asm(params[0]);
-            o << "\tmovl " <<  expr << ", %eax" << endl;
-            o << "\tmovl  $1, %ebx" << endl;
-            o << "\tcmp %eax, %ebx"<< endl;
+            o << "\tcmpl $1, " << expr << endl;
             o << "\tje " << bb->exit_true->label << endl;
             o << "\tjmp " << bb->exit_false->label << endl;
             break;
@@ -94,16 +92,17 @@ void IRInstr::gen_asm(ostream &o) {
             std::string dest_location = bb->cfg->IR_reg_to_asm(params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
-            bool equal = params[3]=="eq";
+            bool equal = !(params[3].compare("eq"));
 
             o << "\tmovl " <<  lValue << ", %eax" << endl;
-            o << "\tcmp  %eax, " << rValue << endl;
+            o << "\tcmpl  %eax, " << rValue << endl;
             if(equal){
                 o << "\tsete %dl" << endl;
             }else{
                 o << "\tsetne %dl" << endl;
                 }
-            o << "\tmov %dl, " << dest_location << endl;
+            o << "\tmovzbl %dl, %eax" << endl;
+            o << "\tmovl %eax, " << dest_location << endl;
             break;
         }
 
@@ -111,7 +110,7 @@ void IRInstr::gen_asm(ostream &o) {
             std::string dest_location = bb->cfg->IR_reg_to_asm(params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
-            bool equal = params[3]=="eq";
+            bool equal = !(params[3].compare("eq"));
 
             o << "\tmovl " <<  rValue << ", %eax" << endl;
             o << "\tcmp  %eax, " << lValue << endl;
@@ -120,7 +119,8 @@ void IRInstr::gen_asm(ostream &o) {
             }else{
                 o << "\tsetb %dl" << endl;
             }
-            o << "\tmov %dl, " << dest_location << endl;
+            o << "\tmovzbl %dl, %eax" << endl;
+            o << "\tmovl %eax, " << dest_location << endl;
             break;
 
         }
@@ -128,16 +128,17 @@ void IRInstr::gen_asm(ostream &o) {
             std::string dest_location = bb->cfg->IR_reg_to_asm(params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
-            bool equal = params[3]=="eq";
+            bool equal = !(params[3].compare("eq"));
 
-            o << "\tmovl " <<  lValue << ", %eax" << endl;
-            o << "\tcmp  %eax, " << rValue << endl;
+            o << "\tmovl " <<  rValue << ", %eax" << endl;
+            o << "\tcmp  %eax, " << lValue << endl;
             if(equal){
                 o << "\tsetae %dl" << endl;
             }else{
                 o << "\tsetna %dl" << endl;
             }
-            o << "\tmov %dl, " << dest_location << endl;
+            o << "\tmovzbl %dl, %eax" << endl;
+            o << "\tmovl %eax, " << dest_location << endl;
             break;
 
         }

@@ -142,7 +142,7 @@ std::string AST::Expr::Const::buildIR(bool not_flag) {
 
 std::string AST::Instr::If::buildIR() {
     // tester la condition
-    auto res = this->expr->buildIR(false);
+    std::string res = this->expr->buildIR(false);
 
     auto bb_true = new BasicBlock(currentCFG, currentCFG->new_BB_name());
     currentCFG->current_bb->exit_true = bb_true;
@@ -189,10 +189,10 @@ std::string AST::Expr::Neq::buildIR(bool not_flag) {
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+                                            {tmp_dest,name_lValue, name_rValue, "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+                                            {tmp_dest,name_lValue, name_rValue, "neq"});
     }
     return tmp_dest;
 }
@@ -207,7 +207,7 @@ std::string AST::Expr::Geq::buildIR(bool not_flag) {
     std::string tmp_dest = currentCFG->create_new_tempvar(Type());
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
                                             {tmp_dest,name_lValue, name_rValue, "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
@@ -225,8 +225,8 @@ std::string AST::Expr::Great::buildIR(bool not_flag) {
     std::string tmp_dest = currentCFG->create_new_tempvar(Type());
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
+                                            {tmp_dest,name_lValue, name_rValue, "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
                                             {tmp_dest,name_lValue, name_rValue, "eq"});
@@ -243,8 +243,8 @@ std::string AST::Expr::Low::buildIR(bool not_flag) {
     std::string tmp_dest = currentCFG->create_new_tempvar(Type());
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
+                                            {tmp_dest,name_lValue, name_rValue, "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
                                             {tmp_dest,name_lValue, name_rValue, "eq"});
@@ -263,7 +263,7 @@ std::string AST::Expr::Leq::buildIR(bool not_flag) {
     std::string tmp_dest = currentCFG->create_new_tempvar(Type());
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
                                             {tmp_dest,name_lValue, name_rValue, "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
