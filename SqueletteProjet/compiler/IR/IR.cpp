@@ -38,11 +38,23 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::copy: {
             // copy params [0] into params [1]
-            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(params[0]);
-            std::string reg_variable = bb->cfg->IR_reg_to_asm(params[1]);
-            o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-            o << "\tmovl %eax , " << reg_variable << endl;
-            break;
+			std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(params[0]);
+		    std::string reg_variable = bb->cfg->IR_reg_to_asm(params[1]);
+			switch(t.type_) { 
+			    case Type::type_int :
+				{
+					o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
+			   		o << "\tmovl %eax , " << reg_variable << endl;
+			    	break;
+				}
+				case Type::type_char :
+				{
+					o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
+					o << "\tmovb %al , " << reg_variable << endl;
+					break;
+				}
+			}
+			break;
         }
         case Operation::sub: {
             std::string regDestString = bb->cfg->IR_reg_to_asm(params[0]);
@@ -240,11 +252,11 @@ void CFG::gen_asm_epilogue(ostream &o) {
 void CFG::add_to_symbol_table(string name, Type t) {
 
     switch (t.type_) {
-        case t.type_enum::type_int: {
+        case Type::type_int: {
             nextFreeSymbolIndex -= INTOFFSET;
             break;
         }
-        case t.type_enum::type_char: {
+        case Type::type_char: {
             nextFreeSymbolIndex -= CHAROFFSET;
             break;
         }
@@ -263,11 +275,11 @@ void CFG::add_to_symbol_table(string name, Type t) {
 
 std::string CFG::create_new_tempvar(Type t) {
     switch (t.type_) {
-        case t.type_enum::type_int: {
+        case Type::type_int: {
             nextFreeSymbolIndex -= INTOFFSET;
             break;
         }
-        case t.type_enum::type_char: {
+        case Type::type_char: {
             nextFreeSymbolIndex -= CHAROFFSET;
             break;
         }

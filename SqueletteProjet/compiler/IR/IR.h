@@ -43,7 +43,7 @@ public:
 		}
 		return suffix;
     }
-
+	
     type_enum type_;
 
 };
