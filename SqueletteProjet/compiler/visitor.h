@@ -88,6 +88,13 @@ public:
       return (AST::Instr::Instr*)(new AST::Instr::If(astExpr, astBloc));
   }
 
+    virtual antlrcpp::Any visitIfelsebloc(ifccParser::IfelseblocContext *ctx) override {
+        AST::Expr::Expr* astExpr = visit(ctx->expr());
+        AST::Bloc* astIfBloc = visit(ctx->bloc()[0]);
+        AST::Bloc* astElseBloc = visit(ctx->bloc()[1]);
+        return (AST::Instr::Instr*)(new AST::Instr::IfElse(astExpr, astIfBloc, astElseBloc));
+    }
+
     virtual antlrcpp::Any visitWhilebloc(ifccParser::WhileblocContext *ctx) override {
         AST::Expr::Expr* astExpr = visit(ctx->expr());
         AST::Bloc* astBloc = visit(ctx->bloc());
