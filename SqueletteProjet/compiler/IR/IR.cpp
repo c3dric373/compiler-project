@@ -124,13 +124,13 @@ void IRInstr::gen_asm(ostream &o) {
             std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
             bool equal = !(params[3].compare("eq"));
 
-            o << "\tmovl " <<  lValue << ", %eax" << endl;
+            o << "\tmovl " << lValue << ", %eax" << endl;
             o << "\tcmpl  %eax, " << rValue << endl;
-            if(equal){
+            if (equal) {
                 o << "\tsete %dl" << endl;
-            }else{
+            } else {
                 o << "\tsetne %dl" << endl;
-                }
+            }
             o << "\tmovzbl %dl, %eax" << endl;
             o << "\tmovl %eax, " << dest_location << endl;
             break;
@@ -142,11 +142,11 @@ void IRInstr::gen_asm(ostream &o) {
             std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
             bool equal = !(params[3].compare("eq"));
 
-            o << "\tmovl " <<  rValue << ", %eax" << endl;
+            o << "\tmovl " << rValue << ", %eax" << endl;
             o << "\tcmp  %eax, " << lValue << endl;
-            if(equal){
+            if (equal) {
                 o << "\tsetbe %dl" << endl;
-            }else{
+            } else {
                 o << "\tsetb %dl" << endl;
             }
             o << "\tmovzbl %dl, %eax" << endl;
@@ -160,11 +160,11 @@ void IRInstr::gen_asm(ostream &o) {
             std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
             bool equal = !(params[3].compare("eq"));
 
-            o << "\tmovl " <<  rValue << ", %eax" << endl;
+            o << "\tmovl " << rValue << ", %eax" << endl;
             o << "\tcmp  %eax, " << lValue << endl;
-            if(equal){
+            if (equal) {
                 o << "\tsetae %dl" << endl;
-            }else{
+            } else {
                 o << "\tseta %dl" << endl;
             }
             o << "\tmovzbl %dl, %eax" << endl;
@@ -206,8 +206,8 @@ BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg),
                                                        label(entry_label) {}
 
 void BasicBlock::gen_asm(ostream &o) {
-    std::string label = this-> label;
-    if(label != "essai"){
+    std::string label = this->label;
+    if (label != "essai") {
         o << this->label << ": " << endl;
     }
     for (auto instr : instrs) {
@@ -254,10 +254,10 @@ std::string CFG::IR_reg_to_asm(string reg) {
 
 void CFG::gen_asm_prologue(ostream &o) {
     std::string label = this->current_bb->label;
-        o << ".globl\tmain" << endl;
-        o << "main:" << endl;
-        o << "\tpushq %rbp" << endl;
-        o << "\tmovq %rsp, %rbp" << endl;
+    o << ".globl\tmain" << endl;
+    o << "main:" << endl;
+    o << "\tpushq %rbp" << endl;
+    o << "\tmovq %rsp, %rbp" << endl;
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {
@@ -302,6 +302,6 @@ std::string CFG::new_BB_name() {
     return ".L" + std::to_string(nextBBnumber++);
 }
 
-BasicBlock* CFG::get_bb_before_last(){
+BasicBlock *CFG::get_bb_before_last() {
     return this->basic_blocs.end()[-2];
 }

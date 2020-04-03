@@ -167,21 +167,20 @@ std::string AST::Instr::While::buildIR() {
     currentCFG->current_bb = start_block;
     currentCFG->add_bb(start_block);
     // create if condition to which we will loop back
-    auto if_condition = new AST::Instr::If(this->expr,this->bloc);
+    auto if_condition = new AST::Instr::If(this->expr, this->bloc);
     if_condition->buildIR();
 
     // We need to add the jump back to the if condition therefore we will need
     // to go one block before the last one in our cfg (the if condition will
     // already have added the bloc after the if condition)
     currentCFG->get_bb_before_last()->add_IRInstr(IRInstr::jmp, Type(),
-                                        {start_block->label});
+                                                  {start_block->label});
 
     return std::string();
 }
 
 
-
-std::string AST::Instr::IfElse::buildIR(){
+std::string AST::Instr::IfElse::buildIR() {
     // tester la condition
     std::string res = this->expr->buildIR(false);
 
@@ -189,14 +188,15 @@ std::string AST::Instr::IfElse::buildIR(){
     currentCFG->current_bb->exit_true = bb_if;
     auto bb_else = new BasicBlock(currentCFG, currentCFG->new_BB_name());
     currentCFG->current_bb->exit_false = bb_else;
-    currentCFG->current_bb->add_IRInstr(IRInstr::if_, Type(),{res});
+    currentCFG->current_bb->add_IRInstr(IRInstr::if_, Type(), {res});
 
     // if bloc
     currentCFG->current_bb = bb_if;
     currentCFG->add_bb(bb_if);
     this->ifBloc->buildIR();
-    auto bb_continuation = new BasicBlock(currentCFG, currentCFG->new_BB_name());
-    bb_if->add_IRInstr(IRInstr::jmp,Type(), {bb_continuation->label});
+    auto bb_continuation = new BasicBlock(currentCFG,
+                                          currentCFG->new_BB_name());
+    bb_if->add_IRInstr(IRInstr::jmp, Type(), {bb_continuation->label});
 
 
     // else bloc
@@ -210,7 +210,6 @@ std::string AST::Instr::IfElse::buildIR(){
 }
 
 
-
 std::string AST::Expr::Eq::buildIR(bool not_flag) {
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_lValue = this->lValue->buildIR(not_flag);
@@ -221,10 +220,12 @@ std::string AST::Expr::Eq::buildIR(bool not_flag) {
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "eq"});
     }
     return tmp_dest;
 
@@ -240,10 +241,12 @@ std::string AST::Expr::Neq::buildIR(bool not_flag) {
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_eq, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "neq"});
     }
     return tmp_dest;
 }
@@ -259,10 +262,12 @@ std::string AST::Expr::Geq::buildIR(bool not_flag) {
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "eq"});
     }
     return tmp_dest;
 }
@@ -277,10 +282,12 @@ std::string AST::Expr::Great::buildIR(bool not_flag) {
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "neq"});
     }
     return tmp_dest;
 }
@@ -295,10 +302,12 @@ std::string AST::Expr::Low::buildIR(bool not_flag) {
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "eq"});
     }
     return tmp_dest;
 }
@@ -315,10 +324,12 @@ std::string AST::Expr::Leq::buildIR(bool not_flag) {
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "eq"});
     }
     return tmp_dest;
 }
@@ -538,7 +549,6 @@ void AST::Expr::And::display() {
 }
 
 
-
 int AST::Expr::And::getValue() {
     return 0;
 }
@@ -753,15 +763,8 @@ int AST::Expr::Eq::getValue() {
 }
 
 
-
-
-
-
-
-
-
 //Les ajouts à la fin comme promis :D
-void AST::Instr::IfElse::display(){
+void AST::Instr::IfElse::display() {
     std::cout << "(IFELSE " << std::flush;
     expr->display();
     ifBloc->display();
@@ -770,52 +773,60 @@ void AST::Instr::IfElse::display(){
 }
 
 
-std::string AST::InitBloc::buildIR(){
+std::string AST::InitBloc::buildIR() {
     return "";
 }
-void AST::InitBloc::pushInstr(AST::InitInstr::InitInstr* instr){
+
+void AST::InitBloc::pushInstr(AST::InitInstr::InitInstr *instr) {
     blocinstr.push_back(instr);
 }
-void AST::InitBloc::display(){
+
+void AST::InitBloc::display() {
     std::cout << "(IBLOC " << std::flush;
     for (auto &it : blocinstr) {
         it->display();
     }
     std::cout << ')' << std::flush;
 }
-std::string AST::InitInstr::DefProc::buildIR(){
+
+std::string AST::InitInstr::DefProc::buildIR() {
     return "";
 }
-void AST::InitInstr::DefProc::display(){
+
+void AST::InitInstr::DefProc::display() {
     std::cout << "(DEFP " << procName << ' ' << std::flush;
-    for(unsigned i = 0; i < names.size(); ++i){
+    for (unsigned i = 0; i < names.size(); ++i) {
         std::cout << types[i] << ' ' << names[i] << ' ' << std::flush;
     }
     bloc->display();
     std::cout << ')' << std::flush;
 }
-void AST::InitInstr::DefProc::pushArg(std::string type, std::string name){
-    if(type == "int"){
+
+void AST::InitInstr::DefProc::pushArg(std::string type, std::string name) {
+    if (type == "int") {
         types.push_back(INT);
-    }
-    else if(type == "char"){
+    } else if (type == "char") {
         types.push_back(CHAR);
     }
     names.push_back(name);
 }
-void AST::Instr::Return::display(){
+
+void AST::Instr::Return::display() {
     std::cout << "RETURN" << std::endl;
 }
-std::string AST::Instr::Return::buildIR(){
+
+std::string AST::Instr::Return::buildIR() {
     return "";
 }
-void AST::Instr::CallProc::display(){
+
+void AST::Instr::CallProc::display() {
     std::cout << "(CALLP " << std::flush;
-    for(auto& it : args){
+    for (auto &it : args) {
         std::cout << it << ' ' << std::flush;
     }
     std::cout << ')' << std::flush;
 }
-std::string AST::Instr::CallProc::buildIR(){
+
+std::string AST::Instr::CallProc::buildIR() {
     return "";
 }
