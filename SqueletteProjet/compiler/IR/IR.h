@@ -20,8 +20,17 @@ using namespace std;
 
 //bullshit class just to compile
 class Type {
+
 public:
-    Type() = default;;
+    typedef enum {
+        type_int,
+        type_char
+    } type_enum;
+    Type(type_enum type_enum_) : type_(type_enum_){};
+    Type()=default;
+
+    type_enum type_;
+
 };
 
 //! The class for one 3-address instruction

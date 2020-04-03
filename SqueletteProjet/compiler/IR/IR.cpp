@@ -19,6 +19,7 @@ C'est la méthode create_new_tempvar de l'IR qui s'occupera d'insérer la variab
 */
 
 int INTOFFSET = 4;
+int CHAROFFSET=1;
 
 IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
                  vector<string> params_) : bb(bb_), op(op_), t(t_),
@@ -221,7 +222,18 @@ void CFG::gen_asm_epilogue(ostream &o) {
 }
 
 void CFG::add_to_symbol_table(string name, Type t) {
-    nextFreeSymbolIndex -= INTOFFSET;
+
+    switch (t.type_) {
+        case t.type_enum::type_int: {
+            nextFreeSymbolIndex -= INTOFFSET;
+            break;
+        }
+        case t.type_enum::type_char: {
+            nextFreeSymbolIndex -= CHAROFFSET;
+            break;
+        }
+    }
+
 
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
         SymbolType[name] = t;
@@ -234,7 +246,16 @@ void CFG::add_to_symbol_table(string name, Type t) {
 }
 
 std::string CFG::create_new_tempvar(Type t) {
-    nextFreeSymbolIndex -= INTOFFSET;
+    switch (t.type_) {
+        case t.type_enum::type_int: {
+            nextFreeSymbolIndex -= INTOFFSET;
+            break;
+        }
+        case t.type_enum::type_char: {
+            nextFreeSymbolIndex -= CHAROFFSET;
+            break;
+        }
+    }
 
     // nextFreeSymbolIndex is negative, so we put -nextFreeSymbolIndex in the tmp name
     std::string name_var_temp = "!tmp" + std::to_string(-nextFreeSymbolIndex);
