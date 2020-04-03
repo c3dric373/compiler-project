@@ -139,7 +139,8 @@ namespace AST {
             void exists(SymbolTable &st) override;
 
             And(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
             void buildReturnIR() override;
 
@@ -163,7 +164,8 @@ namespace AST {
             void exists(SymbolTable &st) override;
 
             Or(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
             void buildReturnIR() override;
 
@@ -187,7 +189,8 @@ namespace AST {
             void exists(SymbolTable &st) override;
 
             Xor(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
             void buildReturnIR() override;
 
@@ -443,7 +446,8 @@ namespace AST {
 
         class DeclInt : public Instr {
         public:
-            DeclInt(std::vector<std::string> names, unsigned line, unsigned column) :
+            DeclInt(std::vector<std::string> names, unsigned line,
+                    unsigned column) :
                     names(names), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -458,7 +462,8 @@ namespace AST {
 
         class DeclChar : public Instr {
         public:
-            DeclChar(std::vector<std::string> names, unsigned line, unsigned column) :
+            DeclChar(std::vector<std::string> names, unsigned line,
+                     unsigned column) :
                     names(names), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -473,7 +478,8 @@ namespace AST {
 
         class DefInt : public Instr {
         public:
-            DefInt(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
+            DefInt(std::string name, Expr::Expr *expr, unsigned line,
+                   unsigned column) :
                     name(name), expr(expr), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -489,7 +495,8 @@ namespace AST {
 
         class DefChar : public Instr {
         public:
-            DefChar(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
+            DefChar(std::string name, Expr::Expr *expr, unsigned line,
+                    unsigned column) :
                     name(name), expr(expr), line(line), column(column) {};
 
             std::string buildIR() override;

@@ -1,7 +1,10 @@
 int main(){
-    int a = 1;
-    while (a < 5){
-         a  = a +1;
+    int a = 3==3;
+    int  b=2;
+    int c= 7;
+    if(a == (b 2)){
+        c =2;
     }
-    return a;
+    return c;
 }
+
