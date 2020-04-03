@@ -32,6 +32,9 @@ public:
     typedef enum {
         ldconst,
         jmp,
+        and_,
+        xor_,
+        or_,
         copy,
         add,
         sub,
