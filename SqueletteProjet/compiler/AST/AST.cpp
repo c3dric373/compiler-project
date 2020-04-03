@@ -552,14 +552,12 @@ void AST::Instr::Affct::display() {
     std::cout << ')' << std::flush;
 }
 
-
 void AST::Instr::If::display() {
     std::cout << "(IF " << std::flush;
     expr->display();
     bloc->display();
     std::cout << ')' << std::flush;
 }
-
 
 void AST::Instr::While::display() {
     std::cout << "(WHL " << std::flush;
@@ -689,4 +687,24 @@ int AST::Expr::Const::getValue() {
 
 int AST::Expr::Eq::getValue() {
     return 0;
+}
+
+
+
+
+
+
+
+
+
+//Les ajouts à la fin comme promis :D
+void AST::Instr::IfElse::display(){
+    std::cout << "(IFELSE " << std::flush;
+    expr->display();
+    ifBloc->display();
+    elseBloc->display();
+    std::cout << ')' << std::flush;
+}
+std::string AST::Instr::IfElse::buildIR(){
+    return "";
 }

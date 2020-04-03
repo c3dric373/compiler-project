@@ -534,6 +534,21 @@ namespace AST {
             AST::Bloc *bloc;
         };
 
+        class IfElse : public Instr {
+        public:
+            IfElse(Expr::Expr *expr, AST::Bloc *ifBloc, AST::Bloc *elseBloc) :
+                    expr(expr), ifBloc(ifBloc), elseBloc(elseBloc) {};
+
+            void display() override;
+
+            std::string buildIR() override;
+
+        private:
+            Expr::Expr *expr;
+            AST::Bloc *ifBloc;
+            AST::Bloc *elseBloc;
+        };
+
         class While : public Instr {
         public:
             While(Expr::Expr *expr, AST::Bloc *bloc) :
