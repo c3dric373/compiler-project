@@ -4,6 +4,8 @@ TEST-CASE: pld-test-output/tests-Init-test-rendu
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-bitwise_int-0_simple_or
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-bitwise_int-1_combination_three
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-bitwise_int-0_simple_and
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-bitwise_int-0_simple_xor
