@@ -5,6 +5,8 @@
 #include <vector>
 #include "SymbolTable.h"
 
+enum TYPES {INT, CHAR, NBTYPES};
+
 class BasicBlock;
 
 class CFG;
@@ -139,7 +141,8 @@ namespace AST {
             void exists(SymbolTable &st) override;
 
             And(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
             void buildReturnIR() override;
 
@@ -163,7 +166,8 @@ namespace AST {
             void exists(SymbolTable &st) override;
 
             Or(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
             void buildReturnIR() override;
 
@@ -187,7 +191,8 @@ namespace AST {
             void exists(SymbolTable &st) override;
 
             Xor(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
             void buildReturnIR() override;
 
@@ -443,7 +448,8 @@ namespace AST {
 
         class DeclInt : public Instr {
         public:
-            DeclInt(std::vector<std::string> names, unsigned line, unsigned column) :
+            DeclInt(std::vector<std::string> names, unsigned line,
+                    unsigned column) :
                     names(names), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -458,7 +464,8 @@ namespace AST {
 
         class DeclChar : public Instr {
         public:
-            DeclChar(std::vector<std::string> names, unsigned line, unsigned column) :
+            DeclChar(std::vector<std::string> names, unsigned line,
+                     unsigned column) :
                     names(names), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -473,7 +480,8 @@ namespace AST {
 
         class DefInt : public Instr {
         public:
-            DefInt(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
+            DefInt(std::string name, Expr::Expr *expr, unsigned line,
+                   unsigned column) :
                     name(name), expr(expr), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -489,7 +497,8 @@ namespace AST {
 
         class DefChar : public Instr {
         public:
-            DefChar(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
+            DefChar(std::string name, Expr::Expr *expr, unsigned line,
+                    unsigned column) :
                     name(name), expr(expr), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -534,6 +543,21 @@ namespace AST {
             AST::Bloc *bloc;
         };
 
+        class IfElse : public Instr {
+        public:
+            IfElse(Expr::Expr *expr, AST::Bloc *ifBloc, AST::Bloc *elseBloc) :
+                    expr(expr), ifBloc(ifBloc), elseBloc(elseBloc) {};
+
+            void display() override;
+
+            std::string buildIR() override;
+
+        private:
+            Expr::Expr *expr;
+            AST::Bloc *ifBloc;
+            AST::Bloc *elseBloc;
+        };
+
         class While : public Instr {
         public:
             While(Expr::Expr *expr, AST::Bloc *bloc) :
@@ -560,7 +584,69 @@ namespace AST {
         private:
             AST::Bloc *bloc;
         };
+
+        class CallProc : public Instr {
+        public:
+            CallProc(std::string procName, std::vector<std::string> args):
+            procName(procName), args(args){};
+
+            void display() override;
+
+            std::string buildIR() override;
+
+        private:
+            std::string procName;
+            std::vector<std::string> args;
+        };
+
+        class Return : public Instr {
+        public:
+            void display() override;
+
+            std::string buildIR() override;
+        };
     }
+
+    namespace InitInstr{
+        class InitInstr {
+        public:
+            virtual std::string buildIR() = 0;
+
+            virtual void display() = 0;
+        };
+
+        class DefProc : public InitInstr {
+        public:
+            DefProc(std::string procName, AST::Bloc* bloc, unsigned line, unsigned column) :
+                    procName(procName), bloc(bloc), line(line), column(column) {};
+
+            void pushArg(std::string type, std::string name);
+
+            std::string buildIR() override;
+
+            void display() override;
+
+        private:
+            std::string procName;
+            std::vector<TYPES> types;
+            std::vector<std::string> names;
+            Bloc* bloc;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+    }
+
+    class InitBloc {
+    public:
+        std::string buildIR();
+
+        void pushInstr(InitInstr::InitInstr *instr);
+
+        void display();
+
+    private:
+        std::vector<InitInstr::InitInstr *> blocinstr;
+    };
 
     class Bloc {
     public:
@@ -576,8 +662,8 @@ namespace AST {
 
     class Prog {
     public:
-        Prog(Bloc *bloc, Expr::Expr *returnValue) : bloc(bloc),
-                                                    returnValue(returnValue) {};
+        Prog(InitBloc* initBloc, Bloc *bloc, Expr::Expr *returnValue):
+        initBloc(initBloc), bloc(bloc), returnValue(returnValue) {};
 
         std::string buildIR();
 
@@ -590,7 +676,8 @@ namespace AST {
         void display();
 
     private:
-        Bloc *bloc;
+        InitBloc* initBloc;
+        Bloc* bloc;
         Expr::Expr *returnValue;
         SymbolTable table;
     };

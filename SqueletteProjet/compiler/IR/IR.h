@@ -48,8 +48,8 @@ public:
         rmem,
         wmem,
         call,
+        if_,
         cmp_eq,
-        cmp_neq,
         cmp_low,
         cmp_great,
         ret,
@@ -167,6 +167,8 @@ public:
     string new_BB_name();
 
     BasicBlock *current_bb;
+
+    BasicBlock *get_bb_before_last();
 
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */
