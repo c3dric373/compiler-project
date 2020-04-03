@@ -28,11 +28,12 @@ IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
 // TODO
 void IRInstr::gen_asm(ostream &o) {
     /* Exemple de ce qu'il faut mettre ici, la + longue méthode*/
+    std::string type = t.get_suffix();
     switch (op) {
         case Operation::ldconst : {
             // for const : params = [ name | value ]
             std::string regString = bb->cfg->IR_reg_to_asm(params[0]);
-            o << "\tmovl $" << params[1] << ", " << regString << endl;
+            o << "\tmov" + type + " $" << params[1] << ", " << regString << endl;
             break;
         }
         case Operation::copy: {

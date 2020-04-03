@@ -28,6 +28,21 @@ public:
     } type_enum;
     Type(type_enum type_enum_) : type_(type_enum_){};
     Type()=default;
+	
+    std::string get_suffix(){
+		std::string suffix;
+		switch (type_) {
+			case type_enum::type_int: {
+				suffix="l";
+				break;
+			}
+			case type_enum::type_char: {
+				suffix="b";
+				break;
+			}
+		}
+		return suffix;
+    }
 
     type_enum type_;
 
