@@ -1,14 +1,30 @@
 grammar ifcc;
 
-axiom : prog       
+axiom : prog
       ;
 
-prog : 'int' 'main' OPENPAR CLOSEPAR OPENBRACE bloc RETURN expr ';' CLOSEBRACE 
-     ;
+prog : initbloc 'int' 'main' OPENPAR CLOSEPAR OPENBRACE bloc RETURN expr ';' CLOSEBRACE
+;
+
+initbloc :
+    initfun*  #blocinit
+;
+
+initfun :
+//     TYPE NAME initarguments ';'                                                        #declfun
+//    |'void' NAME initarguments ';'                                                      #declproc
+//    |TYPE NAME initarguments OPENBRACE bloc RETURN expr CLOSEBRACE                      #deffun
+    'void' NAME OPENPAR type NAME (',' type NAME)* CLOSEPAR OPENBRACE bloc CLOSEBRACE  #defproc
+;
+
+type :
+     'int' #int
+    |'char' #char
+;
 
 bloc :
 	instr*  #blocinstr
-	;
+;
 
 instr :
 	 'int' NAME (',' NAME)* ';'                                                             #declint
@@ -20,8 +36,10 @@ instr :
     |'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE 'else' OPENBRACE bloc CLOSEBRACE  #ifelsebloc
     |'while' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE                                #whilebloc
 	|OPENBRACE bloc CLOSEBRACE                                                              #instrbloc
+	|NAME OPENPAR (NAME (',' NAME)*)? CLOSEPAR ';'                                          #callproc
+	|RETURN ';'                                                                             #return
+//	|RETURN expr ';'                                                                        #returnexpr
 ;
-
 
 expr :
 	 '('expr')'      #par
@@ -45,14 +63,14 @@ expr :
 ;
 
 //les plus specifiques avant
-OPENPAR : '('; 
+OPENPAR : '(';
 CLOSEPAR : ')';
 OPENBRACE : '{';
 CLOSEBRACE : '}';
 RETURN : 'return' ;
 CONST : [0-9]+ ;
 CONSTCHAR : '\'' [a-zA-Z_0-9] '\'' ;
-NAME: [a-zA-Z_]+[a-zA-Z_0-9]* ;//chiffres lettres underscore et blanc souligne ou blanc souligne tout seul
+NAME: [a-zA-Z_]+[a-zA-Z_0-9]* ; //chiffres lettres underscore et blanc souligne ou blanc souligne tout seul
 COMMENT1 : '/*' .*? '*/' -> skip ;
 COMMENT2 : '//' .*? '\n' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
