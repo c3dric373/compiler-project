@@ -1,5 +1,7 @@
 int main(){
-    int a=270;
-    char b=a;
-    return b;
+    char a='a';
+    char c='b';
+    char b=a*c;
+    int ss=b;
+    return ss;
 }
