@@ -585,6 +585,7 @@ void AST::Instr::DefChar::display() {
 
 void AST::Prog::display() {
     std::cout << "(AST " << std::flush;
+    initBloc->display();
     bloc->display();
     std::cout << ", " << std::flush;
     returnValue->display();
@@ -749,4 +750,55 @@ void AST::Instr::IfElse::display(){
     ifBloc->display();
     elseBloc->display();
     std::cout << ')' << std::flush;
+}
+
+
+std::string AST::InitBloc::buildIR(){
+    return "";
+}
+void AST::InitBloc::pushInstr(AST::InitInstr::InitInstr* instr){
+    blocinstr.push_back(instr);
+}
+void AST::InitBloc::display(){
+    std::cout << "(IBLOC " << std::flush;
+    for (auto &it : blocinstr) {
+        it->display();
+    }
+    std::cout << ')' << std::flush;
+}
+std::string AST::InitInstr::DefProc::buildIR(){
+    return "";
+}
+void AST::InitInstr::DefProc::display(){
+    std::cout << "(DEFP " << procName << ' ' << std::flush;
+    for(unsigned i = 0; i < names.size(); ++i){
+        std::cout << types[i] << ' ' << names[i] << ' ' << std::flush;
+    }
+    bloc->display();
+    std::cout << ')' << std::flush;
+}
+void AST::InitInstr::DefProc::pushArg(std::string type, std::string name){
+    if(type == "int"){
+        types.push_back(INT);
+    }
+    else if(type == "char"){
+        types.push_back(CHAR);
+    }
+    names.push_back(name);
+}
+void AST::Instr::Return::display(){
+    std::cout << "RETURN" << std::endl;
+}
+std::string AST::Instr::Return::buildIR(){
+    return "";
+}
+void AST::Instr::CallProc::display(){
+    std::cout << "(CALLP " << std::flush;
+    for(auto& it : args){
+        std::cout << it << ' ' << std::flush;
+    }
+    std::cout << ')' << std::flush;
+}
+std::string AST::Instr::CallProc::buildIR(){
+    return "";
 }
