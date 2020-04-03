@@ -32,30 +32,11 @@ std::string AST::Prog::buildIR() {
     return "";
 }
 
-std::string AST::Expr::ConstChar::buildIR(bool not_flag) {
-    return "";
-}
-
 std::string AST::Bloc::buildIR() {
     for (auto &it : blocinstr) {
         // Todo add bloc pointer to build ir as parameter to have the index for variables
         it->buildIR();
     }
-    return "";
-}
-
-std::string AST::Instr::DefInt::buildIR() {
-    // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
-    std::string name_expr = this->expr->buildIR(false);
-    // Ajout de la variable name à la table des symboles de currentCFG
-    currentCFG->add_to_symbol_table(this->name, Type());
-    // Ajout de l'instruction au current_block
-    currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(),
-                                        {name_expr, this->name});
-    return "";
-}
-
-std::string AST::Instr::DefChar::buildIR() {
     return "";
 }
 
@@ -66,9 +47,6 @@ std::string AST::Instr::Affct::buildIR() {
                                         {name_expr, this->name});
     return "";
 }
-
-
-
 
 std::string AST::Expr::Add::buildIR(bool not_flag) {
     std::string tmp_expr1 = this->lValue->buildIR(not_flag);
@@ -160,14 +138,6 @@ std::string AST::Instr::DefChar::buildIR() {
     currentCFG->add_to_symbol_table(this->name, Type(Type::type_char));
     // Ajout de l'instruction au current_block
     currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(Type::type_char),
-                                        {name_expr, this->name});
-    return "";
-}
-
-std::string AST::Instr::Affct::buildIR() {
-    std::string name_expr = this->expr->buildIR(false);
-    // Ajout de l'instruction au current_block
-    currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(),
                                         {name_expr, this->name});
     return "";
 }
