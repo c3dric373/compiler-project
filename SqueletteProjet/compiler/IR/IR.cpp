@@ -135,7 +135,7 @@ void IRInstr::gen_asm(ostream &o) {
             if(equal){
                 o << "\tsetae %dl" << endl;
             }else{
-                o << "\tsetna %dl" << endl;
+                o << "\tseta %dl" << endl;
             }
             o << "\tmovzbl %dl, %eax" << endl;
             o << "\tmovl %eax, " << dest_location << endl;
@@ -272,6 +272,6 @@ std::string CFG::new_BB_name() {
     return ".L" + std::to_string(nextBBnumber++);
 }
 
-
-
-
+BasicBlock* CFG::get_bb_before_last(){
+    return this->basic_blocs.end()[-2];
+}

@@ -159,6 +159,8 @@ public:
 
     BasicBlock *current_bb;
 
+    BasicBlock *get_bb_before_last();
+
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */
     map<string, int> SymbolIndex; /**< part of the symbol table  */
