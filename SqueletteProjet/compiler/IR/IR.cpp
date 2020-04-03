@@ -72,6 +72,16 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\tmovl %eax, " << regDestString << endl;
             break;
         }
+        case Operation::and_: {
+            std::string regDestString = bb->cfg->IR_reg_to_asm(params[0]);
+            std::string reg1String = bb->cfg->IR_reg_to_asm(params[1]);
+            std::string reg2String = bb->cfg->IR_reg_to_asm(params[2]);
+
+            o << "\tmovl " << reg1String << " , %eax" << endl;
+            o << "\tand " << reg2String << ", %eax" << endl;
+            o << "\tmovl %eax, " << regDestString << endl;
+            break;
+        }
         case Operation::rmem: {
             break;
         }

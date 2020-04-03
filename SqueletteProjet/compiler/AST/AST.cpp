@@ -66,7 +66,14 @@ std::string AST::Instr::Affct::buildIR() {
     return "";
 }
 
-
+std::string AST::Expr::And::buildIR(bool not_flag) {
+    std::string tmp_expr1 = this->lValue->buildIR(not_flag);
+    std::string tmp_expr2 = this->rValue->buildIR(not_flag);
+    std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+    currentCFG->current_bb->add_IRInstr(IRInstr::and_, Type(),
+                                        {tmp_dest, tmp_expr1, tmp_expr2});
+    return tmp_dest;
+}
 
 
 std::string AST::Expr::Add::buildIR(bool not_flag) {
@@ -512,9 +519,7 @@ void AST::Expr::And::display() {
     std::cout << ')' << std::flush;
 }
 
-std::string AST::Expr::And::buildIR(bool not_flag) {
-    return std::string();
-}
+
 
 int AST::Expr::And::getValue() {
     return 0;
