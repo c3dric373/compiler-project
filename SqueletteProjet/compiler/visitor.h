@@ -21,10 +21,19 @@ public:
   }
 
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override {
+    AST::InitBloc* astInitBloc = visit(ctx->initbloc());
     AST::Bloc* astBloc = visit(ctx->bloc());
     AST::Expr::Expr* astExpr = visit(ctx->expr());
-    return new AST::Prog(astBloc, astExpr);
+    return new AST::Prog(astInitBloc, astBloc, astExpr);
   }
+
+    virtual antlrcpp::Any visitBlocinit(ifccParser::BlocinitContext *ctx) override {
+      AST::InitBloc* astInitBloc = new AST::InitBloc;
+      for(auto& it : ctx->initfun()){
+          astInitBloc->pushInstr(visit(it));
+      }
+      return astInitBloc;
+    }
 
   virtual antlrcpp::Any visitBlocinstr(ifccParser::BlocinstrContext *ctx) override {
     AST::Bloc* astBloc = new AST::Bloc();
@@ -99,6 +108,38 @@ public:
         AST::Expr::Expr* astExpr = visit(ctx->expr());
         AST::Bloc* astBloc = visit(ctx->bloc());
         return (AST::Instr::Instr*)(new AST::Instr::While(astExpr, astBloc));
+    }
+
+    virtual antlrcpp::Any visitCallproc(ifccParser::CallprocContext *ctx) override {
+        std::vector<std::string> args = std::vector<std::string>();
+        for(unsigned i = 1; i < ctx->NAME().size(); ++i){
+            args[i - 1] = ctx->NAME()[i]->getText();
+        }
+        return (AST::Instr::Instr*)new AST::Instr::CallProc(ctx->NAME()[0]->getText(), args);
+    }
+
+    virtual antlrcpp::Any visitReturn(ifccParser::ReturnContext *ctx) override {
+        return (AST::Instr::Instr*)new AST::Instr::Return();
+    }
+
+    //INIT FUNCTIONS
+
+    virtual antlrcpp::Any visitDefproc(ifccParser::DefprocContext *ctx) override {
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+      AST::InitInstr::DefProc* astDefProc = new AST::InitInstr::DefProc(ctx->NAME()[0]->getText(), visit(ctx->bloc()), line, column);
+      for(unsigned i = 0; i < ctx->type().size(); ++i){
+          astDefProc->pushArg(visit(ctx->type()[i]), ctx->NAME()[i + 1]->getText());
+      }
+      return (AST::InitInstr::InitInstr*)astDefProc;
+    }
+
+    virtual antlrcpp::Any visitInt(ifccParser::IntContext *ctx) override {
+        return std::string("int");
+    }
+
+    virtual antlrcpp::Any visitChar(ifccParser::CharContext *ctx) override {
+        return std::string("char");
     }
 
   //EXPRESSIONS
