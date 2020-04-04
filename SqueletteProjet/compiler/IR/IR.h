@@ -58,8 +58,9 @@ public:
     void
     gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
 
+    BasicBlock *bb;
 private:
-    BasicBlock *bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
+    /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
     Operation op;
     Type t;
     vector<string> params; /**< For 3-op instrs: d, x, y; for ldconst: d, c;  For call: label, d, params;  for wmem and rmem: choose yourself */

@@ -70,7 +70,7 @@ std::string AST::Instr::If::buildIR() {
     currentCFG->current_bb = bb_false;
 
     // we can also clean the symbol table as we are finished with the if bloc
-    currentCFG->cleanSymbolTable(this->bloc);
+  //  currentCFG->cleanSymbolTable(this->bloc);
     return std::string();
 }
 
@@ -97,7 +97,7 @@ std::string AST::Instr::While::buildIR() {
     // delete all the variables that were defined inside of it. We do this
     // because it will allow us to create them from scratch if we jump back  to
     // the while block.
-    currentCFG->cleanSymbolTable(ast_block);
+   // currentCFG->cleanSymbolTable(ast_block);
 
 
     return std::string();
@@ -130,16 +130,12 @@ std::string AST::Instr::IfElse::buildIR() {
     // after the if we need to jump above the else bloc
     bb_if->add_IRInstr(IRInstr::jmp, Type(), {bb_continuation->label});
 
-    // we can also clean the symbol table as we are finished with the if bloc
-    currentCFG->cleanSymbolTable(this->ifBloc);
 
     // else bloc
     currentCFG->current_bb = bb_else;
     currentCFG->add_bb(bb_else);
     this->elseBloc->buildIR(startBloc);
 
-    // we can also clean the symbol table as we are finished with the if bloc
-    currentCFG->cleanSymbolTable(this->elseBloc);
 
     // here we don't need a jump because the continuation bb is just after the
     // else bb

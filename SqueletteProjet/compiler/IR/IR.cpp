@@ -225,8 +225,11 @@ void BasicBlock::gen_asm(ostream &o) {
     if (label != "essai") {
         o << this->label << ": " << endl;
     }
+    AST::Bloc *predecessor = nullptr;
     for (auto instr : instrs) {
+        if(predecessor != instr->bb->bloc)
         instr->gen_asm(o);
+
     }
 
 }
