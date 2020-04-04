@@ -354,9 +354,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
             }
         } else {
             // Convert the bloc pointer to a string
-            const void *address = static_cast<const void *>(parent_bloc);
+            const void *address1 = static_cast<const void *>(parent_bloc);
             std::stringstream ss;
-            ss << address;
+            ss << address1;
             std::string address_new_bloc = ss.str();
             new_name = address_new_bloc + name;
             bloc = parent_bloc;
@@ -393,5 +393,17 @@ void CFG::cleanSymbolTable(AST::Bloc *bloc) {
 
 }
 void CFG::deleteSymbol(AST::Bloc *bloc,std::string name){
+    // Convert the bloc pointer to a string
+    std::string new_name = create_var_name(bloc,name);
+    SymbolIndex.erase(new_name);
+    SymbolType.erase(new_name);
+}
 
+std::string CFG::create_var_name(AST::Bloc *bloc, std::string name){
+    const void *address1 = static_cast<const void *>(bloc);
+    std::stringstream ss;
+    ss << address1;
+    std::string address_new_bloc = ss.str();
+    std::string new_name = address_new_bloc + name;
+    return new_name;
 }
