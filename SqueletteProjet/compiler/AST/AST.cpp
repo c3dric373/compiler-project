@@ -67,6 +67,9 @@ std::string AST::Instr::If::buildIR() {
     this->bloc->buildIR(currentBloc);
     currentCFG->add_bb(bb_false);
     currentCFG->current_bb = bb_false;
+
+    // we can also clean the symbol table as we are finished with the if bloc
+    currentCFG->cleanSymbolTable(this->bloc);
     return std::string();
 }
 
@@ -126,13 +129,18 @@ std::string AST::Instr::IfElse::buildIR() {
     // after the if we need to jump above the else bloc
     bb_if->add_IRInstr(IRInstr::jmp, Type(), {bb_continuation->label});
 
+    // we can also clean the symbol table as we are finished with the if bloc
+    currentCFG->cleanSymbolTable(this->ifBloc);
 
     // else bloc
     currentCFG->current_bb = bb_else;
     currentCFG->add_bb(bb_else);
     this->elseBloc->buildIR(startBloc);
 
-    // here we don't need a jump because the cotinuation bb is just after the
+    // we can also clean the symbol table as we are finished with the if bloc
+    currentCFG->cleanSymbolTable(this->elseBloc);
+
+    // here we don't need a jump because the continuation bb is just after the
     // else bb
     currentCFG->current_bb = bb_continuation;
     currentCFG->add_bb(bb_continuation);
