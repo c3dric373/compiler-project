@@ -30,7 +30,7 @@ main:
 	movl %eax , -16(%rbp)
 	 jmp .L2
 .L4: 
-	movl $3, -44(%rbp)
+	movl $6, -44(%rbp)
 	movl -44(%rbp), %eax
 	movl %eax , -48(%rbp)
 .L5: 
@@ -44,17 +44,26 @@ main:
 	je .L6
 	jmp .L7
 .L6: 
-	movl -16(%rbp) , %eax
-	addl -24(%rbp), %eax
-	movl %eax, -60(%rbp)
+	movl $2, -60(%rbp)
 	movl -60(%rbp), %eax
-	movl %eax , -16(%rbp)
-	movl $1, -64(%rbp)
-	movl -48(%rbp) , %eax
-	subl -64(%rbp), %eax
+	movl %eax , -64(%rbp)
+	movl -16(%rbp) , %eax
+	addl -64(%rbp), %eax
 	movl %eax, -68(%rbp)
-	movl -68(%rbp), %eax
+	movl -68(%rbp) , %eax
+	addl -24(%rbp), %eax
+	movl %eax, -72(%rbp)
+	movl -72(%rbp), %eax
+	movl %eax , -16(%rbp)
+	movl $1, -76(%rbp)
+	movl -48(%rbp) , %eax
+	subl -76(%rbp), %eax
+	movl %eax, -80(%rbp)
+	movl -80(%rbp), %eax
 	movl %eax , -48(%rbp)
+	movl $1, -84(%rbp)
+	movl -84(%rbp), %eax
+	movl %eax , -24(%rbp)
 	 jmp .L5
 .L7: 
 .L2: 
