@@ -319,7 +319,7 @@ std::string CFG::create_new_temp_var(Type t) {
 int CFG::get_var_index(AST::Bloc *bloc, string name) {
     // If it's a tmp variable created by ourselves we do not need to add the
     // bloc pointer to identify it.
-    if(name.rfind("=!", 0) == 0){
+    if(name.rfind('!', 0) == 0){
         if(SymbolIndex.find(name) == SymbolIndex.end()){
             return -1;
         }else{
