@@ -10,7 +10,7 @@ int main(){
             }else{
                 int f = 3;
                 while(f>1){
-                    c = c + d ;
+                    c = c + d;
                     f = f-1;
                 }
 

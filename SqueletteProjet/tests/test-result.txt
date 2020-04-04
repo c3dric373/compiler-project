@@ -1,6 +1,6 @@
 TEST-CASE: pld-test-output/tests-Init-test-coco
 TEST OK
-TEST-CASE: pld-test-output/tests-Init-test-rendu
+TEST-CASE: pld-test-output/tests-Init-test-rendu-mi-parcours
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-bitwise_int-0_simple_or
 TEST OK
@@ -26,7 +26,13 @@ TEST-CASE: pld-test-output/tests-Init-while-2_while_with_equal
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-bloc-0_simple_nested_bloc
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-bloc-1_ifElse_differentBlocs
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-bloc-0_simple_bloc
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-bloc-1_if_different_blocs
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-bloc-3_ifElseWhile+blocs
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-if_else-0_simple_ifelse
 TEST OK
