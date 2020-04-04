@@ -52,7 +52,7 @@ public:
 
 
     /**  constructor */
-    IRInstr(AST::Bloc *bloc,BasicBlock *bb_, Operation op, Type t, vector<string> params);
+    IRInstr(BasicBlock *bb_, Operation op, Type t, vector<string> params);
 
     /** Actual code generation */
     void
