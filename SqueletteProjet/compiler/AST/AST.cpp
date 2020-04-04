@@ -43,6 +43,7 @@ std::string AST::Bloc::buildIR(AST::Bloc *previousBloc) {
         // Todo add bloc pointer to build ir as parameter to have the index for variables
         it->buildIR();
     }
+    currentCFG->cleanSymbolTable(this);
     return "";
 }
 
