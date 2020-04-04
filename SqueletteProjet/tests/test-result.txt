@@ -34,5 +34,9 @@ TEST-CASE: pld-test-output/tests-Init-bloc-3_reassessment_in_else
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-bloc-3_ifElseWhile+blocs
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-if_else-1_nested_ifElse
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-if_else-0_simple_ifelse
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-if_else-2_combined_ifElse
 TEST OK
