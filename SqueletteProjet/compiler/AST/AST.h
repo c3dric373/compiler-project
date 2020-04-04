@@ -447,7 +447,7 @@ namespace AST {
 
             virtual void display() = 0;
 
-            virtual std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            virtual std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc *bloc) = 0;
 
         };
@@ -460,7 +460,7 @@ namespace AST {
 
             std::string buildIR() override;
 
-            std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc *bloc) override;
 
 
@@ -480,7 +480,7 @@ namespace AST {
 
             std::string buildIR() override;
 
-            std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc *bloc) override;
 
             void display() override;
@@ -499,7 +499,7 @@ namespace AST {
 
             std::string buildIR() override;
 
-            std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc
                           *bloc)
             override;
@@ -521,7 +521,7 @@ namespace AST {
 
             std::string buildIR() override;
 
-            std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc
                           *bloc)
             override;
@@ -543,7 +543,7 @@ namespace AST {
 
             std::string buildIR() override;
 
-            std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc *bloc) override;
 
             void display() override;
@@ -562,7 +562,7 @@ namespace AST {
 
             void display() override;
 
-            std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc*bloc) override;
 
             std::string buildIR() override;
@@ -579,7 +579,7 @@ namespace AST {
 
             void display() override;
 
-            std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc *bloc)
             override;
 
@@ -598,7 +598,7 @@ namespace AST {
 
             void display() override;
 
-            std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc
                           *bloc)
             override;
@@ -617,7 +617,7 @@ namespace AST {
 
             void display() override;
 
-            std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc
                           *bloc)
             override;
@@ -635,7 +635,7 @@ namespace AST {
 
             void display() override;
 
-            std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc *bloc) override;
 
             std::string buildIR() override;
@@ -649,7 +649,7 @@ namespace AST {
         public:
             void display() override;
 
-            std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+            std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
             get_var_names(Bloc
                           *bloc)
             override;
@@ -713,7 +713,7 @@ namespace AST {
 
         // Each variable needs to be mapped to it's bloc, therefore we use a tuple,
         // because there can be blocs inside of blocs we return a list of such a tuple.
-        std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+        std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
         get_var_names();
 
     private:

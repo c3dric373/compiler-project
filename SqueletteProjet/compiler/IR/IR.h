@@ -175,6 +175,8 @@ protected:
     int nextBBnumber; /**< just for naming */
 
     vector<BasicBlock *> basic_blocs; /**< all the basic blocks of this CFG*/
+private:
+    void deleteSymbol(AST::Bloc *bloc,std::string name);
 };
 
 

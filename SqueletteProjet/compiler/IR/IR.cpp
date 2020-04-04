@@ -32,24 +32,24 @@ void IRInstr::gen_asm(ostream &o) {
         case Operation::ldconst : {
             AST::Bloc *bloc = bb->bloc;
             // for const : params = [ name | value ]
-            std::string regString = bb->cfg->IR_reg_to_asm(bloc,params[0]);
+            std::string regString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             o << "\tmovl $" << params[1] << ", " << regString << endl;
             break;
         }
         case Operation::copy: {
             AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
-            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc,params[0]);
-            std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc,params[1]);
+            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
             o << "\tmovl %eax , " << reg_variable << endl;
             break;
         }
         case Operation::sub: {
             AST::Bloc *bloc = bb->bloc;
-            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc,params[0]);
-            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc,params[1]);
-            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc,params[2]);
+            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\tsubl " << reg2String << ", %eax" << endl;
@@ -58,9 +58,9 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::mul: {
             AST::Bloc *bloc = bb->bloc;
-            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc,params[0]);
-            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc,params[1]);
-            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc,params[2]);
+            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\timull " << reg2String << ", %eax" << endl;
@@ -69,9 +69,9 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::add : {
             AST::Bloc *bloc = bb->bloc;
-            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc,params[0]);
-            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc,params[1]);
-            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc,params[2]);
+            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\taddl " << reg2String << ", %eax" << endl;
@@ -80,9 +80,9 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::and_: {
             AST::Bloc *bloc = bb->bloc;
-            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc,params[0]);
-            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc,params[1]);
-            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc,params[2]);
+            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\tand " << reg2String << ", %eax" << endl;
@@ -91,9 +91,9 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::xor_: {
             AST::Bloc *bloc = bb->bloc;
-            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc,params[0]);
-            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc,params[1]);
-            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc,params[2]);
+            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\txor " << reg2String << ", %eax" << endl;
@@ -102,9 +102,9 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::or_: {
             AST::Bloc *bloc = bb->bloc;
-            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc,params[0]);
-            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc,params[1]);
-            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc,params[2]);
+            std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+            std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\tor " << reg2String << ", %eax" << endl;
@@ -122,7 +122,7 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::if_: {
             AST::Bloc *bloc = bb->bloc;
-            std::string expr = bb->cfg->IR_reg_to_asm(bloc,params[0]);
+            std::string expr = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             o << "\tcmpl $1, " << expr << endl;
             o << "\tje " << bb->exit_true->label << endl;
             o << "\tjmp " << bb->exit_false->label << endl;
@@ -130,9 +130,9 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::cmp_eq: {
             AST::Bloc *bloc = bb->bloc;
-            std::string dest_location = bb->cfg->IR_reg_to_asm(bloc,params[0]);
-            std::string lValue = bb->cfg->IR_reg_to_asm(bloc,params[1]);
-            std::string rValue = bb->cfg->IR_reg_to_asm(bloc,params[2]);
+            std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+            std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
             o << "\tmovl " << lValue << ", %eax" << endl;
@@ -149,9 +149,9 @@ void IRInstr::gen_asm(ostream &o) {
 
         case Operation::cmp_low: {
             AST::Bloc *bloc = bb->bloc;
-            std::string dest_location = bb->cfg->IR_reg_to_asm(bloc,params[0]);
-            std::string lValue = bb->cfg->IR_reg_to_asm(bloc,params[1]);
-            std::string rValue = bb->cfg->IR_reg_to_asm(bloc,params[2]);
+            std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+            std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
             o << "\tmovl " << rValue << ", %eax" << endl;
@@ -168,9 +168,9 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::cmp_great: {
             AST::Bloc *bloc = bb->bloc;
-            std::string dest_location = bb->cfg->IR_reg_to_asm(bloc,params[0]);
-            std::string lValue = bb->cfg->IR_reg_to_asm(bloc,params[1]);
-            std::string rValue = bb->cfg->IR_reg_to_asm(bloc,params[2]);
+            std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+            std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
             o << "\tmovl " << rValue << ", %eax" << endl;
@@ -191,7 +191,7 @@ void IRInstr::gen_asm(ostream &o) {
             std::string param = params[0];
             //Si le paramètre ne contient pas de ! c'est que c'est une variable
             if (param.at(0) != '!') {
-                std::string regString = bb->cfg->IR_reg_to_asm(bloc,params[0]);
+                std::string regString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
                 o << "\tmovl " << regString << ", %eax" << endl;
             } else {
                 // Le paramètre est une constante, on enlève le ! et on mets la constante dans %eax
@@ -202,8 +202,8 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::neg: {
             AST::Bloc *bloc = bb->bloc;
-            std::string tmp_var = bb->cfg->IR_reg_to_asm(bloc,params[0]);
-            std::string dest_var = bb->cfg->IR_reg_to_asm(bloc,params[1]);
+            std::string tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string dest_var = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             o << "\tmovl " << tmp_var << ", %eax" << endl;
             o << "\tNEG %eax" << endl;
             o << "\tmovl %eax, " << dest_var << endl;
@@ -284,7 +284,7 @@ void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
     nextFreeSymbolIndex -= INTOFFSET;
 
     // Convert the bloc pointer to a string
-    const void * address = static_cast<const void*>(bloc);
+    const void *address = static_cast<const void *>(bloc);
     std::stringstream ss;
     ss << address;
     std::string address_bloc = ss.str();
@@ -319,15 +319,15 @@ std::string CFG::create_new_temp_var(Type t) {
 int CFG::get_var_index(AST::Bloc *bloc, string name) {
     // If it's a tmp variable created by ourselves we do not need to add the
     // bloc pointer to identify it.
-    if(name.rfind('!', 0) == 0){
-        if(SymbolIndex.find(name) == SymbolIndex.end()){
+    if (name.rfind('!', 0) == 0) {
+        if (SymbolIndex.find(name) == SymbolIndex.end()) {
             return -1;
-        }else{
+        } else {
             return SymbolIndex.at(name);
         }
     }
     // Convert the bloc pointer to a string
-    const void * address = static_cast<const void*>(bloc);
+    const void *address = static_cast<const void *>(bloc);
     std::stringstream ss;
     ss << address;
     std::string address_bloc = ss.str();
@@ -335,31 +335,31 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     // Redefine the name of the variable, in order to identify it via it's bloc
     // pointer
     std::string new_name = address_bloc + name;
-    if(bloc->parent_bloc == NULL){
-        if(SymbolIndex.find(new_name) == SymbolIndex.end()){
+    if (bloc->parent_bloc == NULL) {
+        if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
             return -1;
-        }else{
+        } else {
             return SymbolIndex.at(new_name);
         }
     }
-    while(SymbolIndex.find(new_name) == SymbolIndex.end()){
+    while (SymbolIndex.find(new_name) == SymbolIndex.end()) {
         AST::Bloc *parent_bloc = bloc->parent_bloc;
         // We need to do the last check inside of the loop else we will get
         // a nullptr exception
-        if(parent_bloc == NULL){
-            if(SymbolIndex.find(new_name) == SymbolIndex.end()){
+        if (parent_bloc == NULL) {
+            if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
                 return -1;
-            }else{
+            } else {
                 return SymbolIndex.at(new_name);
             }
-        }else{
+        } else {
             // Convert the bloc pointer to a string
-            const void * address = static_cast<const void*>(parent_bloc);
+            const void *address = static_cast<const void *>(parent_bloc);
             std::stringstream ss;
             ss << address;
             std::string address_new_bloc = ss.str();
             new_name = address_new_bloc + name;
-            bloc  = parent_bloc;
+            bloc = parent_bloc;
 
         }
 
@@ -380,6 +380,18 @@ BasicBlock *CFG::get_bb_before_last() {
 }
 
 void CFG::cleanSymbolTable(AST::Bloc *bloc) {
-    bloc->get_var_names();
+    std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>> var_names =
+            bloc->get_var_names();
+    for (auto &it : var_names) {
+      std::vector<std::string> names = std::get<1>(it);
+      AST::Bloc *bloc = std::get<0>(it);
+      for(auto &name: names){
+        this->deleteSymbol(bloc, name);
+      }
+
+    }
+
+}
+void CFG::deleteSymbol(AST::Bloc *bloc,std::string name){
 
 }

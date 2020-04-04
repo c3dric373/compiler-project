@@ -893,17 +893,17 @@ std::string AST::Instr::CallProc::buildIR() {
 /**------------------------------getVarNames----------------------------------*/
 /**---------------------------------------------------------------------------*/
 
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Instr::CallProc::get_var_names(AST::Bloc *bloc) {
-    return std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>();
+    return  std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>();
 }
 
 
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Bloc::get_var_names() {
-    std::vector<std::tuple<AST::Bloc, std::vector<std::string>>> result;
+     std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>> result;
     for (auto &it : blocinstr) {
-        std::vector<std::tuple<AST::Bloc, std::vector<std::string>>> vars_in_instr =
+         std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>> vars_in_instr =
                 it->get_var_names(this);
         result.insert(result.end(), vars_in_instr.begin(), vars_in_instr.end());
 
@@ -912,60 +912,60 @@ AST::Bloc::get_var_names() {
 }
 
 
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Instr::DeclInt::get_var_names(AST::Bloc *bloc) {
-    std::vector<std::tuple<AST::Bloc, std::vector<std::string>>> res;
-    res.emplace_back(*bloc, this->names);
+     std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>> res;
+    res.emplace_back(bloc, this->names);
     return res;
 }
 
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Instr::DeclChar::get_var_names(AST::Bloc *bloc) {
-    std::vector<std::tuple<AST::Bloc, std::vector<std::string>>> res;
-    res.emplace_back(*bloc, this->names);
+     std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>> res;
+    res.emplace_back(bloc, this->names);
     return res;
 }
 
 
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Instr::DefInt::get_var_names(AST::Bloc *bloc) {
     std::vector<std::string> name;
     name.push_back(this->name);
-    std::vector<std::tuple<AST::Bloc, std::vector<std::string>>> res;
-    res.emplace_back(*bloc, name);
+     std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>> res;
+    res.emplace_back(bloc, name);
     return res;
 }
 
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Instr::DefChar::get_var_names(AST::Bloc *bloc) {
     std::vector<std::string> name;
     name.push_back(this->name);
-    std::vector<std::tuple<AST::Bloc, std::vector<std::string>>> res;
-    res.emplace_back(*bloc, name);
+     std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>> res;
+    res.emplace_back(bloc, name);
     return res;
 }
 
 
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Instr::While::get_var_names(AST::Bloc *bloc) {
     return this->bloc->get_var_names();
 }
 
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Instr::If::get_var_names(AST::Bloc *bloc) {
     return this->bloc->get_var_names();
 }
 
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Instr::Bloci::get_var_names(AST::Bloc *bloc) {
     return this->bloc->get_var_names();
 }
 
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Instr::IfElse::get_var_names(AST::Bloc *bloc) {
-    std::vector<std::tuple<AST::Bloc, std::vector<std::string>>> if_res =
+     std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>> if_res =
             this->ifBloc->get_var_names();
-    std::vector<std::tuple<AST::Bloc, std::vector<std::string>>> else_res =
+     std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>> else_res =
             this->elseBloc->get_var_names();
     if_res.insert(if_res.end(), else_res.begin(), else_res.end());
     return if_res;
@@ -975,12 +975,12 @@ AST::Instr::IfElse::get_var_names(AST::Bloc *bloc) {
 
 
 // --- No action necessary -----------------------------------------------------
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Instr::Affct::get_var_names(AST::Bloc *bloc) {
-    return std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>();
+    return  std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>();
 }
 
-std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+ std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>
 AST::Instr::Return::get_var_names(AST::Bloc *bloc) {
-    return std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>();
+    return  std::vector<std::tuple<AST::Bloc*, std::vector<std::string>>>();
 }
