@@ -298,7 +298,7 @@ std::string AST::Expr::Low::buildIR(bool not_flag) {
                                             {tmp_dest,name_lValue, name_rValue, "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+                                            {tmp_dest,name_lValue, name_rValue, "neq"});
     }
     return tmp_dest;
 }
