@@ -227,7 +227,7 @@ void BasicBlock::gen_asm(ostream &o) {
     }
     AST::Bloc *predecessor = nullptr;
     for (auto instr : instrs) {
-        if(predecessor != instr->bb->bloc)
+        if(predecessor != instr->bb->bloc){}
         instr->gen_asm(o);
 
     }
