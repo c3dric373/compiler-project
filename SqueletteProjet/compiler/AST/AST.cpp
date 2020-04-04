@@ -43,6 +43,87 @@ std::string AST::Bloc::buildIR() {
     return "";
 }
 
+//-----------------------------INSTRUCTIONS-------------------------------------
+
+std::string AST::Instr::If::buildIR() {
+    // tester la condition
+    std::string res = this->expr->buildIR(false);
+
+    auto bb_true = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    currentCFG->current_bb->exit_true = bb_true;
+    bb_true->bloc = this->bloc;
+    auto bb_false = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    bb_false->bloc = currentCFG->current_bb->bloc;
+    currentCFG->current_bb->exit_false = bb_false;
+    currentCFG->current_bb->add_IRInstr(IRInstr::if_, Type(),
+                                        {res});
+    currentCFG->current_bb = bb_true;
+    currentCFG->add_bb(bb_true);
+    this->bloc->buildIR();
+    currentCFG->add_bb(bb_false);
+    currentCFG->current_bb = bb_false;
+    return std::string();
+}
+
+std::string AST::Instr::While::buildIR() {
+    // create new basic bloc where the condition will be tested in order to test
+    // the condition again when we will have be done with the bloc inside of the
+    // loop
+    auto start_block = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    start_block->bloc = currentCFG->current_bb->bloc;
+    currentCFG->current_bb = start_block;
+    currentCFG->add_bb(start_block);
+    // create if condition to which we will loop back
+    auto if_condition = new AST::Instr::If(this->expr, this->bloc);
+    if_condition->buildIR();
+
+    // We need to add the jump back to the if condition therefore we will need
+    // to go one block before the last one in our cfg (the if condition will
+    // already have added the bloc after the if condition)
+    currentCFG->get_bb_before_last()->add_IRInstr(IRInstr::jmp, Type(),
+                                                  {start_block->label});
+
+    return std::string();
+}
+
+
+std::string AST::Instr::IfElse::buildIR() {
+    // tester la condition
+    std::string res = this->expr->buildIR(false);
+    // create basic bloc after if-else here because it's in the same scope as
+    // the current basic bloc
+    auto bb_continuation = new BasicBlock(currentCFG,
+                                          currentCFG->new_BB_name());
+    bb_continuation->bloc = currentCFG->current_bb->bloc;
+    auto bb_if = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    currentCFG->current_bb->exit_true = bb_if;
+    bb_if->bloc = this->ifBloc;
+    auto bb_else = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    currentCFG->current_bb->exit_false = bb_else;
+    bb_else->bloc = this->elseBloc;
+    currentCFG->current_bb->add_IRInstr(IRInstr::if_, Type(), {res});
+
+    // if bloc
+    currentCFG->current_bb = bb_if;
+    currentCFG->add_bb(bb_if);
+    this->ifBloc->buildIR();
+
+    // after the if we need to jump above the else bloc
+    bb_if->add_IRInstr(IRInstr::jmp, Type(), {bb_continuation->label});
+
+
+    // else bloc
+    currentCFG->current_bb = bb_else;
+    currentCFG->add_bb(bb_else);
+    this->elseBloc->buildIR();
+
+    // here we don't need a jump because the cotinuation bb is just after the
+    // else bb
+    currentCFG->current_bb = bb_continuation;
+    currentCFG->add_bb(bb_continuation);
+
+    return std::string();
+}
 std::string AST::Instr::DefInt::buildIR() {
     // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
     std::string name_expr = this->expr->buildIR(false);
@@ -65,6 +146,17 @@ std::string AST::Instr::Affct::buildIR() {
                                         {name_expr, this->name});
     return "";
 }
+
+std::string AST::Instr::Bloci::buildIR() {
+    // We need to create a new bb because there is a new variable scope.
+    auto new_bb = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    currentCFG->current_bb = new_bb;
+    new_bb->bloc = this->bloc;
+    return std::string();
+}
+
+//-----------------------------EXPRESSIONS--------------------------------------
+
 
 std::string AST::Expr::And::buildIR(bool not_flag) {
     std::string tmp_expr1 = this->lValue->buildIR(not_flag);
@@ -141,73 +233,6 @@ std::string AST::Expr::Const::buildIR(bool not_flag) {
     return temp;
 }
 
-std::string AST::Instr::If::buildIR() {
-    // tester la condition
-    std::string res = this->expr->buildIR(false);
-
-    auto bb_true = new BasicBlock(currentCFG, currentCFG->new_BB_name());
-    currentCFG->current_bb->exit_true = bb_true;
-    auto bb_false = new BasicBlock(currentCFG, currentCFG->new_BB_name());
-    currentCFG->current_bb->exit_false = bb_false;
-    currentCFG->current_bb->add_IRInstr(IRInstr::if_, Type(),
-                                        {res});
-    currentCFG->current_bb = bb_true;
-    currentCFG->add_bb(bb_true);
-    this->bloc->buildIR();
-    currentCFG->add_bb(bb_false);
-    currentCFG->current_bb = bb_false;
-    return std::string();
-}
-
-std::string AST::Instr::While::buildIR() {
-    // create new basic bloc where the condition will be tested in order to test
-    // the condition again when we will have be done with the bloc inside of the
-    // loop
-    auto start_block = new BasicBlock(currentCFG, currentCFG->new_BB_name());
-    currentCFG->current_bb = start_block;
-    currentCFG->add_bb(start_block);
-    // create if condition to which we will loop back
-    auto if_condition = new AST::Instr::If(this->expr, this->bloc);
-    if_condition->buildIR();
-
-    // We need to add the jump back to the if condition therefore we will need
-    // to go one block before the last one in our cfg (the if condition will
-    // already have added the bloc after the if condition)
-    currentCFG->get_bb_before_last()->add_IRInstr(IRInstr::jmp, Type(),
-                                                  {start_block->label});
-
-    return std::string();
-}
-
-
-std::string AST::Instr::IfElse::buildIR() {
-    // tester la condition
-    std::string res = this->expr->buildIR(false);
-
-    auto bb_if = new BasicBlock(currentCFG, currentCFG->new_BB_name());
-    currentCFG->current_bb->exit_true = bb_if;
-    auto bb_else = new BasicBlock(currentCFG, currentCFG->new_BB_name());
-    currentCFG->current_bb->exit_false = bb_else;
-    currentCFG->current_bb->add_IRInstr(IRInstr::if_, Type(), {res});
-
-    // if bloc
-    currentCFG->current_bb = bb_if;
-    currentCFG->add_bb(bb_if);
-    this->ifBloc->buildIR();
-    auto bb_continuation = new BasicBlock(currentCFG,
-                                          currentCFG->new_BB_name());
-    bb_if->add_IRInstr(IRInstr::jmp, Type(), {bb_continuation->label});
-
-
-    // else bloc
-    currentCFG->current_bb = bb_else;
-    currentCFG->add_bb(bb_else);
-    this->elseBloc->buildIR();
-    currentCFG->current_bb = bb_continuation;
-    currentCFG->add_bb(bb_continuation);
-
-    return std::string();
-}
 
 
 std::string AST::Expr::Eq::buildIR(bool not_flag) {
@@ -639,13 +664,11 @@ void AST::Instr::While::display() {
     std::cout << ')' << std::flush;
 }
 
-void AST::Instr::Bloc::display() {
+void AST::Instr::Bloci::display() {
     bloc->display();
 }
 
-std::string AST::Instr::Bloc::buildIR() {
-    return std::string();
-}
+
 
 void AST::Instr::Instr::display() {
 

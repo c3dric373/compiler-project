@@ -574,9 +574,9 @@ namespace AST {
             AST::Bloc *bloc;
         };
 
-        class Bloc : public Instr {
+        class Bloci : public Instr {
         public:
-            Bloc(AST::Bloc *bloc) :
+            Bloci(AST::Bloc *bloc) :
                     bloc(bloc) {};
 
             void display() override;

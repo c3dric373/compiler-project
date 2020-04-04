@@ -113,7 +113,9 @@ public:
     CFG *cfg; /** < the CFG where this block belongs */
     vector<IRInstr *> instrs; /** < the instructions themselves. */
     string test_var_name;  /** < when generating IR code for an if(expr) or while(expr) etc,
-													 store here the name of the variable that holds the value of expr */
+												 store here the name of the variable that holds the value of expr */
+    AST::Bloc *bloc; /** bloc to which the bb belongs, needed for the symbol table*/
+
 protected:
 
 
