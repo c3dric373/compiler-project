@@ -654,13 +654,13 @@ namespace AST {
 
     class Bloc {
     public:
-        std::string buildIR();
+        std::string buildIR(AST::Bloc *previousBloc);
 
         void pushInstr(Instr::Instr *instr);
 
         void display();
 
-        AST::Bloc *parent_bloc;
+        AST::Bloc *parent_bloc = nullptr;
     private:
         std::vector<Instr::Instr *> blocinstr;
     };

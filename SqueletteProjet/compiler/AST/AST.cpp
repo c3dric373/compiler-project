@@ -24,9 +24,9 @@ std::string AST::Prog::buildIR() {
     CFG *cfg = new CFG(child);
     currentCFG = cfg;
     cfgs.push_back(cfg);
-
+    currentCFG->current_bb->bloc = child;
     // Construit les CFGs
-    child->buildIR();
+    child->buildIR(nullptr);
     this->returnValue->buildReturnIR();
     return "";
 }
@@ -35,7 +35,8 @@ std::string AST::Expr::ConstChar::buildIR(bool not_flag) {
     return "";
 }
 
-std::string AST::Bloc::buildIR() {
+std::string AST::Bloc::buildIR(AST::Bloc *previousBloc) {
+    this->parent_bloc = previousBloc;
     for (auto &it : blocinstr) {
         // Todo add bloc pointer to build ir as parameter to have the index for variables
         it->buildIR();
@@ -47,6 +48,7 @@ std::string AST::Bloc::buildIR() {
 
 std::string AST::Instr::If::buildIR() {
     // tester la condition
+    AST::Bloc *currentBloc = currentCFG->current_bb->bloc;
     std::string res = this->expr->buildIR(false);
 
     auto bb_true = new BasicBlock(currentCFG, currentCFG->new_BB_name());
@@ -59,7 +61,7 @@ std::string AST::Instr::If::buildIR() {
                                         {res});
     currentCFG->current_bb = bb_true;
     currentCFG->add_bb(bb_true);
-    this->bloc->buildIR();
+    this->bloc->buildIR(currentBloc);
     currentCFG->add_bb(bb_false);
     currentCFG->current_bb = bb_false;
     return std::string();
@@ -88,6 +90,8 @@ std::string AST::Instr::While::buildIR() {
 
 
 std::string AST::Instr::IfElse::buildIR() {
+    AST::Bloc *startBloc = currentCFG->current_bb->bloc;
+
     // tester la condition
     std::string res = this->expr->buildIR(false);
     // create basic bloc after if-else here because it's in the same scope as
@@ -106,7 +110,7 @@ std::string AST::Instr::IfElse::buildIR() {
     // if bloc
     currentCFG->current_bb = bb_if;
     currentCFG->add_bb(bb_if);
-    this->ifBloc->buildIR();
+    this->ifBloc->buildIR(startBloc);
 
     // after the if we need to jump above the else bloc
     bb_if->add_IRInstr(IRInstr::jmp, Type(), {bb_continuation->label});
@@ -115,7 +119,7 @@ std::string AST::Instr::IfElse::buildIR() {
     // else bloc
     currentCFG->current_bb = bb_else;
     currentCFG->add_bb(bb_else);
-    this->elseBloc->buildIR();
+    this->elseBloc->buildIR(startBloc);
 
     // here we don't need a jump because the cotinuation bb is just after the
     // else bb
@@ -149,10 +153,13 @@ std::string AST::Instr::Affct::buildIR() {
 }
 
 std::string AST::Instr::Bloci::buildIR() {
+    AST::Bloc *startBloc = currentCFG->current_bb->bloc;
     // We need to create a new bb because there is a new variable scope.
     auto new_bb = new BasicBlock(currentCFG, currentCFG->new_BB_name());
     currentCFG->current_bb = new_bb;
     new_bb->bloc = this->bloc;
+    currentCFG->add_bb(new_bb);
+    this->bloc->buildIR(startBloc);
     return std::string();
 }
 

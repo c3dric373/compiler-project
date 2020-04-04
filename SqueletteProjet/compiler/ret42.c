@@ -1,17 +1,9 @@
 int main(){
-<<<<<<< HEAD
-    int a = 23;
-    int b;
+    int a = 3;
+    int c =2;
     {
-        int a = 2;
-         b= a+2;
+        int d =3;
+        c = 3+d;
     }
-    return b;
-=======
-    int a = 1;
-    while (a < 5){
-        a  = a +1;
-    }
-    return a;
->>>>>>> develop
+    return c;
 }

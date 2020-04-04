@@ -317,6 +317,7 @@ std::string CFG::create_new_temp_var(Type t) {
 }
 
 int CFG::get_var_index(AST::Bloc *bloc, string name) {
+    if(!name)
     // Convert the bloc pointer to a string
     const void * address = static_cast<const void*>(bloc);
     std::stringstream ss;
@@ -326,21 +327,35 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     // Redefine the name of the variable, in order to identify it via it's bloc
     // pointer
     std::string new_name = address_bloc + name;
-
+    if(bloc->parent_bloc == NULL){
+        if(SymbolIndex.find(new_name) == SymbolIndex.end()){
+            return -1;
+        }else{
+            return SymbolIndex.at(new_name);
+        }
+    }
     while(SymbolIndex.find(new_name) == SymbolIndex.end()){
         AST::Bloc *parent_bloc = bloc->parent_bloc;
-
         // We need to do the last check inside of the loop else we will get
         // a nullptr exception
-        if(parent_bloc == nullptr){
+        if(parent_bloc == NULL){
             if(SymbolIndex.find(new_name) == SymbolIndex.end()){
                 return -1;
             }else{
-                return SymbolIndex.at(name);
+                return SymbolIndex.at(new_name);
             }
+        }else{
+            // Convert the bloc pointer to a string
+            const void * address = static_cast<const void*>(parent_bloc);
+            std::stringstream ss;
+            ss << address;
+            std::string address_new_bloc = ss.str();
+            new_name = address_new_bloc + name;
+
         }
+
     }
-    return SymbolIndex.at(name);
+    return SymbolIndex.at(new_name);
 }
 
 Type CFG::get_var_type(string name) {
