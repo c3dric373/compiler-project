@@ -121,19 +121,20 @@ std::string AST::Instr::IfElse::buildIR() {
     currentCFG->add_bb(bb_else);
     this->elseBloc->buildIR(startBloc);
 
-    // here we don't need a jump because the cotinuation bb is just after the
+    // here we don't need a jump because the continuation bb is just after the
     // else bb
     currentCFG->current_bb = bb_continuation;
     currentCFG->add_bb(bb_continuation);
 
     return std::string();
 }
+
 std::string AST::Instr::DefInt::buildIR() {
     // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
     std::string name_expr = this->expr->buildIR(false);
     // Ajout de la variable name à la table des symboles de currentCFG
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    currentCFG->add_to_symbol_table(current_bloc,this->name, Type());
+    currentCFG->add_to_symbol_table(current_bloc, this->name, Type());
     // Ajout de l'instruction au current_block
     currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(),
                                         {name_expr, this->name});
@@ -243,7 +244,6 @@ std::string AST::Expr::Const::buildIR(bool not_flag) {
 }
 
 
-
 std::string AST::Expr::Eq::buildIR(bool not_flag) {
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_lValue = this->lValue->buildIR(not_flag);
@@ -340,7 +340,8 @@ std::string AST::Expr::Low::buildIR(bool not_flag) {
                                              "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "neq"});
     }
     return tmp_dest;
 }
@@ -381,7 +382,7 @@ std::string AST::Instr::DeclInt::buildIR() {
     for (auto &it : this->names) {
         // Ajout de la variable it à la table des symboles de currentCFG
         AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(current_bloc,it, Type());
+        currentCFG->add_to_symbol_table(current_bloc, it, Type());
     }
     return std::string();
 }
@@ -676,7 +677,6 @@ void AST::Instr::While::display() {
 void AST::Instr::Bloci::display() {
     bloc->display();
 }
-
 
 
 void AST::Instr::Instr::display() {
