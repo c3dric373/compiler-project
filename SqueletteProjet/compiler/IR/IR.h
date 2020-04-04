@@ -166,6 +166,8 @@ public:
 
     BasicBlock *get_bb_before_last();
 
+    void cleanSymbolTable(AST::Bloc *bloc);
+
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */
     map<string, int> SymbolIndex; /**< part of the symbol table  */

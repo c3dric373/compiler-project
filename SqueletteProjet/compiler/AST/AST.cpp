@@ -16,7 +16,9 @@ std::vector<CFG *> AST::Prog::generateIR() {
     return cfgs;
 }
 
-//-------------------buildIR-----------------------
+/**---------------------------------------------------------------------------*/
+/**------------------------------buildIr--------------------------------------*/
+/**---------------------------------------------------------------------------*/
 
 std::string AST::Prog::buildIR() {
     // Plus tard : déplacer ça dans ASP::Fonct
@@ -44,8 +46,9 @@ std::string AST::Bloc::buildIR(AST::Bloc *previousBloc) {
     return "";
 }
 
-//-----------------------------INSTRUCTIONS-------------------------------------
-
+/**---------------------------------------------------------------------------*/
+/**------------------------------INSTRUCTIONS---------------------------------*/
+/**---------------------------------------------------------------------------*/
 std::string AST::Instr::If::buildIR() {
     // tester la condition
     AST::Bloc *currentBloc = currentCFG->current_bb->bloc;
@@ -69,12 +72,13 @@ std::string AST::Instr::If::buildIR() {
 
 std::string AST::Instr::While::buildIR() {
     // create new basic bloc where the condition will be tested in order to test
-    // the condition again when we will have be done with the bloc inside of the
+    // the condition again when we will be done with the bloc inside of the
     // loop
-    auto start_block = new BasicBlock(currentCFG, currentCFG->new_BB_name());
-    start_block->bloc = currentCFG->current_bb->bloc;
-    currentCFG->current_bb = start_block;
-    currentCFG->add_bb(start_block);
+    AST::Bloc *ast_block = this->bloc;
+    auto start_bBlock = new BasicBlock(currentCFG, currentCFG->new_BB_name());
+    start_bBlock->bloc = currentCFG->current_bb->bloc;
+    currentCFG->current_bb = start_bBlock;
+    currentCFG->add_bb(start_bBlock);
     // create if condition to which we will loop back
     auto if_condition = new AST::Instr::If(this->expr, this->bloc);
     if_condition->buildIR();
@@ -83,7 +87,14 @@ std::string AST::Instr::While::buildIR() {
     // to go one block before the last one in our cfg (the if condition will
     // already have added the bloc after the if condition)
     currentCFG->get_bb_before_last()->add_IRInstr(IRInstr::jmp, Type(),
-                                                  {start_block->label});
+                                                  {start_bBlock->label});
+
+    // We need to reset the variables inside of the while bloc, i.e we need to
+    // delete all the variables that were defined inside of it. We do this
+    // because it will allow us to create them from scratch if we jump back  to
+    // the while block.
+    currentCFG->cleanSymbolTable(ast_block);
+
 
     return std::string();
 }
@@ -128,12 +139,13 @@ std::string AST::Instr::IfElse::buildIR() {
 
     return std::string();
 }
+
 std::string AST::Instr::DefInt::buildIR() {
     // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
     std::string name_expr = this->expr->buildIR(false);
     // Ajout de la variable name à la table des symboles de currentCFG
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    currentCFG->add_to_symbol_table(current_bloc,this->name, Type());
+    currentCFG->add_to_symbol_table(current_bloc, this->name, Type());
     // Ajout de l'instruction au current_block
     currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(),
                                         {name_expr, this->name});
@@ -163,8 +175,9 @@ std::string AST::Instr::Bloci::buildIR() {
     return std::string();
 }
 
-//-----------------------------EXPRESSIONS--------------------------------------
-
+/**---------------------------------------------------------------------------*/
+/**--------------------------------EXPRESSIONS--------------------------------*/
+/**---------------------------------------------------------------------------*/
 
 std::string AST::Expr::And::buildIR(bool not_flag) {
     std::string tmp_expr1 = this->lValue->buildIR(not_flag);
@@ -241,7 +254,6 @@ std::string AST::Expr::Const::buildIR(bool not_flag) {
                                         {temp, value_expr});
     return temp;
 }
-
 
 
 std::string AST::Expr::Eq::buildIR(bool not_flag) {
@@ -340,7 +352,8 @@ std::string AST::Expr::Low::buildIR(bool not_flag) {
                                              "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "neq"});
     }
     return tmp_dest;
 }
@@ -381,7 +394,7 @@ std::string AST::Instr::DeclInt::buildIR() {
     for (auto &it : this->names) {
         // Ajout de la variable it à la table des symboles de currentCFG
         AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(current_bloc,it, Type());
+        currentCFG->add_to_symbol_table(current_bloc, it, Type());
     }
     return std::string();
 }
@@ -392,8 +405,9 @@ void AST::Bloc::pushInstr(Instr::Instr *instr) {
 }
 
 
-//------------------buildReturnIR------------------
-
+/**---------------------------------------------------------------------------*/
+/**------------------------------buildReturnIR--------------------------------*/
+/**---------------------------------------------------------------------------*/
 void AST::Expr::Add::buildReturnIR() {
     this->buildIR(true);
 }
@@ -458,8 +472,9 @@ std::string AST::Prog::getErrorMsg() {
     return this->table.getErrorMsg();
 }
 
-//------------------Exists--------------------
-
+/**---------------------------------------------------------------------------*/
+/**------------------------------EXISTS---------------------------------------*/
+/**---------------------------------------------------------------------------*/
 void AST::Expr::Sub::exists(SymbolTable &st) {
     this->lValue->exists(st);
     this->rValue->exists(st);
@@ -519,8 +534,10 @@ void AST::Expr::Xor::exists(SymbolTable &st) {
 void AST::Expr::ConstChar::exists(SymbolTable &st) {
 }
 
-//-------------DISPLAY-----------------------
 
+/**---------------------------------------------------------------------------*/
+/**------------------------------DISPLAY--------------------------------------*/
+/**---------------------------------------------------------------------------*/
 
 void AST::Expr::Mult::display() {
     std::cout << "(MULT " << std::flush;
@@ -620,6 +637,7 @@ void AST::Instr::DeclInt::display() {
     std::cout << ')' << std::flush;
 }
 
+
 void AST::Instr::DeclChar::display() {
     std::cout << "(DECC " << std::flush;
     for (auto &it : names) {
@@ -638,11 +656,13 @@ void AST::Instr::DefInt::display() {
     std::cout << ')' << std::flush;
 }
 
+
 void AST::Instr::DefChar::display() {
     std::cout << "(DEFC " << name << ' ' << std::flush;
     expr->display();
     std::cout << ')' << std::flush;
 }
+
 
 void AST::Prog::display() {
     std::cout << "(AST " << std::flush;
@@ -659,12 +679,14 @@ void AST::Instr::Affct::display() {
     std::cout << ')' << std::flush;
 }
 
+
 void AST::Instr::If::display() {
     std::cout << "(IF " << std::flush;
     expr->display();
     bloc->display();
     std::cout << ')' << std::flush;
 }
+
 
 void AST::Instr::While::display() {
     std::cout << "(WHL " << std::flush;
@@ -676,8 +698,6 @@ void AST::Instr::While::display() {
 void AST::Instr::Bloci::display() {
     bloc->display();
 }
-
-
 
 void AST::Instr::Instr::display() {
 
@@ -851,6 +871,7 @@ std::string AST::Instr::Return::buildIR() {
     return "";
 }
 
+
 void AST::Instr::CallProc::display() {
     std::cout << "(CALLP " << std::flush;
     for (auto &it : args) {
@@ -862,3 +883,79 @@ void AST::Instr::CallProc::display() {
 std::string AST::Instr::CallProc::buildIR() {
     return "";
 }
+
+
+
+
+
+/**---------------------------------------------------------------------------*/
+/**------------------------------getVarNames----------------------------------*/
+/**---------------------------------------------------------------------------*/
+
+std::tuple<AST::Bloc, std::vector<std::string>>
+AST::Instr::CallProc::get_var_names(AST::Bloc *bloc) {
+    return std::tuple<AST::Bloc, std::vector<std::string>>();
+}
+
+
+std::vector<std::tuple<AST::Bloc, std::vector<std::string>>>
+AST::Bloc::get_var_names() {
+    std::vector<std::tuple<AST::Bloc, std::vector<std::string>>> result;
+    for (auto &it : blocinstr) {
+        std::tuple<AST::Bloc, std::vector<std::string>> vars_in_instr = it->get_var_names(
+                this);
+        result.push_back(vars_in_instr);
+    }
+    return result;
+}
+
+
+std::tuple<AST::Bloc, std::vector<std::string>>
+AST::Instr::DeclInt::get_var_names(AST::Bloc *bloc) {
+    return std::tuple<AST::Bloc, std::vector<std::string>>(*bloc, this->names);
+}
+
+
+std::tuple<AST::Bloc, std::vector<std::string>>
+AST::Instr::DefInt::get_var_names(AST::Bloc *bloc) {
+    std::vector<std::string> name;
+    name.push_back(this->name);
+    return std::tuple<AST::Bloc, std::vector<std::string>>(*bloc, name);
+}
+
+std::tuple<AST::Bloc, std::vector<std::string>>
+AST::Instr::DefChar::get_var_names(AST::Bloc *bloc) {
+    return std::tuple<AST::Bloc, std::vector<std::string>>();
+}
+
+std::tuple<AST::Bloc, std::vector<std::string>>
+AST::Instr::Affct::get_var_names(AST::Bloc *bloc) {
+    return std::tuple<AST::Bloc, std::vector<std::string>>();
+}
+
+
+std::tuple<AST::Bloc, std::vector<std::string>>
+AST::Instr::While::get_var_names(AST::Bloc *bloc) {
+    return std::tuple<AST::Bloc, std::vector<std::string>>();
+}
+
+std::tuple<AST::Bloc, std::vector<std::string>>
+AST::Instr::If::get_var_names(AST::Bloc *bloc) {
+    return std::tuple<AST::Bloc, std::vector<std::string>>();
+}
+
+std::tuple<AST::Bloc, std::vector<std::string>>
+AST::Instr::Bloci::get_var_names(AST::Bloc *bloc) {
+    return std::tuple<AST::Bloc, std::vector<std::string>>();
+}
+
+std::tuple<AST::Bloc, std::vector<std::string>>
+AST::Instr::IfElse::get_var_names(AST::Bloc *bloc) {
+    return std::tuple<AST::Bloc, std::vector<std::string>>();
+}
+
+std::tuple<AST::Bloc, std::vector<std::string>>
+AST::Instr::Return::get_var_names(AST::Bloc *bloc) {
+    return std::tuple<AST::Bloc, std::vector<std::string>>();
+}
+

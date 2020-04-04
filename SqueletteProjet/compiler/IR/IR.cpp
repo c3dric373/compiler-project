@@ -378,3 +378,8 @@ std::string CFG::new_BB_name() {
 BasicBlock *CFG::get_bb_before_last() {
     return this->basic_blocs.end()[-2];
 }
+
+void CFG::cleanSymbolTable(AST::Bloc *bloc) {
+    bloc->get_var_names();
+
+}
