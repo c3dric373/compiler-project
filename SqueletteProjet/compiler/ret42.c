@@ -6,11 +6,11 @@ int main() {
         {
             if (d == 4) {
                 int f = 5;
-                c = f;
+                c = f-1;
             } else {
                 int f = 6;
                 while (f > 1) {
-                    int z = 2;
+                    int z = 2-1;
                     c = c + z +d;
                     f = f - 1;
                     d = 1;

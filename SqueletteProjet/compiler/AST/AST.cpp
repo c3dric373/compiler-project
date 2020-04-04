@@ -121,7 +121,7 @@ std::string AST::Instr::IfElse::buildIR() {
     currentCFG->add_bb(bb_else);
     this->elseBloc->buildIR(startBloc);
 
-    // here we don't need a jump because the cotinuation bb is just after the
+    // here we don't need a jump because the continuation bb is just after the
     // else bb
     currentCFG->current_bb = bb_continuation;
     currentCFG->add_bb(bb_continuation);
