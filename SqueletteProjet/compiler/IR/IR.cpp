@@ -42,7 +42,7 @@ void IRInstr::gen_asm(ostream &o) {
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-            o << "\tmovl %eax , " << reg_variable << "# name:" << params[1]
+            o << "\tmovl %eax , " << reg_variable << " # " << params[1]
               << endl;
             break;
         }
@@ -52,8 +52,7 @@ void IRInstr::gen_asm(ostream &o) {
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
-            o << "\tmovl " << reg1String << " , %eax" << "# move: " << params[1]
-              << endl;
+            o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\tsubl " << reg2String << ", %eax" << "# " << params[1]
               << " - " << params[2] << endl;
             o << "\tmovl %eax, " << regDestString << endl;
@@ -66,7 +65,7 @@ void IRInstr::gen_asm(ostream &o) {
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
-            o << "\timull " << reg2String << ", %eax" << "# " << params[1]
+            o << "\timull " << reg2String << ", %eax" << " # " << params[1]
               << " * " << params[2] << endl;
             o << "\tmovl %eax, " << regDestString << endl;
             break;
@@ -78,7 +77,7 @@ void IRInstr::gen_asm(ostream &o) {
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
-            o << "\taddl " << reg2String << ", %eax" << "# " << params[1]
+            o << "\taddl " << reg2String << ", %eax" << " # " << params[1]
               << " * " << params[2] << endl;
             o << "\tmovl %eax, " << regDestString << endl;
             break;
@@ -90,7 +89,7 @@ void IRInstr::gen_asm(ostream &o) {
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
-            o << "\tand " << reg2String << ", %eax" << "# " << params[1]
+            o << "\tand " << reg2String << ", %eax" << " # " << params[1]
               << " and " << params[2] << endl;
             o << "\tmovl %eax, " << regDestString << endl;
             break;
@@ -102,7 +101,7 @@ void IRInstr::gen_asm(ostream &o) {
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
-            o << "\txor " << reg2String << ", %eax" << "# " << params[1]
+            o << "\txor " << reg2String << ", %eax" << " # " << params[1]
               << " xor " << params[2] << endl;
             o << "\tmovl %eax, " << regDestString << endl;
             break;
@@ -114,7 +113,7 @@ void IRInstr::gen_asm(ostream &o) {
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
-            o << "\tor " << reg2String << ", %eax" << "# " << params[1]
+            o << "\tor " << reg2String << ", %eax" << " # " << params[1]
               << " or" << params[2] << endl;
             o << "\tmovl %eax, " << regDestString << endl;
             break;
@@ -146,10 +145,10 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\tmovl " << lValue << ", %eax" << endl;
             o << "\tcmpl  %eax, " << rValue << endl;
             if (equal) {
-                o << "\tsete %dl" << "# " << params[1] << "==" << params[2]
+                o << "\tsete %dl" << " # " << params[1] << "==" << params[2]
                   << endl;
             } else {
-                o << "\tsetne %dl" << "# " << params[1] << "!=" << params[2]
+                o << "\tsetne %dl" << " # " << params[1] << "!=" << params[2]
                   << endl;
             }
             o << "\tmovzbl %dl, %eax" << endl;
@@ -167,10 +166,10 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\tmovl " << rValue << ", %eax" << endl;
             o << "\tcmp  %eax, " << lValue << endl;
             if (equal) {
-                o << "\tsetbe %dl" << "# " << params[1] << "<=" << params[2]
+                o << "\tsetbe %dl" << " # " << params[1] << "<=" << params[2]
                   << endl;
             } else {
-                o << "\tsetb %dl" << "# " << params[1] << "<" << params[2]
+                o << "\tsetb %dl" << " # " << params[1] << "<" << params[2]
                   << endl;
             }
             o << "\tmovzbl %dl, %eax" << endl;
@@ -188,10 +187,10 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\tmovl " << rValue << ", %eax" << endl;
             o << "\tcmp  %eax, " << lValue << endl;
             if (equal) {
-                o << "\tsetae %dl" << "# " << params[1] << ">=" << params[2]
+                o << "\tsetae %dl" << " # " << params[1] << ">=" << params[2]
                   << endl;
             } else {
-                o << "\tseta %dl" << "# " << params[1] << ">" << params[2]
+                o << "\tseta %dl" << " # " << params[1] << ">" << params[2]
                   << endl;
             }
             o << "\tmovzbl %dl, %eax" << endl;
