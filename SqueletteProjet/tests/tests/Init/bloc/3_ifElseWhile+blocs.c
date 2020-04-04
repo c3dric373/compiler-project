@@ -1,21 +1,12 @@
-int main(){
+int main() {
     int a = 3;
-    int c =2;
-    {
-        int d =3;
-        {
-            if(d==4){
-                int f = 5;
-                c = f;
-            }else{
-                int f = 3;
-                while(f>1){
-                    c = c + d;
-                    f = f-1;
-                }
-
-            }
-        }
+    int c = 0;
+    while (a > 1) {
+        int b= 2;
+        b = a +1;
+        a = a -1;
+        c = b +2;
     }
+
     return c;
 }
