@@ -1,3 +1,4 @@
+#include <sstream>
 #include "IR.h"
 
 // Généré à partir de IR.h
@@ -7,20 +8,20 @@
 		- Un attribut CFG* sur le CFG actuellement utilisé
 		- Un attribut vector<CFG*> qui stockerait les CFGs
 
-EN GROS: 
+EN GROS:
 	Les fonctions de l'IR sont appelées dans l'AST, et l'IR traduit les instructions en langage assembleur
-Lors du parcours de l'AST :     	
+Lors du parcours de l'AST :
 	-Un nouveau CFG est créé à chaque nouvelle fonction
 	-Pour tout autre élément, la visite de l'élément ajoutera juste une instruction à l'attribut current_bb du CFG grâce à la méthode add_IRInstr OU ajoutera la variable à la table des symboles en faisant un appel à la fonction add_to_symbol_table du current CFG
 
-Il est important de préciser que les variables temporaires seront crées dans l'AST avant d'être passées en paramètre à la méthode de l'IR correspondante. 
-C'est la méthode create_new_tempvar de l'IR qui s'occupera d'insérer la variable temporaire dans la table des symboles.
+Il est important de préciser que les variables temporaires seront crées dans l'AST avant d'être passées en paramètre à la méthode de l'IR correspondante.
+C'est la méthode create_new_temp_var de l'IR qui s'occupera d'insérer la variable temporaire dans la table des symboles.
 
 */
 
 int INTOFFSET = 4;
 
-IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
+IRInstr::IRInstr(AST::Bloc *bloc,BasicBlock *bb_, Operation op_, Type t_,
                  vector<string> params_) : bb(bb_), op(op_), t(t_),
                                            params(params_) {}
 
@@ -246,8 +247,8 @@ void CFG::gen_asm(ostream &o) {
 }
 
 // take a variable and transform it to "-offset(%rbp)"
-std::string CFG::IR_reg_to_asm(string reg) {
-    int offset = this->get_var_index(reg);
+std::string CFG::IR_reg_to_asm(AST::Bloc *bloc, string reg) {
+    int offset = this->get_var_index(bloc, reg);
     std::string regString = std::to_string(offset) + "(%rbp)";
     return regString;
 }
@@ -265,12 +266,23 @@ void CFG::gen_asm_epilogue(ostream &o) {
     o << "\tret" << endl;
 }
 
-void CFG::add_to_symbol_table(string name, Type t) {
+void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
     nextFreeSymbolIndex -= INTOFFSET;
 
-    if (SymbolIndex.find(name) == SymbolIndex.end()) {
-        SymbolType[name] = t;
-        SymbolIndex[name] = nextFreeSymbolIndex;
+    // Convert the bloc pointer to a string
+    const void * address = static_cast<const void*>(bloc);
+    std::stringstream ss;
+    ss << address;
+    std::string address_bloc = ss.str();
+
+    // Redefine the name of the variable, in order to identify it via it's bloc
+    // pointer
+    std::string new_name = address_bloc + name;
+
+
+    if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
+        SymbolType[new_name] = t;
+        SymbolIndex[new_name] = nextFreeSymbolIndex;
     } else {
         std::string error =
                 "error : int " + name + " has already been defined\n";
@@ -278,7 +290,7 @@ void CFG::add_to_symbol_table(string name, Type t) {
     }
 }
 
-std::string CFG::create_new_tempvar(Type t) {
+std::string CFG::create_new_temp_var(Type t) {
     nextFreeSymbolIndex -= INTOFFSET;
 
     // nextFreeSymbolIndex is negative, so we put -nextFreeSymbolIndex in the tmp name
@@ -290,7 +302,30 @@ std::string CFG::create_new_tempvar(Type t) {
     return name_var_temp;
 }
 
-int CFG::get_var_index(string name) {
+int CFG::get_var_index(AST::Bloc *bloc, string name) {
+    // Convert the bloc pointer to a string
+    const void * address = static_cast<const void*>(bloc);
+    std::stringstream ss;
+    ss << address;
+    std::string address_bloc = ss.str();
+
+    // Redefine the name of the variable, in order to identify it via it's bloc
+    // pointer
+    std::string new_name = address_bloc + name;
+
+    while(SymbolIndex.find(new_name) == SymbolIndex.end()){
+        AST::Bloc *parent_bloc = bloc->parent_bloc;
+
+        // We need to do the last check inside of the loop else we will get
+        // a nullptr exception
+        if(parent_bloc == nullptr){
+            if(SymbolIndex.find(new_name) == SymbolIndex.end()){
+                return -1;
+            }else{
+                return SymbolIndex.at(name);
+            }
+        }
+    }
     return SymbolIndex.at(name);
 }
 

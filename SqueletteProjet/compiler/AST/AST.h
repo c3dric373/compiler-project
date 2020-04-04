@@ -660,6 +660,7 @@ namespace AST {
 
         void display();
 
+        AST::Bloc *parent_bloc;
     private:
         std::vector<Instr::Instr *> blocinstr;
     };
