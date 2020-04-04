@@ -42,7 +42,7 @@ void IRInstr::gen_asm(ostream &o) {
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc,params[0]);
             std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc,params[1]);
             o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-            o << "\tmovl %eax , " << reg_variable << endl;
+            o << "\tmovl %eax , " << reg_variable <<  "# name:"  << params[1] << endl;
             break;
         }
         case Operation::sub: {
