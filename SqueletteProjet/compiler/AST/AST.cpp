@@ -826,9 +826,8 @@ bool AST::Bloc::wrongReturnType(bool returnType){
 }
 
 // here comes the fun todododo (j'espère que vous avez la ref)
-AST::InitInstr::DefFun::DefFun(std::string returnType_, std::string procName, AST::Bloc* bloc, unsigned line,
-                               unsigned column):
-                               procName(procName), bloc(bloc), line(line), column(column){
+AST::InitInstr::DefFun::DefFun(std::string returnType_, std::string procName, AST::Bloc* bloc, unsigned line, unsigned column):
+        funName(procName), bloc(bloc), line(line), column(column){
     if(returnType_ == "int"){
         returnType = INT;
     }
@@ -849,7 +848,7 @@ std::string AST::InitInstr::DefFun::buildIR(){
     return "";
 }
 void AST::InitInstr::DefFun::display(){
-    std::cout << "(DEFF " << returnType << ' ' << procName << ' ' << std::flush;
+    std::cout << "(DEFF " << returnType << ' ' << funName << ' ' << std::flush;
     for(unsigned i = 0; i < names.size(); ++i){
         std::cout << types[i] << ' ' << names[i] << ' ' << std::flush;
     }
@@ -859,5 +858,50 @@ void AST::InitInstr::DefFun::display(){
 
 
 void AST::InitInstr::DeclProc::pushArg(std::string type, std::string name){
+    if(type == "int"){
+        types.push_back(INT);
+    }
+    else if(type == "char"){
+        types.push_back(CHAR);
+    }
+    names.push_back(name);
+}
+std::string AST::InitInstr::DeclProc::buildIR(){
+    return "";
+}
+void AST::InitInstr::DeclProc::display(){
+    std::cout << "(DECLP " << procName << ' ' << std::flush;
+    for(unsigned i = 0; i < names.size(); ++i){
+        std::cout << types[i] << ' ' << names[i] << ' ' << std::flush;
+    }
+    std::cout << ')' << std::flush;
+}
 
+AST::InitInstr::DeclFun::DeclFun(std::string returnType_, std::string procName, unsigned line, unsigned column):
+        funName(procName), line(line), column(column){
+    if(returnType_ == "int"){
+        returnType = INT;
+    }
+    else if(returnType_ == "char"){
+        returnType = CHAR;
+    }
+}
+void AST::InitInstr::DeclFun::pushArg(std::string type, std::string name){
+    if(type == "int"){
+        types.push_back(INT);
+    }
+    else if(type == "char"){
+        types.push_back(CHAR);
+    }
+    names.push_back(name);
+}
+std::string AST::InitInstr::DeclFun::buildIR(){
+    return "";
+}
+void AST::InitInstr::DeclFun::display(){
+    std::cout << "(DECLF " << returnType << ' ' << funName << ' ' << std::flush;
+    for(unsigned i = 0; i < names.size(); ++i){
+        std::cout << types[i] << ' ' << names[i] << ' ' << std::flush;
+    }
+    std::cout << ')' << std::flush;
 }
