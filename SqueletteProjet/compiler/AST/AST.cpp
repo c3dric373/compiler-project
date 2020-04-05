@@ -826,14 +826,14 @@ bool AST::Bloc::wrongReturnType(bool returnType){
 }
 
 // here comes the fun todododo (j'espère que vous avez la ref)
-AST::InitInstr::DefFun::DefFun(std::string returnType, std::string procName, AST::Bloc* bloc, unsigned line,
+AST::InitInstr::DefFun::DefFun(std::string returnType_, std::string procName, AST::Bloc* bloc, unsigned line,
                                unsigned column):
                                procName(procName), bloc(bloc), line(line), column(column){
-    if(returnType == "int"){
-        types.push_back(INT);
+    if(returnType_ == "int"){
+        returnType = INT;
     }
-    else if(returnType == "char"){
-        types.push_back(CHAR);
+    else if(returnType_ == "char"){
+        returnType = CHAR;
     }
 }
 void AST::InitInstr::DefFun::pushArg(std::string type, std::string name){
@@ -849,10 +849,15 @@ std::string AST::InitInstr::DefFun::buildIR(){
     return "";
 }
 void AST::InitInstr::DefFun::display(){
-    std::cout << "(DEFF " << procName << ' ' << std::flush;
+    std::cout << "(DEFF " << returnType << ' ' << procName << ' ' << std::flush;
     for(unsigned i = 0; i < names.size(); ++i){
         std::cout << types[i] << ' ' << names[i] << ' ' << std::flush;
     }
     bloc->display();
     std::cout << ')' << std::flush;
+}
+
+
+void AST::InitInstr::DeclProc::pushArg(std::string type, std::string name){
+
 }
