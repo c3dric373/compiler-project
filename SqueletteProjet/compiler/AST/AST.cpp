@@ -786,11 +786,12 @@ bool AST::Instr::If::wrongReturnType(bool returnType){
     return bloc->wrongReturnType(returnType);
 }
 bool AST::Instr::IfElse::wrongReturnType(bool returnType){
-    return ifBloc->wrongReturnType(returnType) ||
-         elseBloc->wrongReturnType(returnType);
+    bool a = ifBloc->wrongReturnType(returnType);
+    bool b = elseBloc->wrongReturnType(returnType);
+    return a || b;
 }
 bool AST::Instr::While::wrongReturnType(bool returnType){
-    return false;
+    return bloc->wrongReturnType(returnType);
 }
 bool AST::Instr::Bloc::wrongReturnType(bool returnType){
     return bloc->wrongReturnType(returnType);
@@ -815,10 +816,11 @@ bool AST::Instr::ReturnExpr::wrongReturnType(bool returnType){
     return !returnType;
 }
 bool AST::Bloc::wrongReturnType(bool returnType){
+    bool res = false;
     for(auto& it : blocinstr){
         if(it->wrongReturnType(returnType)){
-            return true;
+            res = true;
         }
     }
-    return false;
+    return res;
 }
