@@ -134,6 +134,29 @@ public:
 
     //INIT FUNCTIONS
 
+    virtual antlrcpp::Any visitDeclproc(ifccParser::DeclprocContext *ctx) override {
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        std::string procName = ctx->NAME()[0]->getText();
+        AST::InitInstr::DeclProc* astDeclProc = new AST::InitInstr::DeclProc(procName, line, column);
+        for(unsigned i = 0; i < ctx->type().size(); ++i){
+            astDeclProc->pushArg(visit(ctx->type()[i]), ctx->NAME()[i + 1]->getText());
+        }
+        return (AST::InitInstr::InitInstr*)astDeclProc;
+    }
+
+    virtual antlrcpp::Any visitDeclfun(ifccParser::DeclfunContext *ctx) override {
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        std::string returnType = ctx->type()[0]->getText();
+        std::string procName = ctx->NAME()[0]->getText();
+        AST::InitInstr::DeclFun* astDeclFun = new AST::InitInstr::DeclFun(returnType, procName, line, column);
+        for(unsigned i = 1; i < ctx->type().size(); ++i){
+            astDeclFun->pushArg(visit(ctx->type()[i]), ctx->NAME()[i]->getText());
+        }
+        return (AST::InitInstr::InitInstr*)astDeclFun;
+    }
+
     virtual antlrcpp::Any visitDefproc(ifccParser::DefprocContext *ctx) override {
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
