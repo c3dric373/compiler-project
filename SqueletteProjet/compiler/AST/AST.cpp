@@ -1,8 +1,6 @@
 #include "AST.h"
 #include "../IR/IR.h"
 
-int INT_OFFSET = 4;
-int offset = 0;
 
 // new attribute
 // TODO maybe think about putting them as attributes and not global variables
@@ -239,12 +237,15 @@ std::string AST::Expr::Geq::buildIR(bool not_flag) {
     std::string name_rValue = this->rValue->buildIR(not_flag);
     // create tmp var to store result of expression
     std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+
+	Type t = currentCFG->get_var_type(name_lValue);
+
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, t,
                                             {tmp_dest,name_lValue, name_rValue, "neq"});
     } else {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, t,
                                             {tmp_dest,name_lValue, name_rValue, "eq"});
     }
     return tmp_dest;
@@ -257,12 +258,15 @@ std::string AST::Expr::Great::buildIR(bool not_flag) {
     std::string name_rValue = this->rValue->buildIR(not_flag);
     // create tmp var to store result of expression
     std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+
+	Type t = currentCFG->get_var_type(name_lValue);
+
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, t,
                                             {tmp_dest,name_lValue, name_rValue, "eq"});
     } else {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, t,
                                             {tmp_dest,name_lValue, name_rValue, "neq"});
     }
     return tmp_dest;
@@ -275,12 +279,15 @@ std::string AST::Expr::Low::buildIR(bool not_flag) {
     std::string name_rValue = this->rValue->buildIR(not_flag);
     // create tmp var to store result of expression
     std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+
+	Type t = currentCFG->get_var_type(name_lValue);
+
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, t,
                                             {tmp_dest,name_lValue, name_rValue, "eq"});
     } else {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, t,
                                             {tmp_dest,name_lValue, name_rValue, "eq"});
     }
     return tmp_dest;
@@ -295,12 +302,15 @@ std::string AST::Expr::Leq::buildIR(bool not_flag) {
     std::string name_rValue = this->rValue->buildIR(not_flag);
     // create tmp var to store result of expression
     std::string tmp_dest = currentCFG->create_new_tempvar(Type());
+
+	Type t = currentCFG->get_var_type(name_lValue);
+
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, Type(),
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, t,
                                             {tmp_dest,name_lValue, name_rValue, "neq"});
     } else {
-        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, Type(),
+        currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, t,
                                             {tmp_dest,name_lValue, name_rValue, "eq"});
     }
     return tmp_dest;

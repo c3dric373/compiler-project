@@ -18,8 +18,6 @@ C'est la méthode create_new_tempvar de l'IR qui s'occupera d'insérer la variab
 
 */
 
-int INTOFFSET = 4;
-int CHAROFFSET=1;
 
 IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
                  vector<string> params_) : bb(bb_), op(op_), t(t_),
@@ -126,8 +124,21 @@ void IRInstr::gen_asm(ostream &o) {
             std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
             bool equal = !(params[3].compare("eq"));
 
-            o << "\tmovl " <<  rValue << ", %eax" << endl;
-            o << "\tcmp  %eax, " << lValue << endl;
+			switch(t.type_) { 
+				case Type::type_int :
+				{
+					o << "\tmovl " <<  rValue << ", %eax" << endl;
+            		o << "\tcmp  %eax, " << lValue << endl;
+					break;
+				}
+				case Type::type_char :
+				{
+				    o << "\tmovzbl " <<  rValue << ", %eax" << endl;
+				    o << "\tcmpb  %al, " << lValue << endl;
+					break;
+				}
+			}
+
             if(equal){
                 o << "\tsetbe %dl" << endl;
             }else{
@@ -144,8 +155,21 @@ void IRInstr::gen_asm(ostream &o) {
             std::string rValue = bb->cfg->IR_reg_to_asm(params[2]);
             bool equal = !(params[3].compare("eq"));
 
-            o << "\tmovl " <<  rValue << ", %eax" << endl;
-            o << "\tcmp  %eax, " << lValue << endl;
+			switch(t.type_) { 
+				case Type::type_int :
+				{
+					o << "\tmovl " <<  rValue << ", %eax" << endl;
+            		o << "\tcmp  %eax, " << lValue << endl;
+					break;
+				}
+				case Type::type_char :
+				{
+				    o << "\tmovzbl " <<  rValue << ", %eax" << endl;
+				    o << "\tcmpb  %al, " << lValue << endl;
+					break;
+				}
+			}
+
             if(equal){
                 o << "\tsetae %dl" << endl;
             }else{
@@ -253,11 +277,11 @@ void CFG::add_to_symbol_table(string name, Type t) {
 
     switch (t.type_) {
         case Type::type_int: {
-            nextFreeSymbolIndex -= INTOFFSET;
+            nextFreeSymbolIndex -= t.get_offset();
             break;
         }
         case Type::type_char: {
-            nextFreeSymbolIndex -= CHAROFFSET;
+            nextFreeSymbolIndex -= t.get_offset();
             break;
         }
     }
@@ -276,11 +300,11 @@ void CFG::add_to_symbol_table(string name, Type t) {
 std::string CFG::create_new_tempvar(Type t) {
     switch (t.type_) {
         case Type::type_int: {
-            nextFreeSymbolIndex -= INTOFFSET;
+            nextFreeSymbolIndex -= t.get_offset();
             break;
         }
         case Type::type_char: {
-            nextFreeSymbolIndex -= CHAROFFSET;
+            nextFreeSymbolIndex -= t.get_offset();
             break;
         }
     }

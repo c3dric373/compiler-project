@@ -43,8 +43,25 @@ public:
 		}
 		return suffix;
     }
+
+	int get_offset(){
+		int offset;
+		switch (type_) {
+			case type_enum::type_int: {
+				offset=INTOFFSET;
+				break;
+			}
+			case type_enum::type_char: {
+				offset=CHAROFFSET;
+				break;
+			}
+		}
+		return offset;
+	}
 	
     type_enum type_;
+	int INTOFFSET = 4;
+	int CHAROFFSET=1;
 
 };
 
