@@ -23,6 +23,7 @@ public:
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override {
     AST::InitBloc* astInitBloc = visit(ctx->initbloc());
     AST::Bloc* astBloc = visit(ctx->bloc());
+    astBloc->wrongReturnType(true);
     AST::Expr::Expr* astExpr = visit(ctx->expr());
     return new AST::Prog(astInitBloc, astBloc, astExpr);
   }
@@ -119,7 +120,16 @@ public:
     }
 
     virtual antlrcpp::Any visitReturn(ifccParser::ReturnContext *ctx) override {
-        return (AST::Instr::Instr*)new AST::Instr::Return();
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)new AST::Instr::Return(line, column);
+    }
+
+    virtual antlrcpp::Any visitReturnexpr(ifccParser::ReturnexprContext *ctx) override {
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        AST::Expr::Expr* astExpr = visit(ctx->expr());
+        return (AST::Instr::Instr*)new AST::Instr::ReturnExpr(astExpr, line, column);
     }
 
     //INIT FUNCTIONS
@@ -127,7 +137,9 @@ public:
     virtual antlrcpp::Any visitDefproc(ifccParser::DefprocContext *ctx) override {
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
-      AST::InitInstr::DefProc* astDefProc = new AST::InitInstr::DefProc(ctx->NAME()[0]->getText(), visit(ctx->bloc()), line, column);
+        AST::Bloc* astBloc = visit(ctx->bloc());
+        astBloc->wrongReturnType(false);
+      AST::InitInstr::DefProc* astDefProc = new AST::InitInstr::DefProc(ctx->NAME()[0]->getText(), astBloc, line, column);
       for(unsigned i = 0; i < ctx->type().size(); ++i){
           astDefProc->pushArg(visit(ctx->type()[i]), ctx->NAME()[i + 1]->getText());
       }
