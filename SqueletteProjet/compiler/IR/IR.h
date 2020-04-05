@@ -20,8 +20,49 @@ using namespace std;
 
 //bullshit class just to compile
 class Type {
+
 public:
-    Type() = default;;
+    typedef enum {
+        type_int,
+        type_char
+    } type_enum;
+    Type(type_enum type_enum_) : type_(type_enum_){};
+    Type()=default;
+	
+    std::string get_suffix(){
+		std::string suffix;
+		switch (type_) {
+			case type_enum::type_int: {
+				suffix="l";
+				break;
+			}
+			case type_enum::type_char: {
+				suffix="b";
+				break;
+			}
+		}
+		return suffix;
+    }
+
+	int get_offset(){
+		int offset;
+		switch (type_) {
+			case type_enum::type_int: {
+				offset=INTOFFSET;
+				break;
+			}
+			case type_enum::type_char: {
+				offset=CHAROFFSET;
+				break;
+			}
+		}
+		return offset;
+	}
+	
+    type_enum type_;
+	int INTOFFSET = 4;
+	int CHAROFFSET=1;
+
 };
 
 //! The class for one 3-address instruction
@@ -157,7 +198,7 @@ public:
 
     int get_var_index(AST::Bloc *bloc, string name);
 
-    Type get_var_type(string name);
+    Type get_var_type(AST::Bloc *bloc, string name);
 
     // basic block management
     string new_BB_name();

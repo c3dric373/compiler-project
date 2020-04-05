@@ -19,7 +19,6 @@ C'est la méthode create_new_temp_var de l'IR qui s'occupera d'insérer la varia
 
 */
 
-int INTOFFSET = 4;
 
 IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
                  vector<string> params_) : bb(bb_), op(op_), t(t_),
@@ -28,12 +27,13 @@ IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
 // TODO
 void IRInstr::gen_asm(ostream &o) {
     /* Exemple de ce qu'il faut mettre ici, la + longue méthode*/
+    std::string type = t.get_suffix();
     switch (op) {
         case Operation::ldconst : {
             AST::Bloc *bloc = bb->bloc;
             // for const : params = [ name | value ]
             std::string regString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
-            o << "\tmovl $" << params[1] << ", " << regString << endl;
+            o << "\tmov" + type + " $" << params[1] << ", " << regString << endl;
             break;
         }
         case Operation::copy: {
@@ -41,10 +41,23 @@ void IRInstr::gen_asm(ostream &o) {
             // copy params [0] into params [1]
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc, params[1]);
-            o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-            o << "\tmovl %eax , " << reg_variable << " # " << params[1]
-              << endl;
-            break;
+			switch(t.type_) { 
+			    case Type::type_int :
+				{
+					o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
+			   		o << "\tmovl %eax , " << reg_variable << " # " << params[1]
+					  << endl;
+			    	break;
+				}
+				case Type::type_char :
+				{
+					o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
+					o << "\tmovb %al , " << reg_variable  << " # " << params[1]
+					  << endl;
+					break;
+				}
+			}
+			break;
         }
         case Operation::sub: {
             AST::Bloc *bloc = bb->bloc;
@@ -163,13 +176,26 @@ void IRInstr::gen_asm(ostream &o) {
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
-            o << "\tmovl " << rValue << ", %eax" << endl;
-            o << "\tcmp  %eax, " << lValue << endl;
+			switch(t.type_) { 
+				case Type::type_int :
+				{
+					o << "\tmovl " <<  rValue << ", %eax" << endl;
+            		o << "\tcmp  %eax, " << lValue << endl;
+					break;
+				}
+				case Type::type_char :
+				{
+				    o << "\tmovzbl " <<  rValue << ", %eax" << endl;
+				    o << "\tcmpb  %al, " << lValue << endl;
+					break;
+				}
+			}
+
             if (equal) {
                 o << "\tsetbe %dl" << " # " << params[1] << "<=" << params[2]
                   << endl;
             } else {
-                o << "\tsetb %dl" << " # " << params[1] << "<" << params[2]
+				o << "\tsetb %dl" << " # " << params[1] << "<" << params[2]
                   << endl;
             }
             o << "\tmovzbl %dl, %eax" << endl;
@@ -184,8 +210,21 @@ void IRInstr::gen_asm(ostream &o) {
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
-            o << "\tmovl " << rValue << ", %eax" << endl;
-            o << "\tcmp  %eax, " << lValue << endl;
+			switch(t.type_) { 
+				case Type::type_int :
+				{
+					o << "\tmovl " <<  rValue << ", %eax" << endl;
+            		o << "\tcmp  %eax, " << lValue << endl;
+					break;
+				}
+				case Type::type_char :
+				{
+				    o << "\tmovzbl " <<  rValue << ", %eax" << endl;
+				    o << "\tcmpb  %al, " << lValue << endl;
+					break;
+				}
+			}
+
             if (equal) {
                 o << "\tsetae %dl" << " # " << params[1] << ">=" << params[2]
                   << endl;
@@ -294,7 +333,17 @@ void CFG::gen_asm_epilogue(ostream &o) {
 }
 
 void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
-    nextFreeSymbolIndex -= INTOFFSET;
+
+    switch (t.type_) {
+        case Type::type_int: {
+            nextFreeSymbolIndex -= t.get_offset();
+            break;
+        }
+        case Type::type_char: {
+            nextFreeSymbolIndex -= t.get_offset();
+            break;
+        }
+    }
 
     // Convert the bloc pointer to a string
     const void *address = static_cast<const void *>(bloc);
@@ -318,7 +367,16 @@ void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
 }
 
 std::string CFG::create_new_temp_var(Type t) {
-    nextFreeSymbolIndex -= INTOFFSET;
+    switch (t.type_) {
+        case Type::type_int: {
+            nextFreeSymbolIndex -= t.get_offset();
+            break;
+        }
+        case Type::type_char: {
+            nextFreeSymbolIndex -= t.get_offset();
+            break;
+        }
+    }
 
     // nextFreeSymbolIndex is negative, so we put -nextFreeSymbolIndex in the tmp name
     std::string name_var_temp = "!tmp" + std::to_string(-nextFreeSymbolIndex);
@@ -380,8 +438,56 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     return SymbolIndex.at(new_name);
 }
 
-Type CFG::get_var_type(string name) {
-    return SymbolType.at(name);
+Type CFG::get_var_type(AST::Bloc *bloc, string name) {
+	// If it's a tmp variable created by ourselves we do not need to add the
+    // bloc pointer to identify it.
+    if (name.rfind('!', 0) == 0) {
+        if (SymbolType.find(name) == SymbolType.end()) {
+            return Type();
+        } else {
+            return SymbolType.at(name);
+        }
+    }
+
+	// Convert the bloc pointer to a string
+    const void *address = static_cast<const void *>(bloc);
+    std::stringstream ss;
+    ss << address;
+    std::string address_bloc = ss.str();
+
+    // Redefine the name of the variable, in order to identify it via it's bloc
+    // pointer
+    std::string new_name = address_bloc + name;
+    if (bloc->parent_bloc == NULL) {
+        if (SymbolType.find(new_name) == SymbolType.end()) {
+            return Type();
+        } else {
+            return SymbolType.at(new_name);
+        }
+    }
+
+	while (SymbolType.find(new_name) == SymbolType.end()) {
+        AST::Bloc *parent_bloc = bloc->parent_bloc;
+        // We need to do the last check inside of the loop else we will get
+        // a nullptr exception
+        if (parent_bloc == NULL) {
+            if (SymbolType.find(new_name) == SymbolType.end()) {
+                return Type();
+            } else {
+                return SymbolType.at(new_name);
+            }
+        } else {
+            // Convert the bloc pointer to a string
+            const void *address = static_cast<const void *>(parent_bloc);
+            std::stringstream ss;
+            ss << address;
+            std::string address_new_bloc = ss.str();
+            new_name = address_new_bloc + name;
+            bloc = parent_bloc;
+
+        }
+	}
+    return SymbolType.at(new_name);
 }
 
 std::string CFG::new_BB_name() {
