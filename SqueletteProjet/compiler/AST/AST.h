@@ -674,6 +674,26 @@ namespace AST {
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
+
+        class DefFun : public InitInstr {
+        public:
+            DefFun(std::string returnType, std::string procName, AST::Bloc* bloc, unsigned line, unsigned column);
+
+            void pushArg(std::string type, std::string name);
+
+            std::string buildIR() override;
+
+            void display() override;
+
+        private:
+            std::string procName;
+            TYPES returnType;
+            std::vector<TYPES> types;
+            std::vector<std::string> names;
+            Bloc* bloc;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
     }
 
     class InitBloc {
