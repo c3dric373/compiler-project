@@ -436,8 +436,56 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     return SymbolIndex.at(new_name);
 }
 
-Type CFG::get_var_type(string name) {
-    return SymbolType.at(name);
+Type CFG::get_var_type(AST::Bloc *bloc, string name) {
+	// If it's a tmp variable created by ourselves we do not need to add the
+    // bloc pointer to identify it.
+    if (name.rfind('!', 0) == 0) {
+        if (SymbolType.find(name) == SymbolType.end()) {
+            return Type();
+        } else {
+            return SymbolType.at(name);
+        }
+    }
+
+	// Convert the bloc pointer to a string
+    const void *address = static_cast<const void *>(bloc);
+    std::stringstream ss;
+    ss << address;
+    std::string address_bloc = ss.str();
+
+    // Redefine the name of the variable, in order to identify it via it's bloc
+    // pointer
+    std::string new_name = address_bloc + name;
+    if (bloc->parent_bloc == NULL) {
+        if (SymbolType.find(new_name) == SymbolType.end()) {
+            return Type();
+        } else {
+            return SymbolType.at(new_name);
+        }
+    }
+
+	while (SymbolType.find(new_name) == SymbolType.end()) {
+        AST::Bloc *parent_bloc = bloc->parent_bloc;
+        // We need to do the last check inside of the loop else we will get
+        // a nullptr exception
+        if (parent_bloc == NULL) {
+            if (SymbolType.find(new_name) == SymbolType.end()) {
+                return Type();
+            } else {
+                return SymbolType.at(new_name);
+            }
+        } else {
+            // Convert the bloc pointer to a string
+            const void *address = static_cast<const void *>(parent_bloc);
+            std::stringstream ss;
+            ss << address;
+            std::string address_new_bloc = ss.str();
+            new_name = address_new_bloc + name;
+            bloc = parent_bloc;
+
+        }
+	}
+    return SymbolType.at(new_name);
 }
 
 std::string CFG::new_BB_name() {

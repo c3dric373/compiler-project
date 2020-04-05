@@ -198,7 +198,7 @@ public:
 
     int get_var_index(AST::Bloc *bloc, string name);
 
-    Type get_var_type(string name);
+    Type get_var_type(AST::Bloc *bloc, string name);
 
     // basic block management
     string new_BB_name();

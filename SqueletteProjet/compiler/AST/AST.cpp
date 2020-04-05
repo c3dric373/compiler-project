@@ -304,7 +304,8 @@ std::string AST::Expr::Geq::buildIR(bool not_flag) {
     // create tmp var to store result of expression
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
 
-	Type t = currentCFG->get_var_type(name_lValue);
+	AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+	Type t = currentCFG->get_var_type(current_bloc, name_lValue);
 
     // Put instruction into current block
     if (not_flag) {
@@ -325,7 +326,8 @@ std::string AST::Expr::Great::buildIR(bool not_flag) {
     // create tmp var to store result of expression
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
 
-	Type t = currentCFG->get_var_type(name_lValue);
+	AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+	Type t = currentCFG->get_var_type(current_bloc, name_lValue);
 
     // Put instruction into current block
     if (not_flag) {
@@ -346,7 +348,8 @@ std::string AST::Expr::Low::buildIR(bool not_flag) {
     // create tmp var to store result of expression
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
 
-	Type t = currentCFG->get_var_type(name_lValue);
+	AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+	Type t = currentCFG->get_var_type(current_bloc, name_lValue);
 
     // Put instruction into current block
     if (not_flag) {
@@ -369,7 +372,8 @@ std::string AST::Expr::Leq::buildIR(bool not_flag) {
     // create tmp var to store result of expression
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
 
-	Type t = currentCFG->get_var_type(name_lValue);
+	AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+	Type t = currentCFG->get_var_type(current_bloc, name_lValue);
 
     // Put instruction into current block
     if (not_flag) {
