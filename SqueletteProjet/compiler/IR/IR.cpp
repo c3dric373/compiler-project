@@ -192,8 +192,8 @@ void IRInstr::gen_asm(ostream &o) {
             if (equal) {
                 o << "\tsetbe %dl" << " # " << params[1] << "<=" << params[2]
                   << endl;
-                o << "\tsetb %dl" << " # " << params[1] << "<" << params[2]
             } else {
+				o << "\tsetb %dl" << " # " << params[1] << "<" << params[2]
                   << endl;
             }
             o << "\tmovzbl %dl, %eax" << endl;
@@ -364,7 +364,7 @@ void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
     }
 }
 
-std::string CFG::create_new_tempvar(Type t) {
+std::string CFG::create_new_temp_var(Type t) {
     switch (t.type_) {
         case Type::type_int: {
             nextFreeSymbolIndex -= t.get_offset();
