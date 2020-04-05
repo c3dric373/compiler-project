@@ -394,6 +394,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     // bloc pointer to identify it.
     if (name.rfind('!', 0) == 0) {
         if (SymbolIndex.find(name) == SymbolIndex.end()) {
+	    std::string error =
+                "error : we cannot find " + name + " in the SymbolIndex\n";
+	    this->error.addErrorMessage(error);
             return -1;
         } else {
             return SymbolIndex.at(name);
@@ -410,6 +413,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     std::string new_name = address_bloc + name;
     if (bloc->parent_bloc == NULL) {
         if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
+	    std::string error =
+                "error : we cannot find " + new_name + " in the SymbolIndex\n";
+	    this->error.addErrorMessage(error);
             return -1;
         } else {
             return SymbolIndex.at(new_name);
@@ -421,6 +427,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
         // a nullptr exception
         if (parent_bloc == NULL) {
             if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
+		std::string error =
+               	    "error : we cannot find " + new_name + " in the SymbolIndex\n";
+	  	this->error.addErrorMessage(error);
                 return -1;
             } else {
                 return SymbolIndex.at(new_name);
@@ -433,7 +442,6 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
             std::string address_new_bloc = ss.str();
             new_name = address_new_bloc + name;
             bloc = parent_bloc;
-
         }
 
     }
@@ -445,6 +453,9 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     // bloc pointer to identify it.
     if (name.rfind('!', 0) == 0) {
         if (SymbolType.find(name) == SymbolType.end()) {
+	    std::string error =
+                "error : we cannot find " + name + " in the SymbolType\n";
+	    this->error.addErrorMessage(error);
             return Type();
         } else {
             return SymbolType.at(name);
@@ -462,6 +473,9 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     std::string new_name = address_bloc + name;
     if (bloc->parent_bloc == NULL) {
         if (SymbolType.find(new_name) == SymbolType.end()) {
+	    std::string error =
+                "error : we cannot find " + new_name + " in the SymbolType\n";
+	    this->error.addErrorMessage(error);
             return Type();
         } else {
             return SymbolType.at(new_name);
@@ -474,6 +488,9 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
         // a nullptr exception
         if (parent_bloc == NULL) {
             if (SymbolType.find(new_name) == SymbolType.end()) {
+		std::string error =
+                    "error : we cannot find " + new_name + " in the SymbolType\n";
+	    	this->error.addErrorMessage(error);
                 return Type();
             } else {
                 return SymbolType.at(new_name);
