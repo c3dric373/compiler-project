@@ -139,11 +139,26 @@ public:
         unsigned column = ctx->getStart()->getCharPositionInLine();
         AST::Bloc* astBloc = visit(ctx->bloc());
         astBloc->wrongReturnType(false);
-      AST::InitInstr::DefProc* astDefProc = new AST::InitInstr::DefProc(ctx->NAME()[0]->getText(), astBloc, line, column);
+        std::string procName = ctx->NAME()[0]->getText();
+      AST::InitInstr::DefProc* astDefProc = new AST::InitInstr::DefProc(procName, astBloc, line, column);
       for(unsigned i = 0; i < ctx->type().size(); ++i){
           astDefProc->pushArg(visit(ctx->type()[i]), ctx->NAME()[i + 1]->getText());
       }
       return (AST::InitInstr::InitInstr*)astDefProc;
+    }
+
+    virtual antlrcpp::Any visitDeffun(ifccParser::DeffunContext *ctx) override {
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        AST::Bloc* astBloc = visit(ctx->bloc());
+        astBloc->wrongReturnType(true);
+        std::string returnType = ctx->type()[0]->getText();
+        std::string procName = ctx->NAME()[0]->getText();
+        AST::InitInstr::DefFun* astDefFun = new AST::InitInstr::DefFun(returnType, procName, astBloc, line, column);
+        for(unsigned i = 1; i < ctx->type().size(); ++i){
+            astDefFun->pushArg(visit(ctx->type()[i]), ctx->NAME()[i]->getText());
+        }
+        return (AST::InitInstr::InitInstr*)astDefFun;
     }
 
     virtual antlrcpp::Any visitInt(ifccParser::IntContext *ctx) override {
