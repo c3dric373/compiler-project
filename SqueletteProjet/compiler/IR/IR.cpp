@@ -333,14 +333,16 @@ void CFG::gen_asm_epilogue(ostream &o) {
 }
 
 void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
-
+    std::string type;
     switch (t.type_) {
         case Type::type_int: {
             nextFreeSymbolIndex -= t.get_offset();
+	    type = "int";
             break;
         }
         case Type::type_char: {
             nextFreeSymbolIndex -= t.get_offset();
+	    type = "char";
             break;
         }
     }
@@ -361,9 +363,8 @@ void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
         SymbolIndex[new_name] = nextFreeSymbolIndex;
     } else {
         std::string error =
-                "error : int " + name + " has already been defined\n";
+                "error : " + type + " " + name + " has already been defined\n";
 	this->error.addErrorMessage(error);
-       // cout << error << endl;
     }
 }
 
