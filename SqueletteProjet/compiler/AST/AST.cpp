@@ -857,7 +857,22 @@ void AST::InitInstr::DefFun::display(){
     std::cout << ')' << std::flush;
 }
 
+std::string AST::Expr::CallFun::buildIR(bool not_flag){
+    return "";
+}
+int AST::Expr::CallFun::getValue(){
+    return 0;
+}
+void AST::Expr::CallFun::exists(SymbolTable& st){
 
-void AST::InitInstr::DeclProc::pushArg(std::string type, std::string name){
+}
+void AST::Expr::CallFun::buildReturnIR(){
 
+}
+void AST::Expr::CallFun::display(){
+    std::cout << "(CALLF " << std::flush;
+    for(auto& it : args){
+        std::cout << it << ' ' << std::flush;
+    }
+    std::cout << ')' << std::flush;
 }
