@@ -362,7 +362,8 @@ void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
     } else {
         std::string error =
                 "error : int " + name + " has already been defined\n";
-        cout << error << endl;
+	this->error.addErrorMessage(error);
+       // cout << error << endl;
     }
 }
 
@@ -496,4 +497,8 @@ std::string CFG::new_BB_name() {
 
 BasicBlock *CFG::get_bb_before_last() {
     return this->basic_blocs.end()[-2];
+}
+
+Erreur CFG::getErreur(){
+    return error;
 }
