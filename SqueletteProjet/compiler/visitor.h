@@ -114,7 +114,7 @@ public:
     virtual antlrcpp::Any visitCallproc(ifccParser::CallprocContext *ctx) override {
         std::vector<std::string> args = std::vector<std::string>();
         for(unsigned i = 1; i < ctx->NAME().size(); ++i){
-            args[i - 1] = ctx->NAME()[i]->getText();
+            args.push_back(ctx->NAME()[i]->getText());
         }
         return (AST::Instr::Instr*)new AST::Instr::CallProc(ctx->NAME()[0]->getText(), args);
     }
@@ -247,6 +247,16 @@ public:
       unsigned column = ctx->getStart()->getCharPositionInLine();
     return (AST::Expr::Expr*)new AST::Expr::Name(ctx->NAME()->getText(), line, column);
   }
+
+    virtual antlrcpp::Any visitCallfun(ifccParser::CallfunContext *ctx) override {
+        std::vector<std::string> args = std::vector<std::string>();
+        for(unsigned i = 1; i < ctx->NAME().size(); ++i){
+            args.push_back(ctx->NAME()[i]->getText());
+        }
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Expr::Expr*)new AST::Expr::CallFun(ctx->NAME()[0]->getText(), args, line, column);
+    }
 
   //COMPARAISONS ET BOOLEENS
 
