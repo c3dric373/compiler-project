@@ -655,6 +655,44 @@ namespace AST {
             virtual void display() = 0;
         };
 
+        class DeclProc : InitInstr {
+        public:
+            DeclProc(std::string procName, unsigned line, unsigned column) :
+            procName(procName), line(line), column(column) {};
+
+            void pushArg(std::string type, std::string name);
+
+            std::string buildIR() override;
+
+            void display() override;
+
+        private:
+            std::string procName;
+            std::vector<TYPES> types;
+            std::vector<std::string> names;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class DeclFun : InitInstr {
+        public:
+            DeclFun(std::string returnType, std::string procName, unsigned line, unsigned column);
+
+            void pushArg(std::string type, std::string name);
+
+            std::string buildIR() override;
+
+            void display() override;
+
+        private:
+            TYPES returnType;
+            std::string funName;
+            std::vector<TYPES> types;
+            std::vector<std::string> names;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
         class DefProc : public InitInstr {
         public:
             DefProc(std::string procName, AST::Bloc* bloc, unsigned line, unsigned column) :
@@ -686,7 +724,7 @@ namespace AST {
             void display() override;
 
         private:
-            std::string procName;
+            std::string funName;
             TYPES returnType;
             std::vector<TYPES> types;
             std::vector<std::string> names;
