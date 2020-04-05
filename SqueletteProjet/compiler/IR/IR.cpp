@@ -45,13 +45,15 @@ void IRInstr::gen_asm(ostream &o) {
 			    case Type::type_int :
 				{
 					o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-			   		o << "\tmovl %eax , " << reg_variable << endl;
+			   		o << "\tmovl %eax , " << reg_variable << " # " << params[1]
+					  << endl;
 			    	break;
 				}
 				case Type::type_char :
 				{
 					o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-					o << "\tmovb %al , " << reg_variable << endl;
+					o << "\tmovb %al , " << reg_variable  << " # " << params[1]
+					  << endl;
 					break;
 				}
 			}
