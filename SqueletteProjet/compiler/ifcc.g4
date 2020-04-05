@@ -14,7 +14,7 @@ initfun :
 //     TYPE NAME initarguments ';'                                                        #declfun
 //    |'void' NAME initarguments ';'                                                      #declproc
 //    |TYPE NAME initarguments OPENBRACE bloc RETURN expr CLOSEBRACE                      #deffun
-    'void' NAME OPENPAR type NAME (',' type NAME)* CLOSEPAR OPENBRACE bloc CLOSEBRACE  #defproc
+    'void' NAME OPENPAR (type NAME (',' type NAME)*)? CLOSEPAR OPENBRACE bloc CLOSEBRACE  #defproc
 ;
 
 type :
