@@ -1,10 +1,11 @@
-void f(int i, char c){
+char f(int i, char c){
     i=i+1;	
     c=c+i;
+    return c;
 }
 
-void g(int j){
-    j=j+2;
+int g(int j){
+    return j+2;
 }
 
 
@@ -12,6 +13,6 @@ void g(int j){
 int main(){
     int a=1;
     char b='f';
-    f(g(a),b);//erreur de return ici
+    b=f(g(a),b);
     return  b;
 }

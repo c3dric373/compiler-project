@@ -8,7 +8,7 @@ void g(int j){
 }
 
 void h(int i, char c){
-    f(i);	
+    f(i,c);	
     c=c+i+3;
 }
 
