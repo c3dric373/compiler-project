@@ -40,11 +40,7 @@ int main(int argn, const char **argv) {
 
     std::vector<CFG *> cfgs = ast->generateIR();
 
-    bool error = false;//ast->create_symbol_table();
-    for (auto &it : cfgs) {
-        bool e = it->getErreur().getError();
-	error = error || e;
-    }
+    bool error = ast->getError();
     
     if (!error) {
         for (auto &it : cfgs) {
@@ -56,9 +52,7 @@ int main(int argn, const char **argv) {
         output << resultAssembly.str();
         output.close();
     } else {
-        for (auto &it : cfgs) {
-	    cout << it->getErreur().getMessage();
-        }
+        cout << ast->getErrorMsg();
         return 1;
     }
 

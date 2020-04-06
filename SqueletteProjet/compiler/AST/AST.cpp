@@ -483,8 +483,21 @@ void AST::Expr::Minus::buildReturnIR() {
 }
 */
 
+bool AST::Prog::getError() {
+    bool error = false;
+    for (auto &it : cfgs) {
+        bool e = it->getErreur().getError();
+	error = error || e;
+    }
+    return error;
+}
+
 std::string AST::Prog::getErrorMsg() {
-    return this->table.getErrorMsg();
+    std::string errorMessage;
+    for (auto &it : cfgs) {
+	errorMessage += it->getErreur().getMessage();
+    }
+    return errorMessage;
 }
 
 //------------------Exists--------------------
