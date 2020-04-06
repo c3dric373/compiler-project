@@ -435,9 +435,6 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     // bloc pointer to identify it.
     if (name.rfind('!', 0) == 0) {
         if (SymbolIndex.find(name) == SymbolIndex.end()) {
-			/*std::string erreur =
-		      "error : variable " + name + " has not been declared \n";
-			this->error.addErrorMessage(erreur);*/
             return 1;
         } else {
             return SymbolIndex.at(name);
@@ -454,9 +451,6 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     std::string new_name = address_bloc + name;
     if (bloc->parent_bloc == NULL) {
         if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
-	    	/*std::string erreur =
-                "error : variable " + name + " has not been declared \n";
-	    	this->error.addErrorMessage(erreur);*/
             return 1;
         } else {
             return SymbolIndex.at(new_name);
@@ -468,9 +462,6 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
         // a nullptr exception
         if (parent_bloc == NULL) {
             if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
-				/*std::string erreur =
-               	    "error : variable " + name + " has not been declared \n";
-	  			this->error.addErrorMessage(erreur);*/
                 return 1;
             } else {
                 return SymbolIndex.at(new_name);
