@@ -285,8 +285,10 @@ void BasicBlock::gen_asm(ostream &o) {
 
 void
 BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params) {
-	int offset;
+	// Find out if the variable placed in params has already been declared
+	// if offset == 1, it hasn't been declared
 	for(std::string param : params){
+		int offset = 0;
 	    switch (op) {
 			case IRInstr::copy : 
 			case IRInstr::and_ : 
@@ -307,11 +309,21 @@ BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params) {
 					offset = this->cfg->get_var_index(this->bloc, value);
 				}
 				break;
+			case IRInstr::cmp_eq : 
+			case IRInstr::cmp_low :
+			case IRInstr::cmp_great :
+				if(param.compare("eq") != 0 && param.compare("neq") != 0) {
+					offset = this->cfg->get_var_index(this->bloc, param);
+				}
+				break;
+			// Do nothing
+			default:
+				break;
 		}
-
+		// if param has not been declared, launch an error
 		if (offset==1){
 			std::string erreur =
-            	"error : variable " + param + " has not been declared \n";
+            	"error : cannot find the offset, the variable " + param + " has not been declared \n";
 	  		this->cfg->addErreur(erreur);
 		}
 	}
@@ -484,8 +496,8 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     if (name.rfind('!', 0) == 0) {
         if (SymbolType.find(name) == SymbolType.end()) {
 	    	std::string error =
-                "error : variable " + name + " has not been declared \n";
-	    	this->error.addErrorMessage(error);
+                "error : cannot find the type, the variable " + name + " has not been declared \n";
+	    	this->addErreur(error);
             return Type();
         } else {
             return SymbolType.at(name);
@@ -504,8 +516,8 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     if (bloc->parent_bloc == NULL) {
         if (SymbolType.find(new_name) == SymbolType.end()) {
 	   		std::string error =
-                "error : variable " + name + " has not been declared \n";
-	    	this->error.addErrorMessage(error);
+                "error : cannot find the type, the variable " + name + " has not been declared \n";
+	    	this->addErreur(error);
             return Type();
         } else {
             return SymbolType.at(new_name);
@@ -519,8 +531,8 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
         if (parent_bloc == NULL) {
             if (SymbolType.find(new_name) == SymbolType.end()) {
 				std::string error =
-                    "error : variable " + name + " has not been declared \n";
-	    		this->error.addErrorMessage(error);
+                    "error : cannot find the type, the variable " + name + " has not been declared \n";
+	    		this->addErreur(error);
                 return Type();
             } else {
                 return SymbolType.at(new_name);

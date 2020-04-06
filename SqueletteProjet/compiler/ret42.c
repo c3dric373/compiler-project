@@ -1,5 +1,7 @@
 int main(){
-    int a = 2;
-    int a = 9;
-    return b;
+    int a=2;
+    if(3>b){
+	a=5;
+    }
+    return a;
 }
