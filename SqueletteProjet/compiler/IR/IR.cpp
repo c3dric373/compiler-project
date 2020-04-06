@@ -33,7 +33,8 @@ void IRInstr::gen_asm(ostream &o) {
             AST::Bloc *bloc = bb->bloc;
             // for const : params = [ name | value ]
             std::string regString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
-            o << "\tmov" + type + " $" << params[1] << ", " << regString << endl;
+            o << "\tmov" + type + " $" << params[1] << ", " << regString
+              << endl;
             break;
         }
         case Operation::copy: {
@@ -41,23 +42,21 @@ void IRInstr::gen_asm(ostream &o) {
             // copy params [0] into params [1]
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc, params[1]);
-			switch(t.type_) { 
-			    case Type::type_int :
-				{
-					o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-			   		o << "\tmovl %eax , " << reg_variable << " # " << params[1]
-					  << endl;
-			    	break;
-				}
-				case Type::type_char :
-				{
-					o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-					o << "\tmovb %al , " << reg_variable  << " # " << params[1]
-					  << endl;
-					break;
-				}
-			}
-			break;
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
+                    o << "\tmovl %eax , " << reg_variable << " # " << params[1]
+                      << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
+                    o << "\tmovb %al , " << reg_variable << " # " << params[1]
+                      << endl;
+                    break;
+                }
+            }
+            break;
         }
         case Operation::sub: {
             AST::Bloc *bloc = bb->bloc;
@@ -176,26 +175,24 @@ void IRInstr::gen_asm(ostream &o) {
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
-			switch(t.type_) { 
-				case Type::type_int :
-				{
-					o << "\tmovl " <<  rValue << ", %eax" << endl;
-            		o << "\tcmp  %eax, " << lValue << endl;
-					break;
-				}
-				case Type::type_char :
-				{
-				    o << "\tmovzbl " <<  rValue << ", %eax" << endl;
-				    o << "\tcmpb  %al, " << lValue << endl;
-					break;
-				}
-			}
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl " << rValue << ", %eax" << endl;
+                    o << "\tcmp  %eax, " << lValue << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovzbl " << rValue << ", %eax" << endl;
+                    o << "\tcmpb  %al, " << lValue << endl;
+                    break;
+                }
+            }
 
             if (equal) {
                 o << "\tsetbe %dl" << " # " << params[1] << "<=" << params[2]
                   << endl;
             } else {
-				o << "\tsetb %dl" << " # " << params[1] << "<" << params[2]
+                o << "\tsetb %dl" << " # " << params[1] << "<" << params[2]
                   << endl;
             }
             o << "\tmovzbl %dl, %eax" << endl;
@@ -210,20 +207,18 @@ void IRInstr::gen_asm(ostream &o) {
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
-			switch(t.type_) { 
-				case Type::type_int :
-				{
-					o << "\tmovl " <<  rValue << ", %eax" << endl;
-            		o << "\tcmp  %eax, " << lValue << endl;
-					break;
-				}
-				case Type::type_char :
-				{
-				    o << "\tmovzbl " <<  rValue << ", %eax" << endl;
-				    o << "\tcmpb  %al, " << lValue << endl;
-					break;
-				}
-			}
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl " << rValue << ", %eax" << endl;
+                    o << "\tcmp  %eax, " << lValue << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovzbl " << rValue << ", %eax" << endl;
+                    o << "\tcmpb  %al, " << lValue << endl;
+                    break;
+                }
+            }
 
             if (equal) {
                 o << "\tsetae %dl" << " # " << params[1] << ">=" << params[2]
@@ -280,7 +275,6 @@ void BasicBlock::gen_asm(ostream &o) {
     for (auto instr : instrs) {
         instr->gen_asm(o);
     }
-
 }
 
 void
@@ -373,30 +367,36 @@ void CFG::gen_asm_epilogue(ostream &o) {
     o << "\tret" << endl;
 }
 
+
+static std::string get_var_name(AST::Bloc *bloc, std::string name) {
+    // Convert the bloc pointer to a string
+    const void *parent_bloc_address = static_cast<const void *>(bloc);
+    std::stringstream ss1;
+    ss1 << parent_bloc_address;
+    std::string address_new_bloc = ss1.str();
+    std::string new_name = address_new_bloc + name;
+    return new_name;
+}
+
+
 void CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name, Type t) {
     std::string type;
     switch (t.type_) {
         case Type::type_int: {
             nextFreeSymbolIndex -= t.get_offset();
-	    type = "int";
+            type = "int";
             break;
         }
         case Type::type_char: {
             nextFreeSymbolIndex -= t.get_offset();
-	    type = "char";
+            type = "char";
             break;
         }
     }
 
-    // Convert the bloc pointer to a string
-    const void *address = static_cast<const void *>(bloc);
-    std::stringstream ss;
-    ss << address;
-    std::string address_bloc = ss.str();
-
     // Redefine the name of the variable, in order to identify it via it's bloc
     // pointer
-    std::string new_name = address_bloc + name;
+    std::string new_name = get_var_name(bloc, name);
 
 
     if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
@@ -410,16 +410,8 @@ void CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name
 }
 
 std::string CFG::create_new_temp_var(Type t) {
-    switch (t.type_) {
-        case Type::type_int: {
-            nextFreeSymbolIndex -= t.get_offset();
-            break;
-        }
-        case Type::type_char: {
-            nextFreeSymbolIndex -= t.get_offset();
-            break;
-        }
-    }
+
+    nextFreeSymbolIndex -= t.get_offset();
 
     // nextFreeSymbolIndex is negative, so we put -nextFreeSymbolIndex in the tmp name
     std::string name_var_temp = "!tmp" + std::to_string(-nextFreeSymbolIndex);
@@ -430,114 +422,86 @@ std::string CFG::create_new_temp_var(Type t) {
     return name_var_temp;
 }
 
+int CFG::find_index(string name) {
+    if (SymbolIndex.find(name) == SymbolIndex.end()) {
+        std::string erreur =
+                "error : variable " + name + " has not been declared \n";
+        this->error.addErrorMessage(erreur);
+        return -1;
+    } else {
+        return SymbolIndex.at(name);
+    }
+}
+
+
 int CFG::get_var_index(AST::Bloc *bloc, string name) {
     // If it's a tmp variable created by ourselves we do not need to add the
     // bloc pointer to identify it.
     if (name.rfind('!', 0) == 0) {
-        if (SymbolIndex.find(name) == SymbolIndex.end()) {
-            return 1;
-        } else {
-            return SymbolIndex.at(name);
-        }
+        return find_index(name);
     }
-    // Convert the bloc pointer to a string
-    const void *address = static_cast<const void *>(bloc);
-    std::stringstream ss;
-    ss << address;
-    std::string address_bloc = ss.str();
 
     // Redefine the name of the variable, in order to identify it via it's bloc
     // pointer
-    std::string new_name = address_bloc + name;
-    if (bloc->parent_bloc == NULL) {
-        if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
-            return 1;
-        } else {
-            return SymbolIndex.at(new_name);
-        }
+    std::string new_name = get_var_name(bloc, name);
+    if (bloc->parent_bloc == nullptr) {
+        return find_index(new_name);
     }
     while (SymbolIndex.find(new_name) == SymbolIndex.end()) {
         AST::Bloc *parent_bloc = bloc->parent_bloc;
         // We need to do the last check inside of the loop else we will get
         // a nullptr exception
-        if (parent_bloc == NULL) {
-            if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
-                return 1;
-            } else {
-                return SymbolIndex.at(new_name);
-            }
+        if (parent_bloc == nullptr) {
+            return find_index(new_name);
         } else {
             // Convert the bloc pointer to a string
-            const void *address = static_cast<const void *>(parent_bloc);
-            std::stringstream ss;
-            ss << address;
-            std::string address_new_bloc = ss.str();
-            new_name = address_new_bloc + name;
+            new_name = get_var_name(parent_bloc, name);
             bloc = parent_bloc;
         }
-
     }
     return SymbolIndex.at(new_name);
 }
 
+Type CFG::find_type(string name) {
+    if (SymbolType.find(name) == SymbolType.end()) {
+        std::string erreur =
+                "error : variable " + name + " has not been declared \n";
+        this->error.addErrorMessage(erreur);
+        return {};
+    } else {
+        return SymbolType.at(name);
+    }
+}
+
 Type CFG::get_var_type(AST::Bloc *bloc, string name) {
-	// If it's a tmp variable created by ourselves we do not need to add the
+    // If it's a tmp variable created by ourselves we do not need to add the
     // bloc pointer to identify it.
     if (name.rfind('!', 0) == 0) {
-        if (SymbolType.find(name) == SymbolType.end()) {
-	    	std::string error =
-                "error : cannot find the type, the variable " + name + " has not been declared \n";
-	    	this->addErreur(error);
-            return Type();
-        } else {
-            return SymbolType.at(name);
-        }
+        return find_type(name);
     }
-
-	// Convert the bloc pointer to a string
-    const void *address = static_cast<const void *>(bloc);
-    std::stringstream ss;
-    ss << address;
-    std::string address_bloc = ss.str();
 
     // Redefine the name of the variable, in order to identify it via it's bloc
     // pointer
-    std::string new_name = address_bloc + name;
-    if (bloc->parent_bloc == NULL) {
-        if (SymbolType.find(new_name) == SymbolType.end()) {
+    std::string new_name = get_var_name(bloc, name);
+    if (bloc->parent_bloc == nullptr) {
+        return find_type(new_name);
 	   		std::string error =
                 "error : cannot find the type, the variable " + name + " has not been declared \n";
 	    	this->addErreur(error);
-            return Type();
-        } else {
-            return SymbolType.at(new_name);
-        }
     }
 
-	while (SymbolType.find(new_name) == SymbolType.end()) {
+    while (SymbolType.find(new_name) == SymbolType.end()) {
         AST::Bloc *parent_bloc = bloc->parent_bloc;
         // We need to do the last check inside of the loop else we will get
         // a nullptr exception
-        if (parent_bloc == NULL) {
-            if (SymbolType.find(new_name) == SymbolType.end()) {
-				std::string error =
-                    "error : cannot find the type, the variable " + name + " has not been declared \n";
-	    		this->addErreur(error);
-                return Type();
-            } else {
-                return SymbolType.at(new_name);
-            }
+        if (parent_bloc == nullptr) {
+            return find_type(new_name);
         } else {
-            // Convert the bloc pointer to a string
-            const void *address = static_cast<const void *>(parent_bloc);
-            std::stringstream ss;
-            ss << address;
-            std::string address_new_bloc = ss.str();
-            new_name = address_new_bloc + name;
+            new_name = get_var_name(parent_bloc, name);
             bloc = parent_bloc;
 
         }
-	}
+    }
     return SymbolType.at(new_name);
 }
 

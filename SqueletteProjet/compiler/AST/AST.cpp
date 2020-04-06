@@ -39,6 +39,8 @@ std::string AST::Bloc::buildIR(AST::Bloc *previousBloc) {
     return "";
 }
 
+
+
 //-----------------------------INSTRUCTIONS-------------------------------------
 
 std::string AST::Instr::If::buildIR() {
@@ -150,6 +152,8 @@ std::string AST::Instr::DefChar::buildIR() {
 
 std::string AST::Instr::Affct::buildIR() {
     std::string name_expr = this->expr->buildIR(false);
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    Type t = currentCFG->get_var_type(current_bloc,this->name);
     // Ajout de l'instruction au current_block
     currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy, Type(),
                                         {name_expr, this->name});
@@ -413,6 +417,10 @@ std::string AST::Instr::DeclChar::buildIR() {
     return std::string();
 }
 
+std::string AST::Expr::TabAccess::buildIR(bool not_flag){
+    std::string _name = to_string(this->index->getValue())+this->name;
+    return _name;
+}
 
 void AST::Bloc::pushInstr(Instr::Instr *instr) {
     blocinstr.push_back(instr);
@@ -1060,5 +1068,80 @@ void AST::Expr::CallFun::display(){
     for(auto& it : args){
         std::cout << it << ' ' << std::flush;
     }
+    std::cout << ')' << std::flush;
+}
+
+
+//Ajout des tableaux
+std::string AST::Instr::DeclIntTab::buildIR(){
+    int _size = this->size->getValue();
+    for(int i =0;i<_size;i++){
+        // Ajout de la variable it à la table des symboles de currentCFG
+        AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+        currentCFG->add_to_symbol_table(current_bloc, to_string(i)+this->name,Type::type_int);
+
+    }
+    return std::string();
+}
+void AST::Instr::DeclIntTab::display(){
+    std::cout << "(DECLIT " << name << ' ' << std::flush;
+    size->display();
+    std::cout << ')' << std::flush;
+}
+bool AST::Instr::DeclIntTab::wrongReturnType(bool returnType){
+    return false;
+}
+
+std::string AST::Instr::DeclCharTab::buildIR(){
+    int _size = this->size->getValue();
+    for(int i =0;i<_size;i++){
+        // Ajout de la variable it à la table des symboles de currentCFG
+        AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+        currentCFG->add_to_symbol_table(current_bloc, to_string(i)+this->name,Type::type_char);
+
+    }
+    return std::string();
+}
+void AST::Instr::DeclCharTab::display(){
+    std::cout << "(DECLCT " << name << ' ' << std::flush;
+    size->display();
+    std::cout << ')' << std::flush;
+}
+bool AST::Instr::DeclCharTab::wrongReturnType(bool returnType){
+    return false;
+}
+
+std::string AST::Instr::AffctTab::buildIR(){
+    std::string name_expr = this->expr->buildIR(false);
+    // Ajout de l'instruction au current_block
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    Type t = currentCFG->get_var_type(current_bloc,to_string(this->index->getValue())+this->name);
+    currentCFG->current_bb->add_IRInstr(IRInstr::copy, t,
+                                        {name_expr, to_string(this->index->getValue())+this->name});
+    return "";
+}
+void AST::Instr::AffctTab::display(){
+    std::cout << "(AFFT " << name << ' ' << std::flush;
+    index->display();
+    expr->display();
+    std::cout << ')' << std::flush;
+}
+bool AST::Instr::AffctTab::wrongReturnType(bool returnType){
+    return false;
+}
+
+
+int AST::Expr::TabAccess::getValue(){
+    return 0;
+}
+void AST::Expr::TabAccess::exists(SymbolTable& st){
+
+}
+void AST::Expr::TabAccess::buildReturnIR(){
+    currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {to_string(this->index->getValue())+this->name});
+}
+void AST::Expr::TabAccess::display(){
+    std::cout << "(TA " << name << ' ' << std::flush;
+    index->display();
     std::cout << ')' << std::flush;
 }

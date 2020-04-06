@@ -273,6 +273,30 @@ namespace AST {
             unsigned column; // even more: the column in this line
         };
 
+        class TabAccess : public Expr {
+        public:
+            TabAccess(std::string name) : name(name) {};
+
+            std::string buildIR(bool not_flag) override;
+
+            int getValue() override;
+
+            void exists(SymbolTable &st) override;
+
+            TabAccess(std::string name, Expr* index, unsigned line, unsigned column) :
+                    name(name), index(index), line(line), column(column) {};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+        private:
+            std::string name;
+            Expr* index;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
         class CallFun : public Expr {
         public:
             CallFun(std::string funName, std::vector<std::string> args):
@@ -505,6 +529,42 @@ namespace AST {
             unsigned column; // even more: the column in this line
         };
 
+        class DeclIntTab : public Instr {
+        public:
+            DeclIntTab(std::string name, Expr::Expr* size, unsigned line, unsigned column) :
+                    name(name), size(size), line(line), column(column) {};
+
+            std::string buildIR() override;
+
+            void display() override;
+
+            bool wrongReturnType(bool returnType) override;
+
+        private:
+            std::string name;
+            Expr::Expr* size;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class DeclCharTab : public Instr {
+        public:
+            DeclCharTab(std::string name, Expr::Expr* size, unsigned line, unsigned column) :
+            name(name), size(size), line(line), column(column) {};
+
+            std::string buildIR() override;
+
+            void display() override;
+
+            bool wrongReturnType(bool returnType) override;
+
+        private:
+            std::string name;
+            Expr::Expr* size;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
         class DefInt : public Instr {
         public:
             DefInt(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
@@ -556,6 +616,26 @@ namespace AST {
         private:
             std::string name;
             Expr::Expr *expr;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class AffctTab : public Instr {
+        public:
+            AffctTab(std::string name, Expr::Expr *index, Expr::Expr *expr, unsigned line,
+                  unsigned column) :
+                    name(name), index(index), expr(expr), line(line), column(column) {};
+
+            std::string buildIR() override;
+
+            void display() override;
+
+            bool wrongReturnType(bool returnType) override;
+
+        private:
+            std::string name;
+            Expr::Expr* index;
+            Expr::Expr* expr;
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
@@ -757,7 +837,8 @@ namespace AST {
             std::vector<TYPES> types;
             std::vector<std::string> names;
             Bloc* bloc;
-            unsigned line; // the line of the expression
+            unsigned line; // the line of the ex
+            // pression
             unsigned column; // even more: the column in this line
         };
     }
