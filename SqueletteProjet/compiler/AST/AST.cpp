@@ -152,8 +152,10 @@ std::string AST::Instr::DefChar::buildIR() {
 
 std::string AST::Instr::Affct::buildIR() {
     std::string name_expr = this->expr->buildIR(false);
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    Type t = currentCFG->get_var_type(current_bloc,this->name);
     // Ajout de l'instruction au current_block
-    currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(),
+    currentCFG->current_bb->add_IRInstr(IRInstr::copy, t,
                                         {name_expr, this->name});
     return "";
 }
@@ -1112,7 +1114,9 @@ bool AST::Instr::DeclCharTab::wrongReturnType(bool returnType){
 std::string AST::Instr::AffctTab::buildIR(){
     std::string name_expr = this->expr->buildIR(false);
     // Ajout de l'instruction au current_block
-    currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type(),
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    Type t = currentCFG->get_var_type(current_bloc,to_string(this->index->getValue())+this->name);
+    currentCFG->current_bb->add_IRInstr(IRInstr::copy, t,
                                         {name_expr, to_string(this->index->getValue())+this->name});
     return "";
 }
