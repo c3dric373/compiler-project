@@ -7,6 +7,8 @@
 #include <initializer_list>
 #include <map>
 #include "../AST/AST.h"
+#include "../Erreur/Erreur.h"
+
 
 // Declarations from the parser -- replace with your own
 class Type;
@@ -16,7 +18,6 @@ class BasicBlock;
 class CFG;
 
 using namespace std;
-
 
 //bullshit class just to compile
 class Type {
@@ -200,6 +201,8 @@ public:
 
     Type get_var_type(AST::Bloc *bloc, string name);
 
+    Erreur getErreur();
+
     // basic block management
     string new_BB_name();
 
@@ -209,13 +212,15 @@ public:
 
     int find_index(string name);
 
+    Type find_type(string name);
+
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */
     map<string, int> SymbolIndex; /**< part of the symbol table  */
     int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
     int nextBBnumber; /**< just for naming */
-
     vector<BasicBlock *> basic_blocs; /**< all the basic blocks of this CFG*/
+    Erreur error;
 };
 
 

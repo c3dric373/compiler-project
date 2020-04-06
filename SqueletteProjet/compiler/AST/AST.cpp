@@ -548,8 +548,21 @@ void AST::Expr::Minus::buildReturnIR() {
 }
 */
 
+bool AST::Prog::getError() {
+    bool error = false;
+    for (auto &it : cfgs) {
+        bool e = it->getErreur().getError();
+	error = error || e;
+    }
+    return error;
+}
+
 std::string AST::Prog::getErrorMsg() {
-    return this->table.getErrorMsg();
+    std::string errorMessage;
+    for (auto &it : cfgs) {
+	errorMessage += it->getErreur().getMessage();
+    }
+    return errorMessage;
 }
 
 //------------------Exists--------------------
@@ -1051,6 +1064,15 @@ void AST::InitInstr::DefFun::display() {
     std::cout << ')' << std::flush;
 }
 
+std::string AST::Expr::CallFun::buildIR(bool not_flag){
+    return "";
+}
+int AST::Expr::CallFun::getValue(){
+    return 0;
+}
+void AST::Expr::CallFun::exists(SymbolTable& st){
+}
+void AST::Expr::CallFun::buildReturnIR(){}
 
 
 void AST::InitInstr::DeclProc::pushArg(std::string type, std::string name) {
@@ -1093,6 +1115,13 @@ void AST::InitInstr::DeclFun::display() {
     std::cout << "(DECLF " << returnType << ' ' << funName << ' ' << std::flush;
     for (unsigned i = 0; i < names.size(); ++i) {
         std::cout << types[i] << ' ' << names[i] << ' ' << std::flush;
+    }
+    std::cout << ')' << std::flush;
+}
+void AST::Expr::CallFun::display(){
+    std::cout << "(CALLF " << std::flush;
+    for(auto& it : args){
+        std::cout << it << ' ' << std::flush;
     }
     std::cout << ')' << std::flush;
 }

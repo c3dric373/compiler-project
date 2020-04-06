@@ -36,16 +36,16 @@ int main(int argn, const char **argv) {
 
     Visitor visitor;
     AST::Prog *ast = visitor.visit(tree);
-    bool error = 0;//ast->create_symbol_table();
     stringstream resultAssembly;
 
+    std::vector<CFG *> cfgs = ast->generateIR();
+
+    for (auto &it : cfgs) {
+        it->gen_asm(resultAssembly);
+    }
+
+    bool error = ast->getError();
     if (!error) {
-        std::vector<CFG *> cfgs = ast->generateIR();
-
-        for (auto &it : cfgs) {
-            it->gen_asm(resultAssembly);
-        }
-
         ofstream output;
         output.open(filename_stripped + ".s");
         output << resultAssembly.str();
