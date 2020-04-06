@@ -1062,3 +1062,60 @@ void AST::Expr::CallFun::display(){
     }
     std::cout << ')' << std::flush;
 }
+
+
+//Ajout des tableaux
+std::string AST::Instr::DeclIntTab::buildIR(){
+    return "";
+}
+void AST::Instr::DeclIntTab::display(){
+    std::cout << "(DECLIT " << name << ' ' << std::flush;
+    size->display();
+    std::cout << ')' << std::flush;
+}
+bool AST::Instr::DeclIntTab::wrongReturnType(bool returnType){
+    return false;
+}
+
+std::string AST::Instr::DeclCharTab::buildIR(){
+    return "";
+}
+void AST::Instr::DeclCharTab::display(){
+    std::cout << "(DECLCT " << name << ' ' << std::flush;
+    size->display();
+    std::cout << ')' << std::flush;
+}
+bool AST::Instr::DeclCharTab::wrongReturnType(bool returnType){
+    return false;
+}
+
+std::string AST::Instr::AffctTab::buildIR(){
+    return "";
+}
+void AST::Instr::AffctTab::display(){
+    std::cout << "(AFFT " << name << ' ' << std::flush;
+    index->display();
+    expr->display();
+    std::cout << ')' << std::flush;
+}
+bool AST::Instr::AffctTab::wrongReturnType(bool returnType){
+    return false;
+}
+
+std::string AST::Expr::TabAccess::buildIR(bool not_flag){
+    return "";
+}
+int AST::Expr::TabAccess::getValue(){
+    return 0;
+}
+void AST::Expr::TabAccess::exists(SymbolTable& st){
+
+}
+void AST::Expr::TabAccess::buildReturnIR(){
+
+}
+void AST::Expr::TabAccess::display(){
+    std::cout << "(TA " << name << ' ' << std::flush;
+    index->display();
+    std::cout << ')' << std::flush;
+}
