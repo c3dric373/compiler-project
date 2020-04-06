@@ -20,6 +20,14 @@ TEST-CASE: pld-test-output/tests-Init-while-2_while_with_equal
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-while-3_nested_while
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-for-1_for_nested_while
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-for-0_simple
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-for-1_no_first_argument
+TEST FAIL (your compiler accepts an invalid program)
+TEST-CASE: pld-test-output/tests-Init-for-3_no_third_argument
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-bloc-0_simple_nested_bloc
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-bloc-1_ifElse_differentBlocs
@@ -36,14 +44,10 @@ TEST-CASE: pld-test-output/tests-Init-bloc-3_reassessment_in_else
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-bloc-3_ifElseWhile+blocs
 TEST OK
-TEST-CASE: pld-test-output/tests-Init-if_else-3_multiple_return_ifElse
-TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-if_else-1_nested_ifElse
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-if_else-0_simple_ifelse
 TEST OK
-TEST-CASE: pld-test-output/tests-Init-if_else-4_not_declared_variable
-TEST FAIL (your compiler accepts an invalid program)
 TEST-CASE: pld-test-output/tests-Init-if_else-2_combined_ifElse
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-superieur-0_superieur_simple
