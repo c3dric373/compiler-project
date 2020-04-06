@@ -91,7 +91,7 @@ void IRInstr::gen_asm(ostream &o) {
 
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\taddl " << reg2String << ", %eax" << " # " << params[1]
-              << " * " << params[2] << endl;
+              << " + " << params[2] << endl;
             o << "\tmovl %eax, " << regDestString << endl;
             break;
         }

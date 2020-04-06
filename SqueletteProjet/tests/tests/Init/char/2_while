@@ -1,0 +1,16 @@
+int main(){
+    
+    char a='a';
+    char b,c,d;
+    b='b';
+    while(a<'W'){
+        a=a+b;
+	if(a>'g'){
+	    a=a+1;
+	}else{
+	    a=a+'1';
+        }
+    }
+    return a;
+
+}

@@ -1,0 +1,19 @@
+int main(){
+    
+    char a='a';
+    char b,c,d;
+    b='b';
+    if(a<b){
+        c=a+b;
+	if(c<'h'){
+	    d='h';
+	}
+        
+    }else{
+
+	c='S';
+	d='f'+a
+    }
+
+    return d;
+}
