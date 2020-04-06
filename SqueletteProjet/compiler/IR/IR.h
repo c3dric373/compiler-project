@@ -193,7 +193,7 @@ public:
     void gen_asm_epilogue(ostream &o);
 
     // symbol table methods
-    void add_to_symbol_table(AST::Bloc *bloc, string name, Type t);
+    void add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name, Type t);
 
     string create_new_temp_var(Type t);
 

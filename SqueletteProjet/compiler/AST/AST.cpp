@@ -129,7 +129,7 @@ std::string AST::Instr::DefInt::buildIR() {
     std::string name_expr = this->expr->buildIR(false);
     // Ajout de la variable name à la table des symboles de currentCFG
 	AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    currentCFG->add_to_symbol_table(current_bloc, this->name, Type::type_int);
+    currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, this->name, Type::type_int);
     // Ajout de l'instruction au current_block
     currentCFG->current_bb->add_IRInstr(IRInstr::copy, Type::type_int,
                                         {name_expr, this->name});
@@ -141,7 +141,7 @@ std::string AST::Instr::DefChar::buildIR() {
     std::string name_expr = this->expr->buildIR(false);
     // Ajout de la variable name à la table des symboles de currentCFG
 	AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    currentCFG->add_to_symbol_table(current_bloc, this->name, Type::type_char);
+    currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, this->name, Type::type_char);
     currentCFG->current_bb->add_IRInstr(IRInstr::copy,Type::type_char,
     // Ajout de l'instruction au current_block
                                         {name_expr, this->name});
@@ -399,7 +399,7 @@ std::string AST::Instr::DeclInt::buildIR() {
     for (auto &it : this->names) {
         // Ajout de la variable it à la table des symboles de currentCFG
         AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(current_bloc, it,Type::type_int);
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, it,Type::type_int);
     }
     return std::string();
 }
@@ -408,7 +408,7 @@ std::string AST::Instr::DeclChar::buildIR() {
     for (auto &it : this->names) {
         // Ajout de la variable it à la table des symboles de currentCFG
 		AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(current_bloc, it, Type::type_char);
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, it, Type::type_char);
     }
     return std::string();
 }
