@@ -757,7 +757,8 @@ namespace AST {
             std::vector<TYPES> types;
             std::vector<std::string> names;
             Bloc* bloc;
-            unsigned line; // the line of the expression
+            unsigned line; // the line of the ex
+            // pression
             unsigned column; // even more: the column in this line
         };
     }
