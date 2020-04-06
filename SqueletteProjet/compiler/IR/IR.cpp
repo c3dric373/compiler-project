@@ -376,16 +376,8 @@ void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
 }
 
 std::string CFG::create_new_temp_var(Type t) {
-    switch (t.type_) {
-        case Type::type_int: {
-            nextFreeSymbolIndex -= t.get_offset();
-            break;
-        }
-        case Type::type_char: {
-            nextFreeSymbolIndex -= t.get_offset();
-            break;
-        }
-    }
+
+    nextFreeSymbolIndex -= t.get_offset();
 
     // nextFreeSymbolIndex is negative, so we put -nextFreeSymbolIndex in the tmp name
     std::string name_var_temp = "!tmp" + std::to_string(-nextFreeSymbolIndex);
@@ -453,7 +445,7 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     if (name.rfind('!', 0) == 0) {
         return find_type(name);
     }
-    
+
     // Redefine the name of the variable, in order to identify it via it's bloc
     // pointer
     std::string new_name = get_var_name(bloc, name);
