@@ -43,6 +43,7 @@ int main(int argn, const char **argv) {
     for (auto &it : cfgs) {
         it->gen_asm(resultAssembly);
     }
+
     bool error = ast->getError();
     if (!error) {
         ofstream output;
