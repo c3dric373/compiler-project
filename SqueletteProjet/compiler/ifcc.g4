@@ -29,9 +29,12 @@ bloc :
 instr :
 	 'int' NAME (',' NAME)* ';'                                                                            #declint
 	|'char' NAME (',' NAME)* ';'                                                                           #declchar
+	|'int' NAME '[' expr ']' ';'                                                                           #declinttab
+	|'char' NAME '[' expr ']' ';'                                                                          #declchartab
 	|'int' NAME '=' expr ';'                                                                               #defint
 	|'char' NAME '=' expr ';'                                                                              #defchar
 	|NAME '=' expr ';'                                                                                     #affexpr
+	|NAME '[' expr ']' '=' expr ';'                                                                        #afftab
     |'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE                                                  #ifbloc
     |'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE 'else' OPENBRACE bloc CLOSEBRACE                 #ifelsebloc
     |'while' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE                                               #whilebloc
@@ -43,15 +46,19 @@ instr :
 ;
 
 initfor :
-	 'int' NAME (',' NAME)*   #fordeclint
-	|'char' NAME (',' NAME)*  #fordeclchar
-	|'int' NAME '=' expr      #fordefint
-	|'char' NAME '=' expr     #fordefchar
-	|NAME '=' expr            #foraffexpr
+	 'int' NAME (',' NAME)*      #fordeclint
+	|'char' NAME (',' NAME)*     #fordeclchar
+	|'int' NAME '[' expr ']'     #fordeclinttab
+	|'char' NAME '[' expr ']'    #fordeclchartab
+	|'int' NAME '=' expr         #fordefint
+	|'char' NAME '=' expr        #fordefchar
+	|NAME '=' expr               #foraffexpr
+	|NAME '[' expr ']' '=' expr  #forafftab
 ;
 
 loopinstr :
-	 NAME '=' expr  #foraff
+	 NAME '=' expr               #loopaff
+	|NAME '[' expr ']' '=' expr  #loopafftab
 ;
 
 expr :
@@ -74,6 +81,7 @@ expr :
 	|CONST                                      #const
 	|CONSTCHAR                                  #constchar
 	|NAME                                       #name
+	|NAME '[' expr ']'                          #tabaccess
 ;
 
 //les plus specifiques avant
