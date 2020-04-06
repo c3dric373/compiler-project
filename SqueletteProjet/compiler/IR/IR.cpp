@@ -275,7 +275,6 @@ void BasicBlock::gen_asm(ostream &o) {
     for (auto instr : instrs) {
         instr->gen_asm(o);
     }
-
 }
 
 void
@@ -354,15 +353,9 @@ void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
         }
     }
 
-    // Convert the bloc pointer to a string
-    const void *address = static_cast<const void *>(bloc);
-    std::stringstream ss;
-    ss << address;
-    std::string address_bloc = ss.str();
-
     // Redefine the name of the variable, in order to identify it via it's bloc
     // pointer
-    std::string new_name = address_bloc + name;
+    std::string new_name = get_var_name(bloc, name);
 
 
     if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
