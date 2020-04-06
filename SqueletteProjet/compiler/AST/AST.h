@@ -273,6 +273,31 @@ namespace AST {
             unsigned column; // even more: the column in this line
         };
 
+        class CallFun : public Expr {
+        public:
+            CallFun(std::string funName, std::vector<std::string> args):
+                    funName(funName), args(args){};
+
+            std::string buildIR(bool not_flag) override;
+
+            int getValue() override;
+
+            void exists(SymbolTable &st) override;
+
+            CallFun(std::string funName, std::vector<std::string> args, unsigned line, unsigned column):
+                    funName(funName), args(args), line(line), column(column){};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+        private:
+            std::string funName;
+            std::vector<std::string> args;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
         //COMPARAISONS ET BOOLEENS
 
         class Eq : public Expr {
@@ -435,7 +460,6 @@ namespace AST {
             unsigned column; // even more: the column in this line
         };
     }
-
 
     namespace Instr {
         class Instr {
