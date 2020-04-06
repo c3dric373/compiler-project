@@ -25,7 +25,7 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-for-0_simple
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-for-1_no_first_argument
-TEST FAIL (your compiler accepts an invalid program)
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-for-3_no_third_argument
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-bloc-0_simple_nested_bloc
