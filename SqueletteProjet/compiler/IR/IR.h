@@ -212,6 +212,8 @@ public:
 
     int find_index(string name);
 
+    Type find_type(string name);
+
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */
     map<string, int> SymbolIndex; /**< part of the symbol table  */
