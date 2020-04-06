@@ -36,8 +36,6 @@ std::string AST::Prog::buildIR() {
 }
 
 
-
-
 std::string AST::Bloc::buildIR(AST::Bloc *previousBloc) {
     this->parent_bloc = previousBloc;
     for (auto &it : blocinstr) {
@@ -85,6 +83,7 @@ std::string AST::InitInstr::DeclProc::buildIR() {
 }
 
 std::string AST::Instr::Return::buildIR() {
+    currentCFG->current_bb->add_IRInstr(IRInstr::return_, Type(), {});
     return "";
 }
 
@@ -94,6 +93,8 @@ std::string AST::Instr::CallProc::buildIR() {
 }
 
 std::string AST::Instr::ReturnExpr::buildIR() {
+    std::string res = this->expr->buildIR(false);
+    currentCFG->current_bb->add_IRInstr(IRInstr::return_, Type(), {res});
     return "";
 }
 
@@ -552,7 +553,7 @@ bool AST::Prog::getError() {
     bool error = false;
     for (auto &it : cfgs) {
         bool e = it->getErreur().getError();
-	error = error || e;
+        error = error || e;
     }
     return error;
 }
@@ -560,7 +561,7 @@ bool AST::Prog::getError() {
 std::string AST::Prog::getErrorMsg() {
     std::string errorMessage;
     for (auto &it : cfgs) {
-	errorMessage += it->getErreur().getMessage();
+        errorMessage += it->getErreur().getMessage();
     }
     return errorMessage;
 }
@@ -1064,15 +1065,18 @@ void AST::InitInstr::DefFun::display() {
     std::cout << ')' << std::flush;
 }
 
-std::string AST::Expr::CallFun::buildIR(bool not_flag){
+std::string AST::Expr::CallFun::buildIR(bool not_flag) {
     return "";
 }
-int AST::Expr::CallFun::getValue(){
+
+int AST::Expr::CallFun::getValue() {
     return 0;
 }
-void AST::Expr::CallFun::exists(SymbolTable& st){
+
+void AST::Expr::CallFun::exists(SymbolTable &st) {
 }
-void AST::Expr::CallFun::buildReturnIR(){}
+
+void AST::Expr::CallFun::buildReturnIR() {}
 
 
 void AST::InitInstr::DeclProc::pushArg(std::string type, std::string name) {
@@ -1118,9 +1122,10 @@ void AST::InitInstr::DeclFun::display() {
     }
     std::cout << ')' << std::flush;
 }
-void AST::Expr::CallFun::display(){
+
+void AST::Expr::CallFun::display() {
     std::cout << "(CALLF " << std::flush;
-    for(auto& it : args){
+    for (auto &it : args) {
         std::cout << it << ' ' << std::flush;
     }
     std::cout << ')' << std::flush;
@@ -1131,7 +1136,6 @@ std::string AST::InitInstr::DefFun::get_name() {
 }
 
 
-
 std::string AST::InitInstr::DefProc::get_name() {
     return this->procName;
 }
@@ -1140,22 +1144,23 @@ std::string AST::InitInstr::DefProc::get_name() {
 std::string AST::InitInstr::DeclProc::get_name() {
     return this->procName;
 }
+
 std::string AST::InitInstr::DeclFun::get_name() {
     return this->funName;
 }
 
-AST::Bloc* AST::InitInstr::DefFun::get_bloc() {
+AST::Bloc *AST::InitInstr::DefFun::get_bloc() {
     return nullptr;
 }
 
-AST::Bloc* AST::InitInstr::DeclFun::get_bloc() {
+AST::Bloc *AST::InitInstr::DeclFun::get_bloc() {
     return nullptr;
 }
 
-AST::Bloc* AST::InitInstr::DefProc::get_bloc() {
+AST::Bloc *AST::InitInstr::DefProc::get_bloc() {
     return this->bloc;
 }
 
-AST::Bloc* AST::InitInstr::DeclProc::get_bloc() {
+AST::Bloc *AST::InitInstr::DeclProc::get_bloc() {
     return nullptr;
 }

@@ -261,6 +261,15 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\t jmp " << basic_block << endl;
             break;
         }
+        case Operation::return_: {
+            o << "\t nop" << endl;
+            break;
+        }
+        case Operation::return_expr: {
+                std::string return_address = params[0];
+                o << "\tmovq " + return_address + ", %eax" << endl;
+                break;
+        }
     }
 }
 
@@ -269,7 +278,7 @@ BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg),
 
 void BasicBlock::gen_asm(ostream &o) {
     std::string label = this->label;
-    if (label != "essai") {
+    if (!label.empty()) {
         o << this->label << ": " << endl;
     }
     for (auto instr : instrs) {
@@ -284,8 +293,9 @@ BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params) {
 
 CFG::CFG(AST::Bloc *ast_, std::string name) : nextFreeSymbolIndex(0),
                                               nextBBnumber(0), ast(ast_) {
-    auto firstBB = new BasicBlock(this, name);
+    auto firstBB = new BasicBlock(this, "");
     this->add_bb(firstBB);
+    this->name = name;
 
     // Create just one block
     // In the future, we must create one more
@@ -314,15 +324,27 @@ std::string CFG::IR_reg_to_asm(AST::Bloc *bloc, string reg) {
     return regString;
 }
 
+void CFG::set_name(std::string name){
+    this->name = name;
+}
+
+std::string CFG::get_name(){
+    return this->name;
+}
+
 void CFG::gen_asm_prologue(ostream &o) {
-    std::string label = this->current_bb->label;
-    o << ".globl\tmain" << endl;
-    o << "main:" << endl;
+    std::string label = this->name;
+    if (label == "main"){
+        o << ".globl\tmain" << endl;
+    }
+    o << this->name << ":" << endl;
     o << "\tpushq %rbp" << endl;
     o << "\tmovq %rsp, %rbp" << endl;
+    o << "\tsubq $" << this->nextFreeSymbolIndex << ", %rsp" << endl;
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {
+    o << "\taddq $" << this->nextFreeSymbolIndex << ", %rsp" << endl;
     o << "\tpopq %rbp" << endl;
     o << "\tret" << endl;
 }
@@ -463,7 +485,7 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
 }
 
 std::string CFG::new_BB_name() {
-    return ".L" + std::to_string(nextBBnumber++);
+    return ".L" + this->name + std::to_string(nextBBnumber++);
 }
 
 BasicBlock *CFG::get_bb_before_last() {

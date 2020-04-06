@@ -89,6 +89,8 @@ public:
         cmp_low,
         cmp_great,
         ret,
+        return_,
+        return_expr,
         neg
     } Operation;
 
@@ -214,6 +216,10 @@ public:
 
     Type find_type(string name);
 
+    std::string get_name();
+
+    void set_name(std::string name);
+
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */
     map<string, int> SymbolIndex; /**< part of the symbol table  */
@@ -221,6 +227,7 @@ protected:
     int nextBBnumber; /**< just for naming */
     vector<BasicBlock *> basic_blocs; /**< all the basic blocks of this CFG*/
     Erreur error;
+    std::string name;
 };
 
 

@@ -1,16 +1,9 @@
-<<<<<<< HEAD
 void test(){
-    int d = 3;
+    int d =5;
 }
 
-
-int main() {
-    int a = 4;
+int main(){
+    int a =5;
     test();
     return a;
-=======
-int main(){
-	 a = 2;
-    return b;
->>>>>>> develop
 }
