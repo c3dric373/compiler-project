@@ -1,5 +1,5 @@
 void test(){
-    int a = 3;
+    int d = 3;
 }
 
 

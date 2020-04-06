@@ -49,7 +49,8 @@ std::string AST::Bloc::buildIR(AST::Bloc *previousBloc) {
 
 std::string AST::InitBloc::buildIR() {
     for (auto &function : initFuns) {
-        AST::Bloc *child = function->bloc;
+        AST::Bloc *child = function->get_bloc();
+        std::string();
         CFG *cfg = new CFG(child, function->get_name());
         cfgs.push_back(cfg);
         currentCFG = cfg;
@@ -1100,6 +1101,8 @@ std::string AST::InitInstr::DefFun::get_name() {
     return this->funName;
 }
 
+
+
 std::string AST::InitInstr::DefProc::get_name() {
     return this->procName;
 }
@@ -1110,4 +1113,20 @@ std::string AST::InitInstr::DeclProc::get_name() {
 }
 std::string AST::InitInstr::DeclFun::get_name() {
     return this->funName;
+}
+
+AST::Bloc* AST::InitInstr::DefFun::get_bloc() {
+    return nullptr;
+}
+
+AST::Bloc* AST::InitInstr::DeclFun::get_bloc() {
+    return nullptr;
+}
+
+AST::Bloc* AST::InitInstr::DefProc::get_bloc() {
+    return this->bloc;
+}
+
+AST::Bloc* AST::InitInstr::DeclProc::get_bloc() {
+    return nullptr;
 }

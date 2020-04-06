@@ -665,7 +665,7 @@ namespace AST {
             virtual void display() = 0;
 
             virtual std::string get_name() = 0;
-            AST::Bloc *bloc;
+            virtual AST::Bloc* get_bloc()=0;
         };
 
         class DeclProc : InitInstr {
@@ -680,6 +680,8 @@ namespace AST {
             void display() override;
 
             std::string get_name()  override ;
+            AST::Bloc* get_bloc() override;
+
 
 
         private:
@@ -702,6 +704,8 @@ namespace AST {
             void display() override;
 
             std::string get_name()  override ;
+            AST::Bloc* get_bloc() override;
+
 
 
         private:
@@ -728,6 +732,8 @@ namespace AST {
 
             std::string get_name()  override ;
 
+            AST::Bloc* get_bloc() override;
+
 
         private:
             std::string procName;
@@ -750,6 +756,8 @@ namespace AST {
             void display() override;
 
             std::string get_name()  override ;
+            AST::Bloc* get_bloc() override;
+
 
 
         private:
