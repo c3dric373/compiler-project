@@ -284,7 +284,8 @@ void BasicBlock::gen_asm(ostream &o) {
 }
 
 void
-BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params) {
+BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t, vector<string> params) {
+	// Analyse statique :
 	// Find out if the variable placed in params has already been declared
 	// if offset == 1, it hasn't been declared
 	for(std::string param : params){
@@ -301,6 +302,7 @@ BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params) {
 				offset = this->cfg->get_var_index(this->bloc, param); 
 				break;
 	        case IRInstr::ret : 
+				// if the param doesn't contain a !, this is not a constant
  				if (param.at(0) != '!') {
 			        offset = this->cfg->get_var_index(this->bloc, param);
 			    }
@@ -319,7 +321,8 @@ BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params) {
 		// if param has not been declared, launch an error
 		if (offset==1){
 			std::string erreur =
-            	"error : cannot find the offset, the variable " + param + " has not been declared \n";
+            	"error line " + std::to_string(line) + " column " + std::to_string(column) +
+					 " : cannot find the offset, the variable " + param + " has not been declared \n";
 	  		this->cfg->addErreur(erreur);
 		}
 	}
