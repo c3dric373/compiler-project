@@ -434,15 +434,15 @@ void AST::Expr::Mult::buildReturnIR() {
 }
 
 void AST::Expr::And::buildReturnIR() {
-
+    this->buildIR(true);
 }
 
 void AST::Expr::Or::buildReturnIR() {
-
+    this->buildIR(true);
 }
 
 void AST::Expr::Xor::buildReturnIR() {
-
+    this->buildIR(true);
 }
 
 void AST::Expr::Const::buildReturnIR() {

@@ -303,11 +303,7 @@ BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params) {
 	        case IRInstr::ret : 
  				if (param.at(0) != '!') {
 			        offset = this->cfg->get_var_index(this->bloc, param);
-			    }else{
-					// Le paramètre commence par !, on enlève le ! 
-					std::string value = param.erase(0, 1);
-					offset = this->cfg->get_var_index(this->bloc, value);
-				}
+			    }
 				break;
 			case IRInstr::cmp_eq : 
 			case IRInstr::cmp_low :
