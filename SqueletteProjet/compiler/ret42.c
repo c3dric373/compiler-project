@@ -1,9 +1,7 @@
 int main(){
     int a = 1;
-    int b = 6;
-	int c = 10;
-    if (a<b){
-       c = 5;
+    for(int i =0; i <5; i  = i +1){
+        a = a +1;
     }
-    return c;
+    return a;
 }
