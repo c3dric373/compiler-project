@@ -655,6 +655,7 @@ namespace AST {
             virtual std::string buildIR() = 0;
 
             virtual void display() = 0;
+             AST::Bloc *bloc;
         };
 
         class DeclProc : InitInstr {
@@ -747,7 +748,7 @@ namespace AST {
         void display();
 
     private:
-        std::vector<InitInstr::InitInstr *> blocinstr;
+        std::vector<InitInstr::InitInstr *> initFuns;
     };
 
     class Bloc {
