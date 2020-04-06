@@ -203,6 +203,8 @@ public:
 
     Erreur getErreur();
 
+	void addErreur(std::string message);
+
     // basic block management
     string new_BB_name();
 
