@@ -91,6 +91,7 @@ public:
         ret,
         return_,
         return_expr,
+        call_proc,
         neg
     } Operation;
 

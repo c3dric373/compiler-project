@@ -261,6 +261,10 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\t jmp " << basic_block << endl;
             break;
         }
+        case Operation::call_proc: {
+
+            break;
+        }
         case Operation::return_: {
             o << "\t nop" << endl;
             break;

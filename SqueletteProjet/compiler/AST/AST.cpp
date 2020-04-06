@@ -89,6 +89,8 @@ std::string AST::Instr::Return::buildIR() {
 
 
 std::string AST::Instr::CallProc::buildIR() {
+    for(auto &name : this->args){
+    }
     return "";
 }
 
