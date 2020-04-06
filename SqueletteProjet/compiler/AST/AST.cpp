@@ -271,7 +271,7 @@ std::string AST::Expr::Eq::buildIR(bool not_flag) {
                                             {tmp_dest, name_lValue, name_rValue,
                                              "eq"});
     }
-    return "";
+    return tmp_dest;
 
 }
 
@@ -292,7 +292,7 @@ std::string AST::Expr::Neq::buildIR(bool not_flag) {
                                             {tmp_dest, name_lValue, name_rValue,
                                              "neq"});
     }
-    return "";
+    return tmp_dest;
 }
 
 
@@ -315,7 +315,7 @@ std::string AST::Expr::Geq::buildIR(bool not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, t,
                                             {tmp_dest,name_lValue, name_rValue, "eq"});
     }
-    return std::string();
+    return tmp_dest;
 }
 
 std::string AST::Expr::Great::buildIR(bool not_flag) {
@@ -337,7 +337,7 @@ std::string AST::Expr::Great::buildIR(bool not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_great, t,
                                             {tmp_dest,name_lValue, name_rValue, "neq"});
     }
-    return std::string();
+    return tmp_dest;
 }
 
 std::string AST::Expr::Low::buildIR(bool not_flag) {
@@ -359,7 +359,7 @@ std::string AST::Expr::Low::buildIR(bool not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, t,
                                             {tmp_dest,name_lValue, name_rValue, "neq"});
     }
-    return std::string();
+    return tmp_dest;
 }
 
 
@@ -383,13 +383,12 @@ std::string AST::Expr::Leq::buildIR(bool not_flag) {
                                             {tmp_dest,name_lValue, name_rValue, "eq"});
     }
 
-    return std::string();
+    return tmp_dest;
 }
 
 
 std::string AST::Expr::Not::buildIR(bool not_flag) {
-    this->value->buildIR(true);
-    return "";
+    return this->value->buildIR(true);
 }
 
 std::string AST::Expr::Expr::buildIR(bool not_flag) {
