@@ -176,7 +176,7 @@ protected:
  */
 class CFG {
 public:
-    CFG(AST::Bloc *ast);
+    CFG(AST::Bloc *ast, std::string name);
 
     AST::Bloc *ast; /**< The AST this CFG comes from */
 

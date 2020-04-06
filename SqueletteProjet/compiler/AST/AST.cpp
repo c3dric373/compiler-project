@@ -18,13 +18,25 @@ std::vector<CFG *> AST::Prog::generateIR() {
 //-------------------buildIR-----------------------
 
 std::string AST::Prog::buildIR() {
-    // Plus tard : déplacer ça dans ASP::Fonct
-    AST::InitBloc *child = this->initBloc;
+    // Build cfgs for defined functions
+    AST::InitBloc *pInitBloc = this->initBloc;
     initBloc->buildIR();
+
+    // Build cfg for main function
+    Bloc *child = this->bloc;
+    CFG *cfg = new CFG(child, "main");
+    currentCFG = cfg;
+    cfgs.push_back(cfg);
+    currentCFG->current_bb->bloc = child;
+    // Construit les CFGs
+    child->buildIR(nullptr);
 
     this->returnValue->buildReturnIR();
     return "";
 }
+
+
+
 
 std::string AST::Bloc::buildIR(AST::Bloc *previousBloc) {
     this->parent_bloc = previousBloc;
@@ -38,7 +50,7 @@ std::string AST::Bloc::buildIR(AST::Bloc *previousBloc) {
 std::string AST::InitBloc::buildIR() {
     for (auto &function : initFuns) {
         AST::Bloc *child = function->bloc;
-        CFG *cfg = new CFG(child);
+        CFG *cfg = new CFG(child, function->get_name());
         cfgs.push_back(cfg);
         currentCFG = cfg;
         currentCFG->current_bb->bloc = child;
@@ -1039,6 +1051,7 @@ void AST::InitInstr::DefFun::display() {
 }
 
 
+
 void AST::InitInstr::DeclProc::pushArg(std::string type, std::string name) {
     if (type == "int") {
         types.push_back(INT);
@@ -1081,4 +1094,20 @@ void AST::InitInstr::DeclFun::display() {
         std::cout << types[i] << ' ' << names[i] << ' ' << std::flush;
     }
     std::cout << ')' << std::flush;
+}
+
+std::string AST::InitInstr::DefFun::get_name() {
+    return this->funName;
+}
+
+std::string AST::InitInstr::DefProc::get_name() {
+    return this->procName;
+}
+
+
+std::string AST::InitInstr::DeclProc::get_name() {
+    return this->procName;
+}
+std::string AST::InitInstr::DeclFun::get_name() {
+    return this->funName;
 }

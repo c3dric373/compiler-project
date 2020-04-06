@@ -288,8 +288,8 @@ BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params) {
     instrs.push_back(new IRInstr(this, op, t, params));
 }
 
-CFG::CFG(AST::Bloc *ast_) : nextFreeSymbolIndex(0), nextBBnumber(0), ast(ast_) {
-    auto firstBB = new BasicBlock(this, "essai");
+CFG::CFG(AST::Bloc *ast_, std::string name) : nextFreeSymbolIndex(0), nextBBnumber(0), ast(ast_) {
+    auto firstBB = new BasicBlock(this, name);
     this->add_bb(firstBB);
 
     // Create just one block
