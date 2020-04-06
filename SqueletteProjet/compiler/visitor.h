@@ -48,7 +48,7 @@ public:
 
     virtual antlrcpp::Any visitInstrbloc(ifccParser::InstrblocContext *ctx) override {
         AST::Bloc* astBloc = visit(ctx->bloc());
-        return (AST::Instr::Instr*)(new AST::Instr::Bloc(astBloc));
+        return (AST::Instr::Instr*)(new AST::Instr::Bloci(astBloc));
     }
 
   virtual antlrcpp::Any visitDeclint(ifccParser::DeclintContext *ctx) override {
@@ -151,7 +151,7 @@ public:
         }
         AST::Instr::While* astWhile = new AST::Instr::While(astExpr, astBloc);
         astForBloc->pushInstr(astWhile);
-        return (AST::Instr::Instr*)new AST::Instr::Bloc(astForBloc);
+        return (AST::Instr::Instr*)new AST::Instr::Bloci(astForBloc);
     }
 
     virtual antlrcpp::Any visitFordeclint(ifccParser::FordeclintContext *ctx) override {

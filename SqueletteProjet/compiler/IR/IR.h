@@ -20,8 +20,49 @@ using namespace std;
 
 //bullshit class just to compile
 class Type {
+
 public:
-    Type() = default;;
+    typedef enum {
+        type_int,
+        type_char
+    } type_enum;
+    Type(type_enum type_enum_) : type_(type_enum_){};
+    Type()=default;
+	
+    std::string get_suffix(){
+		std::string suffix;
+		switch (type_) {
+			case type_enum::type_int: {
+				suffix="l";
+				break;
+			}
+			case type_enum::type_char: {
+				suffix="b";
+				break;
+			}
+		}
+		return suffix;
+    }
+
+	int get_offset(){
+		int offset;
+		switch (type_) {
+			case type_enum::type_int: {
+				offset=INTOFFSET;
+				break;
+			}
+			case type_enum::type_char: {
+				offset=CHAROFFSET;
+				break;
+			}
+		}
+		return offset;
+	}
+	
+    type_enum type_;
+	int INTOFFSET = 4;
+	int CHAROFFSET=1;
+
 };
 
 //! The class for one 3-address instruction
@@ -32,6 +73,9 @@ public:
     typedef enum {
         ldconst,
         jmp,
+        and_,
+        xor_,
+        or_,
         copy,
         add,
         sub,
@@ -76,21 +120,21 @@ private:
 	  returning a boolean value (as an int)
 
 	 Assembly jumps are generated as follows:
-	 BasicBlock::gen_asm() first calls IRInstr::gen_asm() on all its instructions, and then 
-		    if  exit_true  is a  nullptr, 
+	 BasicBlock::gen_asm() first calls IRInstr::gen_asm() on all its instructions, and then
+		    if  exit_true  is a  nullptr,
             the epilogue is generated
-        else if exit_false is a nullptr, 
+        else if exit_false is a nullptr,
           an unconditional jmp to the exit_true branch is generated
 				else (we have two successors, hence a branch)
           an instruction comparing the value of test_var_name to true is generated,
 					followed by a conditional branch to the exit_false branch,
 					followed by an unconditional branch to the exit_true branch
-	 The attribute test_var_name itself is defined when converting 
+	 The attribute test_var_name itself is defined when converting
   the if, while, etc of the AST  to IR.
 
 Possible optimization:
-     a cmp_* comparison instructions, if it is the last instruction of its block, 
-       generates an actual assembly comparison 
+     a cmp_* comparison instructions, if it is the last instruction of its block,
+       generates an actual assembly comparison
        followed by a conditional jump to the exit_false branch
 */
 
@@ -110,7 +154,9 @@ public:
     CFG *cfg; /** < the CFG where this block belongs */
     vector<IRInstr *> instrs; /** < the instructions themselves. */
     string test_var_name;  /** < when generating IR code for an if(expr) or while(expr) etc,
-													 store here the name of the variable that holds the value of expr */
+												 store here the name of the variable that holds the value of expr */
+    AST::Bloc *bloc; /** bloc to which the bb belongs, needed for the symbol table*/
+
 protected:
 
 
@@ -139,25 +185,27 @@ public:
     // x86 code generation: could be encapsulated in a processor class in a retargetable compiler
     void gen_asm(ostream &o);
 
-    string IR_reg_to_asm(
-            string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
+    string IR_reg_to_asm(AST::Bloc *bloc,
+                         string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
     void gen_asm_prologue(ostream &o);
 
     void gen_asm_epilogue(ostream &o);
 
     // symbol table methods
-    void add_to_symbol_table(string name, Type t);
+    void add_to_symbol_table(AST::Bloc *bloc, string name, Type t);
 
-    string create_new_tempvar(Type t);
+    string create_new_temp_var(Type t);
 
-    int get_var_index(string name);
+    int get_var_index(AST::Bloc *bloc, string name);
 
-    Type get_var_type(string name);
+    Type get_var_type(AST::Bloc *bloc, string name);
 
     // basic block management
     string new_BB_name();
 
     BasicBlock *current_bb;
+
+    BasicBlock *get_bb_before_last();
 
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */
