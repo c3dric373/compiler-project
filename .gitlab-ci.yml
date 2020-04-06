@@ -19,7 +19,7 @@ test:
     script:
         - chmod 755 SqueletteProjet/compiler/ifcc
         - cd SqueletteProjet/tests/
-        - mv SqueletteProjet/tests/easy SqueletteProjet/tests/Init/
+        - mv SqueletteProjet/tests/tests/easy SqueletteProjet/tests/tests/Init/
         - sh test_if.sh
         
     artifacts:
