@@ -146,7 +146,7 @@ public:
     void
     gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
-    void add_IRInstr(IRInstr::Operation op, Type t, vector<string> params);
+    void add_IRInstr(int line, int column, IRInstr::Operation op, Type t, vector<string> params);
 
     // No encapsulation whatsoever here. Feel free to do better.
     BasicBlock *exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
@@ -193,7 +193,7 @@ public:
     void gen_asm_epilogue(ostream &o);
 
     // symbol table methods
-    void add_to_symbol_table(AST::Bloc *bloc, string name, Type t);
+    void add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name, Type t);
 
     string create_new_temp_var(Type t);
 
@@ -202,6 +202,8 @@ public:
     Type get_var_type(AST::Bloc *bloc, string name);
 
     Erreur getErreur();
+
+	void addErreur(std::string message);
 
     // basic block management
     string new_BB_name();
@@ -212,7 +214,7 @@ public:
 
     int find_index(string name);
 
-    Type find_type(string name);
+    Type find_type(string name, string realName);
 
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */

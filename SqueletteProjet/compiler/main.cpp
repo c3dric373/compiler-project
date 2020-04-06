@@ -40,12 +40,13 @@ int main(int argn, const char **argv) {
 
     std::vector<CFG *> cfgs = ast->generateIR();
 
-    for (auto &it : cfgs) {
-        it->gen_asm(resultAssembly);
-    }
-
     bool error = ast->getError();
     if (!error) {
+
+		for (auto &it : cfgs) {
+			it->gen_asm(resultAssembly);
+		}
+
         ofstream output;
         output.open(filename_stripped + ".s");
         output << resultAssembly.str();
