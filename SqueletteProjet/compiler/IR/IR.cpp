@@ -424,10 +424,7 @@ std::string CFG::create_new_temp_var(Type t) {
 
 int CFG::find_index(string name) {
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
-        std::string erreur =
-                "error : variable " + name + " has not been declared \n";
-        this->error.addErrorMessage(erreur);
-        return -1;
+        return 1;
     } else {
         return SymbolIndex.at(name);
     }
@@ -462,12 +459,12 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     return SymbolIndex.at(new_name);
 }
 
-Type CFG::find_type(string name) {
+Type CFG::find_type(string name, string realName) {
     if (SymbolType.find(name) == SymbolType.end()) {
-        std::string erreur =
-                "error : variable " + name + " has not been declared \n";
-        this->error.addErrorMessage(erreur);
-        return {};
+        std::string error =
+        	"error : cannot find the type, the variable " + realName + " has not been declared \n";
+	    this->addErreur(error);
+        return Type();
     } else {
         return SymbolType.at(name);
     }
@@ -477,17 +474,15 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     // If it's a tmp variable created by ourselves we do not need to add the
     // bloc pointer to identify it.
     if (name.rfind('!', 0) == 0) {
-        return find_type(name);
+        return find_type(name, name);
     }
 
     // Redefine the name of the variable, in order to identify it via it's bloc
     // pointer
     std::string new_name = get_var_name(bloc, name);
     if (bloc->parent_bloc == nullptr) {
-        return find_type(new_name);
-	   		std::string error =
-                "error : cannot find the type, the variable " + name + " has not been declared \n";
-	    	this->addErreur(error);
+        return find_type(new_name, name);
+	   		
     }
 
     while (SymbolType.find(new_name) == SymbolType.end()) {
@@ -495,7 +490,7 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
         // We need to do the last check inside of the loop else we will get
         // a nullptr exception
         if (parent_bloc == nullptr) {
-            return find_type(new_name);
+            return find_type(new_name, name);
         } else {
             new_name = get_var_name(parent_bloc, name);
             bloc = parent_bloc;

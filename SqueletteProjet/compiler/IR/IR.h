@@ -214,7 +214,7 @@ public:
 
     int find_index(string name);
 
-    Type find_type(string name);
+    Type find_type(string name, string realName);
 
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */

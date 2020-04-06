@@ -155,7 +155,7 @@ std::string AST::Instr::Affct::buildIR() {
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     Type t = currentCFG->get_var_type(current_bloc,this->name);
     // Ajout de l'instruction au current_block
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy, Type(),
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy, t,
                                         {name_expr, this->name});
     return "";
 }
@@ -1078,7 +1078,7 @@ std::string AST::Instr::DeclIntTab::buildIR(){
     for(int i =0;i<_size;i++){
         // Ajout de la variable it à la table des symboles de currentCFG
         AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(current_bloc, to_string(i)+this->name,Type::type_int);
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, to_string(i)+this->name,Type::type_int);
 
     }
     return std::string();
@@ -1097,7 +1097,7 @@ std::string AST::Instr::DeclCharTab::buildIR(){
     for(int i =0;i<_size;i++){
         // Ajout de la variable it à la table des symboles de currentCFG
         AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(current_bloc, to_string(i)+this->name,Type::type_char);
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, to_string(i)+this->name,Type::type_char);
 
     }
     return std::string();
@@ -1116,7 +1116,7 @@ std::string AST::Instr::AffctTab::buildIR(){
     // Ajout de l'instruction au current_block
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     Type t = currentCFG->get_var_type(current_bloc,to_string(this->index->getValue())+this->name);
-    currentCFG->current_bb->add_IRInstr(IRInstr::copy, t,
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy, t,
                                         {name_expr, to_string(this->index->getValue())+this->name});
     return "";
 }
@@ -1138,7 +1138,7 @@ void AST::Expr::TabAccess::exists(SymbolTable& st){
 
 }
 void AST::Expr::TabAccess::buildReturnIR(){
-    currentCFG->current_bb->add_IRInstr(IRInstr::ret, Type(), {to_string(this->index->getValue())+this->name});
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret, Type(), {to_string(this->index->getValue())+this->name});
 }
 void AST::Expr::TabAccess::display(){
     std::cout << "(TA " << name << ' ' << std::flush;
