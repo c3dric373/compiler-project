@@ -2,6 +2,12 @@
 main:
 	pushq %rbp
 	movq %rsp, %rbp
+<<<<<<< HEAD
+	movl $2, -4(%rbp)
+	movl -4(%rbp), %eax
+	movl %eax , -1(%rbp) # a
+	movl -1(%rbp), %eax
+=======
 	movl $0, -4(%rbp)
 	movl -4(%rbp), %eax
 	movl %eax , -8(%rbp) # a
@@ -58,5 +64,6 @@ main:
 	movl -8(%rbp) , %eax
 	addl -16(%rbp), %eax # a + c
 	movl %eax, -64(%rbp)
+>>>>>>> develop
 	popq %rbp
 	ret

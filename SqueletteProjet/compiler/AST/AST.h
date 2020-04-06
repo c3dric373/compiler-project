@@ -776,6 +776,8 @@ namespace AST {
 
         std::vector<CFG *> generateIR();
 
+	bool getError();
+
         std::string getErrorMsg();
 
         void display();

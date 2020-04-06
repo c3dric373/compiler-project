@@ -333,14 +333,16 @@ void CFG::gen_asm_epilogue(ostream &o) {
 }
 
 void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
-
+    std::string type;
     switch (t.type_) {
         case Type::type_int: {
             nextFreeSymbolIndex -= t.get_offset();
+	    type = "int";
             break;
         }
         case Type::type_char: {
             nextFreeSymbolIndex -= t.get_offset();
+	    type = "char";
             break;
         }
     }
@@ -360,9 +362,9 @@ void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
         SymbolType[new_name] = t;
         SymbolIndex[new_name] = nextFreeSymbolIndex;
     } else {
-        std::string error =
-                "error : int " + name + " has already been defined\n";
-        cout << error << endl;
+        std::string erreur =
+                "error : " + type + " " + name + " has already been defined\n";
+		error.addErrorMessage(erreur);
     }
 }
 
@@ -392,6 +394,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     // bloc pointer to identify it.
     if (name.rfind('!', 0) == 0) {
         if (SymbolIndex.find(name) == SymbolIndex.end()) {
+			std::string erreur =
+		      "error : variable " + name + " has not been declared \n";
+			this->error.addErrorMessage(erreur);
             return -1;
         } else {
             return SymbolIndex.at(name);
@@ -408,6 +413,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     std::string new_name = address_bloc + name;
     if (bloc->parent_bloc == NULL) {
         if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
+	    	std::string erreur =
+                "error : variable " + name + " has not been declared \n";
+	    	this->error.addErrorMessage(erreur);
             return -1;
         } else {
             return SymbolIndex.at(new_name);
@@ -419,6 +427,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
         // a nullptr exception
         if (parent_bloc == NULL) {
             if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
+				std::string erreur =
+               	    "error : variable " + name + " has not been declared \n";
+	  			this->error.addErrorMessage(erreur);
                 return -1;
             } else {
                 return SymbolIndex.at(new_name);
@@ -431,7 +442,6 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
             std::string address_new_bloc = ss.str();
             new_name = address_new_bloc + name;
             bloc = parent_bloc;
-
         }
 
     }
@@ -443,6 +453,9 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     // bloc pointer to identify it.
     if (name.rfind('!', 0) == 0) {
         if (SymbolType.find(name) == SymbolType.end()) {
+	    	std::string error =
+                "error : variable " + name + " has not been declared \n";
+	    	this->error.addErrorMessage(error);
             return Type();
         } else {
             return SymbolType.at(name);
@@ -460,6 +473,9 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     std::string new_name = address_bloc + name;
     if (bloc->parent_bloc == NULL) {
         if (SymbolType.find(new_name) == SymbolType.end()) {
+	   		std::string error =
+                "error : variable " + name + " has not been declared \n";
+	    	this->error.addErrorMessage(error);
             return Type();
         } else {
             return SymbolType.at(new_name);
@@ -472,6 +488,9 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
         // a nullptr exception
         if (parent_bloc == NULL) {
             if (SymbolType.find(new_name) == SymbolType.end()) {
+				std::string error =
+                    "error : variable " + name + " has not been declared \n";
+	    		this->error.addErrorMessage(error);
                 return Type();
             } else {
                 return SymbolType.at(new_name);
@@ -496,4 +515,8 @@ std::string CFG::new_BB_name() {
 
 BasicBlock *CFG::get_bb_before_last() {
     return this->basic_blocs.end()[-2];
+}
+
+Erreur CFG::getErreur(){
+    return this->error;
 }
