@@ -340,19 +340,6 @@ static std::string get_var_name(AST::Bloc *bloc, std::string name) {
 
 
 void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
-
-static std::string get_var_name(AST::Bloc *bloc, std::string name) {
-    // Convert the bloc pointer to a string
-    const void *parent_bloc_address = static_cast<const void *>(bloc);
-    std::stringstream ss1;
-    ss1 << parent_bloc_address;
-    std::string address_new_bloc = ss1.str();
-    std::string new_name = address_new_bloc + name;
-    return new_name;
-}
-
-
-void CFG::add_to_symbol_table(AST::Bloc *bloc, string name, Type t) {
     std::string type;
     switch (t.type_) {
         case Type::type_int: {
