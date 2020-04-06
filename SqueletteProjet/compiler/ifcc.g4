@@ -11,9 +11,9 @@ initbloc :
 ;
 
 initfun :
-//     TYPE NAME initarguments ';'                                                        #declfun
-//    |'void' NAME initarguments ';'                                                      #declproc
-     'void' NAME OPENPAR (type NAME (',' type NAME)*)? CLOSEPAR OPENBRACE bloc CLOSEBRACE  #defproc
+     'void' NAME OPENPAR (type NAME (',' type NAME)*)? CLOSEPAR ';'                        #declproc
+    |type NAME OPENPAR (type NAME (',' type NAME)*)? CLOSEPAR ';'                          #declfun
+    |'void' NAME OPENPAR (type NAME (',' type NAME)*)? CLOSEPAR OPENBRACE bloc CLOSEBRACE  #defproc
     |type NAME OPENPAR (type NAME (',' type NAME)*)? CLOSEPAR OPENBRACE bloc CLOSEBRACE    #deffun
 ;
 
@@ -27,18 +27,31 @@ bloc :
 ;
 
 instr :
-	 'int' NAME (',' NAME)* ';'                                                             #declint
-	|'char' NAME (',' NAME)* ';'                                                            #declchar
-	|'int' NAME '=' expr ';'                                                                #defint
-	|'char' NAME '=' expr ';'                                                               #defchar
-	|NAME '=' expr ';'                                                                      #affexpr
-    |'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE                                   #ifbloc
-    |'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE 'else' OPENBRACE bloc CLOSEBRACE  #ifelsebloc
-    |'while' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE                                #whilebloc
-	|OPENBRACE bloc CLOSEBRACE                                                              #instrbloc
-	|NAME OPENPAR (NAME (',' NAME)*)? CLOSEPAR ';'                                          #callproc
-	|RETURN ';'                                                                             #return
-  	|RETURN expr ';'                                                                        #returnexpr
+	 'int' NAME (',' NAME)* ';'                                                                            #declint
+	|'char' NAME (',' NAME)* ';'                                                                           #declchar
+	|'int' NAME '=' expr ';'                                                                               #defint
+	|'char' NAME '=' expr ';'                                                                              #defchar
+	|NAME '=' expr ';'                                                                                     #affexpr
+    |'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE                                                  #ifbloc
+    |'if' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE 'else' OPENBRACE bloc CLOSEBRACE                 #ifelsebloc
+    |'while' OPENPAR expr CLOSEPAR OPENBRACE bloc CLOSEBRACE                                               #whilebloc
+    |'for' OPENPAR initfor? ';' expr? ';' (loopinstr(',' loopinstr)*)? CLOSEPAR OPENBRACE bloc CLOSEBRACE  #forbloc
+	|OPENBRACE bloc CLOSEBRACE                                                                             #instrbloc
+	|NAME OPENPAR (NAME (',' NAME)*)? CLOSEPAR ';'                                                         #callproc
+	|RETURN ';'                                                                                            #return
+  	|RETURN expr ';'                                                                                       #returnexpr
+;
+
+initfor :
+	 'int' NAME (',' NAME)*   #fordeclint
+	|'char' NAME (',' NAME)*  #fordeclchar
+	|'int' NAME '=' expr      #fordefint
+	|'char' NAME '=' expr     #fordefchar
+	|NAME '=' expr            #foraffexpr
+;
+
+loopinstr :
+	 NAME '=' expr  #foraff
 ;
 
 expr :

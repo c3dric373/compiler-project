@@ -5,7 +5,9 @@
 #include <vector>
 #include "SymbolTable.h"
 
-enum TYPES {INT, CHAR, NBTYPES};
+enum TYPES {
+    INT, CHAR, NBTYPES
+};
 
 class BasicBlock;
 
@@ -607,9 +609,9 @@ namespace AST {
             AST::Bloc *bloc;
         };
 
-        class Bloc : public Instr {
+        class Bloci : public Instr {
         public:
-            Bloc(AST::Bloc *bloc) :
+            Bloci(AST::Bloc *bloc) :
                     bloc(bloc) {};
 
             void display() override;
@@ -624,8 +626,8 @@ namespace AST {
 
         class CallProc : public Instr {
         public:
-            CallProc(std::string procName, std::vector<std::string> args):
-            procName(procName), args(args){};
+            CallProc(std::string procName, std::vector<std::string> args) :
+                    procName(procName), args(args) {};
 
             void display() override;
 
@@ -671,7 +673,7 @@ namespace AST {
         };
     }
 
-    namespace InitInstr{
+    namespace InitInstr {
         class InitInstr {
         public:
             virtual std::string buildIR() = 0;
@@ -679,10 +681,10 @@ namespace AST {
             virtual void display() = 0;
         };
 
-        class DefProc : public InitInstr {
+        class DeclProc : InitInstr {
         public:
-            DefProc(std::string procName, AST::Bloc* bloc, unsigned line, unsigned column) :
-                    procName(procName), bloc(bloc), line(line), column(column) {};
+            DeclProc(std::string procName, unsigned line, unsigned column) :
+            procName(procName), line(line), column(column) {};
 
             void pushArg(std::string type, std::string name);
 
@@ -694,7 +696,47 @@ namespace AST {
             std::string procName;
             std::vector<TYPES> types;
             std::vector<std::string> names;
-            Bloc* bloc;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class DeclFun : InitInstr {
+        public:
+            DeclFun(std::string returnType, std::string procName, unsigned line, unsigned column);
+
+            void pushArg(std::string type, std::string name);
+
+            std::string buildIR() override;
+
+            void display() override;
+
+        private:
+            TYPES returnType;
+            std::string funName;
+            std::vector<TYPES> types;
+            std::vector<std::string> names;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class DefProc : public InitInstr {
+        public:
+            DefProc(std::string procName, AST::Bloc *bloc, unsigned line,
+                    unsigned column) :
+                    procName(procName), bloc(bloc), line(line),
+                    column(column) {};
+
+            void pushArg(std::string type, std::string name);
+
+            std::string buildIR() override;
+
+            void display() override;
+
+        private:
+            std::string procName;
+            std::vector<TYPES> types;
+            std::vector<std::string> names;
+            Bloc *bloc;
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
@@ -710,7 +752,7 @@ namespace AST {
             void display() override;
 
         private:
-            std::string procName;
+            std::string funName;
             TYPES returnType;
             std::vector<TYPES> types;
             std::vector<std::string> names;
@@ -734,7 +776,7 @@ namespace AST {
 
     class Bloc {
     public:
-        std::string buildIR();
+        std::string buildIR(AST::Bloc *previousBloc);
 
         void pushInstr(Instr::Instr *instr);
 
@@ -742,14 +784,15 @@ namespace AST {
 
         bool wrongReturnType(bool returnType);
 
+        AST::Bloc *parent_bloc = nullptr;
     private:
         std::vector<Instr::Instr *> blocinstr;
     };
 
     class Prog {
     public:
-        Prog(InitBloc* initBloc, Bloc *bloc, Expr::Expr *returnValue):
-        initBloc(initBloc), bloc(bloc), returnValue(returnValue) {};
+        Prog(InitBloc *initBloc, Bloc *bloc, Expr::Expr *returnValue) :
+                initBloc(initBloc), bloc(bloc), returnValue(returnValue) {};
 
         std::string buildIR();
 
@@ -757,13 +800,15 @@ namespace AST {
 
         std::vector<CFG *> generateIR();
 
+	bool getError();
+
         std::string getErrorMsg();
 
         void display();
 
     private:
-        InitBloc* initBloc;
-        Bloc* bloc;
+        InitBloc *initBloc;
+        Bloc *bloc;
         Expr::Expr *returnValue;
         SymbolTable table;
     };
