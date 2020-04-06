@@ -285,6 +285,24 @@ void BasicBlock::gen_asm(ostream &o) {
 
 void
 BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params) {
+	int offset;
+	for(std::string param : params){
+		if (op == IRInstr::ret){
+			 if (param.at(0) != '!') {
+                offset = this->cfg->get_var_index(this->bloc, param);
+            }else{
+				// Le paramètre commence par !, on enlève le ! 
+				std::string value = param.erase(0, 1);
+				offset = this->cfg->get_var_index(this->bloc, value);
+			}
+		} else if (op != IRInstr::ldconst){
+			offset = this->cfg->get_var_index(this->bloc, param);
+		}
+		if (offset==-1){
+			cout << 
+				  "error : " << param << " variable has not been declared \n";
+		}
+	}
     instrs.push_back(new IRInstr(this, op, t, params));
 }
 
@@ -394,9 +412,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     // bloc pointer to identify it.
     if (name.rfind('!', 0) == 0) {
         if (SymbolIndex.find(name) == SymbolIndex.end()) {
-			std::string erreur =
+			/*std::string erreur =
 		      "error : variable " + name + " has not been declared \n";
-			this->error.addErrorMessage(erreur);
+			this->error.addErrorMessage(erreur);*/
             return -1;
         } else {
             return SymbolIndex.at(name);
@@ -413,9 +431,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
     std::string new_name = address_bloc + name;
     if (bloc->parent_bloc == NULL) {
         if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
-	    	std::string erreur =
+	    	/*std::string erreur =
                 "error : variable " + name + " has not been declared \n";
-	    	this->error.addErrorMessage(erreur);
+	    	this->error.addErrorMessage(erreur);*/
             return -1;
         } else {
             return SymbolIndex.at(new_name);
@@ -427,9 +445,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
         // a nullptr exception
         if (parent_bloc == NULL) {
             if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
-				std::string erreur =
+				/*std::string erreur =
                	    "error : variable " + name + " has not been declared \n";
-	  			this->error.addErrorMessage(erreur);
+	  			this->error.addErrorMessage(erreur);*/
                 return -1;
             } else {
                 return SymbolIndex.at(new_name);
