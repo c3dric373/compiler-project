@@ -365,7 +365,6 @@ std::string AST::Expr::Low::buildIR(bool not_flag) {
 
 std::string AST::Expr::Leq::buildIR(bool not_flag) {
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_lValue = this->lValue->buildIR(not_flag);
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_rValue = this->rValue->buildIR(not_flag);
@@ -383,13 +382,13 @@ std::string AST::Expr::Leq::buildIR(bool not_flag) {
         currentCFG->current_bb->add_IRInstr(IRInstr::cmp_low, t,
                                             {tmp_dest,name_lValue, name_rValue, "eq"});
     }
+
     return tmp_dest;
 }
 
 
 std::string AST::Expr::Not::buildIR(bool not_flag) {
-    this->value->buildIR(true);
-    return "";
+    return this->value->buildIR(true);
 }
 
 std::string AST::Expr::Expr::buildIR(bool not_flag) {
@@ -569,7 +568,6 @@ void AST::Bloc::display() {
     }
     std::cout << ')' << std::flush;
 }
-
 
 void AST::Expr::Sub::display() {
     std::cout << "(SUB " << std::flush;
@@ -887,4 +885,151 @@ void AST::Instr::CallProc::display() {
 
 std::string AST::Instr::CallProc::buildIR() {
     return "";
+}
+void AST::Instr::ReturnExpr::display(){
+    std::cout << "(RET " << std::flush;
+    expr->display();
+    std::cout << ')' << std::flush;
+}
+std::string AST::Instr::ReturnExpr::buildIR(){
+    return "";
+}
+
+bool AST::Instr::DeclInt::wrongReturnType(bool returnType){
+    return false;
+}
+bool AST::Instr::DeclChar::wrongReturnType(bool returnType){
+    return false;
+}
+bool AST::Instr::DefInt::wrongReturnType(bool returnType){
+    return false;
+}
+bool AST::Instr::DefChar::wrongReturnType(bool returnType){
+    return false;
+}
+bool AST::Instr::Affct::wrongReturnType(bool returnType){
+    return false;
+}
+bool AST::Instr::If::wrongReturnType(bool returnType){
+    return bloc->wrongReturnType(returnType);
+}
+bool AST::Instr::IfElse::wrongReturnType(bool returnType){
+    bool a = ifBloc->wrongReturnType(returnType);
+    bool b = elseBloc->wrongReturnType(returnType);
+    return a || b;
+}
+bool AST::Instr::While::wrongReturnType(bool returnType){
+    return bloc->wrongReturnType(returnType);
+}
+bool AST::Instr::Bloci::wrongReturnType(bool returnType){
+    return bloc->wrongReturnType(returnType);
+}
+bool AST::Instr::CallProc::wrongReturnType(bool returnType){
+    return false;
+}
+bool AST::Instr::Return::wrongReturnType(bool returnType){
+    if(returnType){
+        std::string errorMessage = "line" + std::to_string(line) + ':' + std::to_string(column)
+                                   + " expecting an expression to return";
+        std::cout << "\033[;31m" + errorMessage + "\033[0m" << std::endl;
+    }
+    return returnType;
+}
+bool AST::Instr::ReturnExpr::wrongReturnType(bool returnType){
+    if(!returnType){
+        std::string errorMessage = "line" + std::to_string(line) + ':' + std::to_string(column)
+                                   + " expecting a void return";
+        std::cout << "\033[;31m" + errorMessage + "\033[0m" << std::endl;
+    }
+    return !returnType;
+}
+bool AST::Bloc::wrongReturnType(bool returnType){
+    bool res = false;
+    for(auto& it : blocinstr){
+        if(it->wrongReturnType(returnType)){
+            res = true;
+        }
+    }
+    return res;
+}
+
+// here comes the fun todododo (j'espère que vous avez la ref)
+AST::InitInstr::DefFun::DefFun(std::string returnType_, std::string procName, AST::Bloc* bloc, unsigned line, unsigned column):
+        funName(procName), bloc(bloc), line(line), column(column){
+    if(returnType_ == "int"){
+        returnType = INT;
+    }
+    else if(returnType_ == "char"){
+        returnType = CHAR;
+    }
+}
+void AST::InitInstr::DefFun::pushArg(std::string type, std::string name){
+    if(type == "int"){
+        types.push_back(INT);
+    }
+    else if(type == "char"){
+        types.push_back(CHAR);
+    }
+    names.push_back(name);
+}
+std::string AST::InitInstr::DefFun::buildIR(){
+    return "";
+}
+void AST::InitInstr::DefFun::display(){
+    std::cout << "(DEFF " << returnType << ' ' << funName << ' ' << std::flush;
+    for(unsigned i = 0; i < names.size(); ++i){
+        std::cout << types[i] << ' ' << names[i] << ' ' << std::flush;
+    }
+    bloc->display();
+    std::cout << ')' << std::flush;
+}
+
+
+void AST::InitInstr::DeclProc::pushArg(std::string type, std::string name){
+    if(type == "int"){
+        types.push_back(INT);
+    }
+    else if(type == "char"){
+        types.push_back(CHAR);
+    }
+    names.push_back(name);
+}
+std::string AST::InitInstr::DeclProc::buildIR(){
+    return "";
+}
+void AST::InitInstr::DeclProc::display(){
+    std::cout << "(DECLP " << procName << ' ' << std::flush;
+    for(unsigned i = 0; i < names.size(); ++i){
+        std::cout << types[i] << ' ' << names[i] << ' ' << std::flush;
+    }
+    std::cout << ')' << std::flush;
+}
+
+AST::InitInstr::DeclFun::DeclFun(std::string returnType_, std::string procName, unsigned line, unsigned column):
+        funName(procName), line(line), column(column){
+    if(returnType_ == "int"){
+        returnType = INT;
+    }
+    else if(returnType_ == "char"){
+        returnType = CHAR;
+    }
+}
+void AST::InitInstr::DeclFun::pushArg(std::string type, std::string name){
+    if(type == "int"){
+        types.push_back(INT);
+    }
+    else if(type == "char"){
+        types.push_back(CHAR);
+    }
+    names.push_back(name);
+}
+std::string AST::InitInstr::DeclFun::buildIR(){
+    return "";
+}
+void AST::InitInstr::DeclFun::display(){
+    std::cout << "(DECLF " << returnType << ' ' << funName << ' ' << std::flush;
+    for(unsigned i = 0; i < names.size(); ++i){
+        std::cout << types[i] << ' ' << names[i] << ' ' << std::flush;
+    }
+    std::cout << ')' << std::flush;
 }
