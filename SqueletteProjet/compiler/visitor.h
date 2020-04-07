@@ -39,7 +39,10 @@ public:
   virtual antlrcpp::Any visitBlocinstr(ifccParser::BlocinstrContext *ctx) override {
     AST::Bloc* astBloc = new AST::Bloc();
     for(auto& it : ctx->instr()){
-      astBloc->pushInstr(visit(it));
+        AST::Instr::Instr* astInstr = visit(it);
+        if(astInstr != nullptr){
+            astBloc->pushInstr(astInstr);
+    }
     }
     return astBloc;
   }
@@ -117,19 +120,43 @@ public:
   virtual antlrcpp::Any visitIfbloc(ifccParser::IfblocContext *ctx) override {
       AST::Expr::Expr* astExpr = visit(ctx->expr());
       AST::Bloc* astBloc = visit(ctx->bloc());
-      return (AST::Instr::Instr*)(new AST::Instr::If(astExpr, astBloc));
+      //optimization : unreachable code
+      if(astExpr->isConst() && astExpr->getValue() == 0){
+          return (AST::Instr::Instr*)nullptr;
+      }
+      //optimisation : always reached code
+      if(astExpr->isConst() && astExpr->getValue() > 0){
+          return (AST::Instr::Instr*)new AST::Instr::Bloci(astBloc);
+      }
+
+      return (AST::Instr::Instr*)new AST::Instr::If(astExpr, astBloc);
   }
 
     virtual antlrcpp::Any visitIfelsebloc(ifccParser::IfelseblocContext *ctx) override {
         AST::Expr::Expr* astExpr = visit(ctx->expr());
         AST::Bloc* astIfBloc = visit(ctx->bloc()[0]);
         AST::Bloc* astElseBloc = visit(ctx->bloc()[1]);
+        //optimization : unreachable code
+        if(astExpr->isConst() && astExpr->getValue() == 0){
+            return (AST::Instr::Instr*)new AST::Instr::Bloci(astElseBloc);
+        }
+        if(astExpr->isConst() && astExpr->getValue() > 0){
+            return (AST::Instr::Instr*)new AST::Instr::Bloci(astIfBloc);
+        }
+
         return (AST::Instr::Instr*)(new AST::Instr::IfElse(astExpr, astIfBloc, astElseBloc));
     }
 
     virtual antlrcpp::Any visitWhilebloc(ifccParser::WhileblocContext *ctx) override {
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
         AST::Expr::Expr* astExpr = visit(ctx->expr());
         AST::Bloc* astBloc = visit(ctx->bloc());
+        //optimization : unreachable code
+        if(astExpr->isConst() && astExpr->getValue() == 0){
+            return (AST::Instr::Instr*)nullptr;
+        }
+
         return (AST::Instr::Instr*)(new AST::Instr::While(astExpr, astBloc));
     }
 
@@ -383,6 +410,11 @@ public:
       }
       if(astRightExpr->isConst() && astRightExpr->getValue() == 1){
           return astLeftExpr;
+      }
+      //optimisation : absorbance de 0
+      if((astLeftExpr->isConst() && astLeftExpr->getValue() == 0) ||
+              (astRightExpr->isConst() && astRightExpr->getValue() == 1)){
+          return (AST::Expr::Expr*)new AST::Expr::Const(0);
       }
 
       return (AST::Expr::Expr*)new AST::Expr::Mult(astLeftExpr, astRightExpr, line, column);
