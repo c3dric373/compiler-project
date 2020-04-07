@@ -92,6 +92,7 @@ public:
         return_,
         return_expr,
         call_proc,
+        add_fct_param,
         neg
     } Operation;
 

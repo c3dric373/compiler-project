@@ -37,6 +37,26 @@ void IRInstr::gen_asm(ostream &o) {
               << endl;
             break;
         }
+        case Operation::add_fct_param: {
+            AST::Bloc *bloc = bb->bloc;
+            // copy params [0] into params [1]
+            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string reg_variable =  params[1];
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
+                    o << "\tmovl %eax , " << reg_variable << " # " << params[1]
+                      << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
+                    o << "\tmovb %al , " << reg_variable << " # " << params[1]
+                      << endl;
+                    break;
+                }
+            }
+        }
         case Operation::copy: {
             AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
@@ -270,9 +290,9 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::return_expr: {
-                std::string return_address = params[0];
-                o << "\tmovq " + return_address + ", %eax" << endl;
-                break;
+            std::string return_address = params[0];
+            o << "\tmovq " + return_address + ", %eax" << endl;
+            break;
         }
     }
 }
@@ -291,48 +311,51 @@ void BasicBlock::gen_asm(ostream &o) {
 }
 
 void
-BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t, vector<string> params) {
-	// Analyse statique :
-	// Find out if the variable placed in params has already been declared
-	// if offset == 1, it hasn't been declared
-	for(std::string param : params){
-		int offset = 0;
-	    switch (op) {
-			case IRInstr::copy : 
-			case IRInstr::and_ : 
-			case IRInstr::xor_ : 
-			case IRInstr::or_ : 
-			case IRInstr::add : 
-			case IRInstr::sub : 
-        	case IRInstr::mul : 
-			case IRInstr::neg :
-				offset = this->cfg->get_var_index(this->bloc, param); 
-				break;
-	        case IRInstr::ret : 
-				// if the param doesn't contain a !, this is not a constant
- 				if (param.at(0) != '!') {
-			        offset = this->cfg->get_var_index(this->bloc, param);
-			    }
-				break;
-			case IRInstr::cmp_eq : 
-			case IRInstr::cmp_low :
-			case IRInstr::cmp_great :
-				if(param.compare("eq") != 0 && param.compare("neq") != 0) {
-					offset = this->cfg->get_var_index(this->bloc, param);
-				}
-				break;
-			// Do nothing
-			default:
-				break;
-		}
-		// if param has not been declared, launch an error
-		if (offset==1){
-			std::string erreur =
-            	"error line " + std::to_string(line) + " column " + std::to_string(column) +
-					 " : cannot find the offset, the variable " + param + " has not been declared \n";
-	  		this->cfg->addErreur(erreur);
-		}
-	}
+BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
+                        vector<string> params) {
+    // Analyse statique :
+    // Find out if the variable placed in params has already been declared
+    // if offset == 1, it hasn't been declared
+    for (std::string param : params) {
+        int offset = 0;
+        switch (op) {
+            case IRInstr::copy :
+            case IRInstr::and_ :
+            case IRInstr::xor_ :
+            case IRInstr::or_ :
+            case IRInstr::add :
+            case IRInstr::sub :
+            case IRInstr::mul :
+            case IRInstr::neg :
+                offset = this->cfg->get_var_index(this->bloc, param);
+                break;
+            case IRInstr::ret :
+                // if the param doesn't contain a !, this is not a constant
+                if (param.at(0) != '!') {
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                }
+                break;
+            case IRInstr::cmp_eq :
+            case IRInstr::cmp_low :
+            case IRInstr::cmp_great :
+                if (param.compare("eq") != 0 && param.compare("neq") != 0) {
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                }
+                break;
+                // Do nothing
+            default:
+                break;
+        }
+        // if param has not been declared, launch an error
+        if (offset == 1) {
+            std::string erreur =
+                    "error line " + std::to_string(line) + " column " +
+                    std::to_string(column) +
+                    " : cannot find the offset, the variable " + param +
+                    " has not been declared \n";
+            this->cfg->addErreur(erreur);
+        }
+    }
     instrs.push_back(new IRInstr(this, op, t, params));
 }
 
@@ -369,29 +392,30 @@ std::string CFG::IR_reg_to_asm(AST::Bloc *bloc, string reg) {
     return regString;
 }
 
-void CFG::set_name(std::string name){
+void CFG::set_name(std::string name) {
     this->name = name;
 }
-int CFG::getNextFreeSymbolIndex(){return nextFreeSymbolIndex;}
+
+int CFG::getNextFreeSymbolIndex() { return nextFreeSymbolIndex; }
 
 
-std::string CFG::get_name(){
+std::string CFG::get_name() {
     return this->name;
 }
 
 void CFG::gen_asm_prologue(ostream &o) {
     std::string label = this->name;
-    if (label == "main"){
+    if (label == "main") {
         o << ".globl\tmain" << endl;
     }
     o << this->name << ":" << endl;
     o << "\tpushq %rbp" << endl;
     o << "\tmovq %rsp, %rbp" << endl;
-    o << "\tsubq $" << this->nextFreeSymbolIndex << ", %rsp" << endl;
+    o << "\tsubq $" << this->nextFreeSymbolIndex*(-1) << ", %rsp" << endl;
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {
-    o << "\taddq $" << this->nextFreeSymbolIndex << ", %rsp" << endl;
+    o << "\taddq $" << this->nextFreeSymbolIndex*(-1) << ", %rsp" << endl;
     o << "\tpopq %rbp" << endl;
     o << "\tret" << endl;
 }
@@ -408,7 +432,9 @@ static std::string get_var_name(AST::Bloc *bloc, std::string name) {
 }
 
 
-void CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name, Type t) {
+void
+CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name,
+                         Type t) {
     std::string type;
     switch (t.type_) {
         case Type::type_int: {
@@ -433,8 +459,10 @@ void CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name
         SymbolIndex[new_name] = nextFreeSymbolIndex;
     } else {
         std::string erreur =
-                "error line " + std::to_string(line) + " column " + std::to_string(column) + " : " + type + " " + name + " has already been defined\n";
-		error.addErrorMessage(erreur);
+                "error line " + std::to_string(line) + " column " +
+                std::to_string(column) + " : " + type + " " + name +
+                " has already been defined\n";
+        error.addErrorMessage(erreur);
     }
 }
 
@@ -491,8 +519,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
 Type CFG::find_type(string name, string realName) {
     if (SymbolType.find(name) == SymbolType.end()) {
         std::string error =
-        	"error : cannot find the type, the variable " + realName + " has not been declared \n";
-	    this->addErreur(error);
+                "error : cannot find the type, the variable " + realName +
+                " has not been declared \n";
+        this->addErreur(error);
         return Type();
     } else {
         return SymbolType.at(name);
@@ -511,7 +540,7 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     std::string new_name = get_var_name(bloc, name);
     if (bloc->parent_bloc == nullptr) {
         return find_type(new_name, name);
-	   		
+
     }
 
     while (SymbolType.find(new_name) == SymbolType.end()) {
@@ -537,10 +566,10 @@ BasicBlock *CFG::get_bb_before_last() {
     return this->basic_blocs.end()[-2];
 }
 
-void CFG::addErreur(std::string message){
-	this->error.addErrorMessage(message);
+void CFG::addErreur(std::string message) {
+    this->error.addErrorMessage(message);
 }
 
-Erreur CFG::getErreur(){
+Erreur CFG::getErreur() {
     return error;
 }

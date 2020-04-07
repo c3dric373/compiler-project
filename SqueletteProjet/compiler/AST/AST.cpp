@@ -69,19 +69,27 @@ std::string AST::InitBloc::buildIR() {
 
 std::string AST::InitInstr::DefProc::buildIR() {
 
-    vector<std::string>::iterator ptr=this->names.begin();
+    auto ptr = this->types.begin();
     Type t;
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     for (auto &it : this->names) {
-        if(*ptr=="int"){
-            t=Type(Type::type_int);
-        }else if(*ptr=="char"){
-            t=Type(Type::type_char);
+        switch (*ptr) {
+            case INT:
+                t = Type(Type::type_int);
+                break;
+            case CHAR:
+                t = Type(Type::type_char);
+                break;
+
+                // Ajout de la variable it à la table des symboles de currentCFG
+
+
         }
-        // Ajout de la variable it à la table des symboles de currentCFG
-        AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(this->line,this->column,current_bloc, it, t);
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
+                                        it, t);
         ptr++;
     }
+    
     this->bloc->buildIR(nullptr);
     return "";
 }
@@ -97,7 +105,8 @@ std::string AST::InitInstr::DeclProc::buildIR() {
 }
 
 std::string AST::Instr::Return::buildIR() {
-    currentCFG->current_bb->add_IRInstr(this->line,this->column,IRInstr::return_, Type(), {});
+    currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                        IRInstr::return_, Type(), {});
     return "";
 }
 
@@ -105,13 +114,13 @@ std::string AST::Instr::Return::buildIR() {
 std::string AST::Instr::CallProc::buildIR() {
     int offset = currentCFG->getNextFreeSymbolIndex();
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    for(std::string &name : this->args){
-        std::string name_expr = name;
-        Type t = currentCFG->get_var_type(current_bloc,name_expr);
-        offset+=t.get_offset();
-        std::string rbp="-"+to_string(offset)+"(rbp)";
+    for (std::string &name : this->args) {
+        const std::string& name_expr = name;
+        Type t = currentCFG->get_var_type(current_bloc, name_expr);
+        offset -= t.get_offset();
+        std::string rbp = to_string(offset) + "(%rbp)";
         // Ajout de l'instruction au current_block
-        currentCFG->current_bb->add_IRInstr(0,0,IRInstr::copy, t,
+        currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::add_fct_param, t,
                                             {name_expr, rbp});
     }
     return "";
@@ -119,7 +128,8 @@ std::string AST::Instr::CallProc::buildIR() {
 
 std::string AST::Instr::ReturnExpr::buildIR() {
     std::string res = this->expr->buildIR(false);
-    currentCFG->current_bb->add_IRInstr(this->line,this->column,IRInstr::return_, Type(), {res});
+    currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                        IRInstr::return_, Type(), {res});
     return "";
 }
 
@@ -212,10 +222,12 @@ std::string AST::Instr::DefInt::buildIR() {
     // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
     std::string name_expr = this->expr->buildIR(false);
     // Ajout de la variable name à la table des symboles de currentCFG
-	AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, this->name, Type::type_int);
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
+                                    this->name, Type::type_int);
     // Ajout de l'instruction au current_block
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy, Type::type_int,
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy,
+                                        Type::type_int,
                                         {name_expr, this->name});
     return "";
 }
@@ -224,10 +236,12 @@ std::string AST::Instr::DefChar::buildIR() {
     // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
     std::string name_expr = this->expr->buildIR(false);
     // Ajout de la variable name à la table des symboles de currentCFG
-	AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, this->name, Type::type_char);
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy,Type::type_char,
-    // Ajout de l'instruction au current_block
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
+                                    this->name, Type::type_char);
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy,
+                                        Type::type_char,
+            // Ajout de l'instruction au current_block
                                         {name_expr, this->name});
     return "";
 }
@@ -235,9 +249,10 @@ std::string AST::Instr::DefChar::buildIR() {
 std::string AST::Instr::Affct::buildIR() {
     std::string name_expr = this->expr->buildIR(false);
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    Type t = currentCFG->get_var_type(current_bloc,this->name);
+    Type t = currentCFG->get_var_type(current_bloc, this->name);
     // Ajout de l'instruction au current_block
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy, t,
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy,
+                                        t,
                                         {name_expr, this->name});
     return "";
 }
@@ -261,7 +276,8 @@ std::string AST::Expr::And::buildIR(bool not_flag) {
     std::string tmp_expr2 = this->rValue->buildIR(not_flag);
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::and_, Type(),
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::and_,
+                                        Type(),
                                         {tmp_dest, tmp_expr1, tmp_expr2});
     return tmp_dest;
 }
@@ -271,7 +287,8 @@ std::string AST::Expr::Xor::buildIR(bool not_flag) {
     std::string tmp_expr1 = this->lValue->buildIR(not_flag);
     std::string tmp_expr2 = this->rValue->buildIR(not_flag);
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::xor_, Type(),
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::xor_,
+                                        Type(),
                                         {tmp_dest, tmp_expr1, tmp_expr2});
     return tmp_dest;
 }
@@ -280,7 +297,8 @@ std::string AST::Expr::Or::buildIR(bool not_flag) {
     std::string tmp_expr1 = this->lValue->buildIR(not_flag);
     std::string tmp_expr2 = this->rValue->buildIR(not_flag);
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::or_, Type(),
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::or_,
+                                        Type(),
                                         {tmp_dest, tmp_expr1, tmp_expr2});
     return tmp_dest;
 }
@@ -289,7 +307,8 @@ std::string AST::Expr::Add::buildIR(bool not_flag) {
     std::string tmp_expr1 = this->lValue->buildIR(not_flag);
     std::string tmp_expr2 = this->rValue->buildIR(not_flag);
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::add, Type(),
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::add,
+                                        Type(),
                                         {tmp_dest, tmp_expr1, tmp_expr2});
     return tmp_dest;
 }
@@ -298,7 +317,8 @@ std::string AST::Expr::Sub::buildIR(bool not_flag) {
     std::string tmp_expr1 = this->lValue->buildIR(not_flag);
     std::string tmp_expr2 = this->rValue->buildIR(not_flag);
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::sub, Type(),
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::sub,
+                                        Type(),
                                         {tmp_dest, tmp_expr1, tmp_expr2});
     return tmp_dest;
 }
@@ -307,7 +327,8 @@ std::string AST::Expr::Mult::buildIR(bool not_flag) {
     std::string tmp_expr1 = this->lValue->buildIR(not_flag);
     std::string tmp_expr2 = this->rValue->buildIR(not_flag);
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::mul, Type(),
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::mul,
+                                        Type(),
                                         {tmp_dest, tmp_expr1, tmp_expr2});
     return tmp_dest;
 }
@@ -319,7 +340,8 @@ std::string AST::Expr::Name::buildIR(bool not_flag) {
 std::string AST::Expr::Minus::buildIR(bool not_flag) {
     std::string value_expr = this->value->buildIR(not_flag);
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::neg, Type(),
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::neg,
+                                        Type(),
                                         {value_expr, tmp_dest});
     return tmp_dest;
 }
@@ -327,7 +349,8 @@ std::string AST::Expr::Minus::buildIR(bool not_flag) {
 std::string AST::Expr::Const::buildIR(bool not_flag) {
     std::string value_expr = std::to_string(this->value);
     std::string temp = currentCFG->create_new_temp_var(Type::type_int);
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ldconst, Type::type_int,
+    currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                        IRInstr::ldconst, Type::type_int,
                                         {temp, value_expr});
     return temp;
 }
@@ -335,7 +358,8 @@ std::string AST::Expr::Const::buildIR(bool not_flag) {
 std::string AST::Expr::ConstChar::buildIR(bool not_flag) {
     std::string value_expr = std::to_string((int) this->value);
     std::string temp = currentCFG->create_new_temp_var(Type::type_char);
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ldconst, Type::type_char,
+    currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                        IRInstr::ldconst, Type::type_char,
                                         {temp, value_expr});
     return temp;
 }
@@ -349,11 +373,13 @@ std::string AST::Expr::Eq::buildIR(bool not_flag) {
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_eq, Type(),
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_eq, Type(),
                                             {tmp_dest, name_lValue, name_rValue,
                                              "neq"});
     } else {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_eq, Type(),
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_eq, Type(),
                                             {tmp_dest, name_lValue, name_rValue,
                                              "eq"});
     }
@@ -370,11 +396,13 @@ std::string AST::Expr::Neq::buildIR(bool not_flag) {
     std::string tmp_dest = currentCFG->create_new_temp_var(Type());
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_eq, Type(),
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_eq, Type(),
                                             {tmp_dest, name_lValue, name_rValue,
                                              "eq"});
     } else {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_eq, Type(),
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_eq, Type(),
                                             {tmp_dest, name_lValue, name_rValue,
                                              "neq"});
     }
@@ -395,11 +423,15 @@ std::string AST::Expr::Geq::buildIR(bool not_flag) {
 
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_low, t,
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_low, t,
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "neq"});
     } else {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_great, t,
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_great, t,
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "eq"});
     }
     return tmp_dest;
 }
@@ -417,11 +449,15 @@ std::string AST::Expr::Great::buildIR(bool not_flag) {
 
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_low, t,
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_low, t,
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "eq"});
     } else {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_great, t,
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_great, t,
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "neq"});
     }
     return tmp_dest;
 }
@@ -439,11 +475,15 @@ std::string AST::Expr::Low::buildIR(bool not_flag) {
 
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_great, t,
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_great, t,
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "eq"});
     } else {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_low, t,
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_low, t,
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "neq"});
     }
     return tmp_dest;
 }
@@ -462,11 +502,15 @@ std::string AST::Expr::Leq::buildIR(bool not_flag) {
 
     // Put instruction into current block
     if (not_flag) {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_great, t,
-                                            {tmp_dest,name_lValue, name_rValue, "neq"});
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_great, t,
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "neq"});
     } else {
-        currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::cmp_low, t,
-                                            {tmp_dest,name_lValue, name_rValue, "eq"});
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::cmp_low, t,
+                                            {tmp_dest, name_lValue, name_rValue,
+                                             "eq"});
     }
 
     return tmp_dest;
@@ -485,7 +529,8 @@ std::string AST::Instr::DeclInt::buildIR() {
     for (auto &it : this->names) {
         // Ajout de la variable it à la table des symboles de currentCFG
         AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, it,Type::type_int);
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
+                                        it, Type::type_int);
     }
     return std::string();
 }
@@ -493,14 +538,15 @@ std::string AST::Instr::DeclInt::buildIR() {
 std::string AST::Instr::DeclChar::buildIR() {
     for (auto &it : this->names) {
         // Ajout de la variable it à la table des symboles de currentCFG
-		AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, it, Type::type_char);
+        AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
+                                        it, Type::type_char);
     }
     return std::string();
 }
 
-std::string AST::Expr::TabAccess::buildIR(bool not_flag){
-    std::string _name = to_string(this->index->getValue())+this->name;
+std::string AST::Expr::TabAccess::buildIR(bool not_flag) {
+    std::string _name = to_string(this->index->getValue()) + this->name;
     return _name;
 }
 
@@ -537,17 +583,20 @@ void AST::Expr::Xor::buildReturnIR() {
 
 void AST::Expr::Const::buildReturnIR() {
     std::string value = std::to_string(this->value);
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret, Type(), {"!" + value});
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret,
+                                        Type(), {"!" + value});
 }
 
 void AST::Expr::ConstChar::buildReturnIR() {
     std::string value = std::to_string(this->value);
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret, Type(), {"!" + value});
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret,
+                                        Type(), {"!" + value});
 }
 
 void AST::Expr::Name::buildReturnIR() {
     auto ntm = currentCFG->current_bb;
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret, Type(), {this->name});
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret,
+                                        Type(), {this->name});
 }
 
 void AST::Expr::Minus::buildReturnIR() {
@@ -1076,17 +1125,18 @@ void AST::InitInstr::DefFun::pushArg(std::string type, std::string name) {
 }
 
 std::string AST::InitInstr::DefFun::buildIR() {
-    vector<std::string>::iterator ptr=this->names.begin();
+    vector<std::string>::iterator ptr = this->names.begin();
     Type t;
     for (auto &it : this->names) {
-        if(*ptr=="int"){
-            t=Type(Type::type_int);
-        }else if(*ptr=="char"){
-            t=Type(Type::type_char);
+        if (*ptr == "int") {
+            t = Type(Type::type_int);
+        } else if (*ptr == "char") {
+            t = Type(Type::type_char);
         }
         // Ajout de la variable it à la table des symboles de currentCFG
         AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(this->line,this->column,current_bloc, it, t);
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
+                                        it, t);
         ptr++;
     }
     this->bloc->buildIR(nullptr);
@@ -1203,74 +1253,95 @@ AST::Bloc *AST::InitInstr::DeclProc::get_bloc() {
 }
 
 //Ajout des tableaux
-std::string AST::Instr::DeclIntTab::buildIR(){
+std::string AST::Instr::DeclIntTab::buildIR() {
     int _size = this->size->getValue();
-    for(int i =0;i<_size;i++){
+    for (int i = 0; i < _size; i++) {
         // Ajout de la variable it à la table des symboles de currentCFG
         AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, to_string(i)+this->name,Type::type_int);
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
+                                        to_string(i) + this->name,
+                                        Type::type_int);
 
     }
     return std::string();
 }
-void AST::Instr::DeclIntTab::display(){
+
+void AST::Instr::DeclIntTab::display() {
     std::cout << "(DECLIT " << name << ' ' << std::flush;
     size->display();
     std::cout << ')' << std::flush;
 }
-bool AST::Instr::DeclIntTab::wrongReturnType(bool returnType){
+
+bool AST::Instr::DeclIntTab::wrongReturnType(bool returnType) {
     return false;
 }
 
-std::string AST::Instr::DeclCharTab::buildIR(){
+std::string AST::Instr::DeclCharTab::buildIR() {
     int _size = this->size->getValue();
-    for(int i =0;i<_size;i++){
+    for (int i = 0; i < _size; i++) {
         // Ajout de la variable it à la table des symboles de currentCFG
         AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc, to_string(i)+this->name,Type::type_char);
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
+                                        to_string(i) + this->name,
+                                        Type::type_char);
 
     }
     return std::string();
 }
-void AST::Instr::DeclCharTab::display(){
+
+void AST::Instr::DeclCharTab::display() {
     std::cout << "(DECLCT " << name << ' ' << std::flush;
     size->display();
     std::cout << ')' << std::flush;
 }
-bool AST::Instr::DeclCharTab::wrongReturnType(bool returnType){
+
+bool AST::Instr::DeclCharTab::wrongReturnType(bool returnType) {
     return false;
 }
 
-std::string AST::Instr::AffctTab::buildIR(){
+std::string AST::Instr::AffctTab::buildIR() {
     std::string name_expr = this->expr->buildIR(false);
     // Ajout de l'instruction au current_block
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    Type t = currentCFG->get_var_type(current_bloc,to_string(this->index->getValue())+this->name);
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy, t,
-                                        {name_expr, to_string(this->index->getValue())+this->name});
+    Type t = currentCFG->get_var_type(current_bloc,
+                                      to_string(this->index->getValue()) +
+                                      this->name);
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy,
+                                        t,
+                                        {name_expr,
+                                         to_string(this->index->getValue()) +
+                                         this->name});
     return "";
 }
-void AST::Instr::AffctTab::display(){
+
+void AST::Instr::AffctTab::display() {
     std::cout << "(AFFT " << name << ' ' << std::flush;
     index->display();
     expr->display();
     std::cout << ')' << std::flush;
 }
-bool AST::Instr::AffctTab::wrongReturnType(bool returnType){
+
+bool AST::Instr::AffctTab::wrongReturnType(bool returnType) {
     return false;
 }
 
 
-int AST::Expr::TabAccess::getValue(){
+int AST::Expr::TabAccess::getValue() {
     return 0;
 }
-void AST::Expr::TabAccess::exists(SymbolTable& st){
+
+void AST::Expr::TabAccess::exists(SymbolTable &st) {
 
 }
-void AST::Expr::TabAccess::buildReturnIR(){
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret, Type(), {to_string(this->index->getValue())+this->name});
+
+void AST::Expr::TabAccess::buildReturnIR() {
+    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret,
+                                        Type(),
+                                        {to_string(this->index->getValue()) +
+                                         this->name});
 }
-void AST::Expr::TabAccess::display(){
+
+void AST::Expr::TabAccess::display() {
     std::cout << "(TA " << name << ' ' << std::flush;
     index->display();
     std::cout << ')' << std::flush;
