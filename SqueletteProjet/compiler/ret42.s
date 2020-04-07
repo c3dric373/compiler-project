@@ -4,7 +4,7 @@ f:
 	subq $17, %rsp
 	movl 16(%rbp), %eax# get arg i
 	movl %eax , -4(%rbp)  # write argi
-	movl 17(%rbp), %eax# get arg c
+	movl 20(%rbp), %eax# get arg c
 	movl %eax , -5(%rbp)  # write argc
 	movl $1, -9(%rbp)
 	movl -4(%rbp) , %eax
@@ -33,9 +33,9 @@ main:
 	movl -9(%rbp), %eax
 	movb %al , -10(%rbp) # b
 	movl -10(%rbp), %eax
-	movb %al , -11(%rbp) # fct param -11(%rbp)
+	movb %al , -14(%rbp) # fct param -14(%rbp)
 	movl -8(%rbp), %eax
-	movl %eax , -15(%rbp) # fct param -15(%rbp)
+	movl %eax , -18(%rbp) # fct param -18(%rbp)
 	call f
 	movl %eax, %eax
 	movb %al , -10(%rbp) # b

@@ -171,7 +171,7 @@ TEST FAIL (different results at execution)
 TEST-CASE: pld-test-output/tests-Init-functions-0_false_return_test
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-2_simple2
-TEST OK
+TEST FAIL (different results at execution)
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_add_char_a
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_char_sub

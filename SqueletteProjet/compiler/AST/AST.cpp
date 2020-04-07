@@ -104,7 +104,7 @@ std::string AST::Expr::CallFun::buildIR(bool not_flag) {
     for (auto it = this->args.rbegin(); it != this->args.rend(); it++) {
         std::string arg = *it;
         Type t = currentCFG->get_var_type(current_bloc, arg);
-        offset -= t.get_offset();
+        offset -= 4;
         std::string rbp = to_string(offset) + "(%rbp)";
         // Ajout de l'instruction au current_block
         currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::add_fct_param, t,
@@ -153,7 +153,7 @@ std::string AST::InitInstr::DefFun::buildIR() {
                 // Ajout de la variable name à la table des symboles de currentCFG
         }
 
-        i += type_next.get_offset();
+        i +=4;
         ptr++;
         ptr_offset++;
     }
