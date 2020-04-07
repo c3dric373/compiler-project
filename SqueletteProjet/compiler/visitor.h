@@ -317,18 +317,42 @@ public:
   //EXPRESSIONS
 
   virtual antlrcpp::Any visitAdd(ifccParser::AddContext *ctx) override {
+      unsigned line = ctx->getStart()->getLine();
+      unsigned column = ctx->getStart()->getCharPositionInLine();
     AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
     AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
-      unsigned line = ctx->getStart()->getLine();
-      unsigned column = ctx->getStart()->getCharPositionInLine();
+    //optimisation : constant propagation
+    if(astRightExpr->isConst() && astLeftExpr->isConst()){
+        return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() + astRightExpr->getValue());
+    }
+    //optimisation : neutrality of 0
+    if(astLeftExpr->isConst() && astLeftExpr->getValue() == 0){
+        return astRightExpr;
+    }
+    if(astRightExpr->isConst() && astRightExpr->getValue() == 0){
+        return astLeftExpr;
+    }
+
     return (AST::Expr::Expr*)new AST::Expr::Add(astLeftExpr, astRightExpr, line, column);
-  }
+    }
 
   virtual antlrcpp::Any visitSub(ifccParser::SubContext *ctx) override {
-      AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
-    AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
       unsigned line = ctx->getStart()->getLine();
       unsigned column = ctx->getStart()->getCharPositionInLine();
+      AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+      AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+      //optimisation : constant propagation
+      if(astRightExpr->isConst() && astLeftExpr->isConst()){
+          return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() - astRightExpr->getValue());
+      }
+      //optimisation : neutrality of 0
+      if(astLeftExpr->isConst() && astLeftExpr->getValue() == 0){
+          return (AST::Expr::Expr*)new AST::Expr::Minus(astRightExpr, line, column);
+      }
+      if(astRightExpr->isConst() && astRightExpr->getValue() == 0){
+          return astLeftExpr;
+      }
+
     return (AST::Expr::Expr*)new AST::Expr::Sub(astLeftExpr, astRightExpr, line, column);
   }
 
@@ -336,38 +360,77 @@ public:
     AST::Expr::Expr* astExpr = visit(ctx->expr());
       unsigned line = ctx->getStart()->getLine();
       unsigned column = ctx->getStart()->getCharPositionInLine();
+      //optimisation : constant propagation
+      if(astExpr->isConst()){
+          return (AST::Expr::Expr*)new AST::Expr::Const(- astExpr->getValue());
+      }
+
     return (AST::Expr::Expr*)new AST::Expr::Minus(astExpr, line, column);
   }
 
   virtual antlrcpp::Any visitMult(ifccParser::MultContext *ctx) override {
-    AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
-    AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
       unsigned line = ctx->getStart()->getLine();
       unsigned column = ctx->getStart()->getCharPositionInLine();
-    return (AST::Expr::Expr*)new AST::Expr::Mult(astLeftExpr, astRightExpr, line, column);
+      AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+      AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+      //optimisation : constant propagation
+      if(astRightExpr->isConst() && astLeftExpr->isConst()){
+          return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() * astRightExpr->getValue());
+      }
+      //optimisation : neutrality of 1
+      if(astLeftExpr->isConst() && astLeftExpr->getValue() == 1){
+          return astRightExpr;
+      }
+      if(astRightExpr->isConst() && astRightExpr->getValue() == 1){
+          return astLeftExpr;
+      }
+
+      return (AST::Expr::Expr*)new AST::Expr::Mult(astLeftExpr, astRightExpr, line, column);
   }
 
     virtual antlrcpp::Any visitAnd(ifccParser::AndContext *ctx) override {
-        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
-        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation
+        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+            return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() & astRightExpr->getValue());
+        }
+
         return (AST::Expr::Expr*)new AST::Expr::And(astLeftExpr, astRightExpr, line, column);
     }
 
     virtual antlrcpp::Any visitOr(ifccParser::OrContext *ctx) override {
-        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
-        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation
+        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+            return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() | astRightExpr->getValue());
+        }
+        //optimisation : neutrality of 0
+        if(astLeftExpr->isConst() && astLeftExpr->getValue() == 0){
+            return astRightExpr;
+        }
+        if(astRightExpr->isConst() && astRightExpr->getValue() == 0){
+            return astLeftExpr;
+        }
+
         return (AST::Expr::Expr*)new AST::Expr::Or(astLeftExpr, astRightExpr, line, column);
     }
 
     virtual antlrcpp::Any visitXor(ifccParser::XorContext *ctx) override {
-        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
-        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation
+        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+            return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() ^ astRightExpr->getValue());
+        }
+
         return (AST::Expr::Expr*)new AST::Expr::Xor(astLeftExpr, astRightExpr, line, column);
     }
 
@@ -413,57 +476,92 @@ public:
   //COMPARAISONS ET BOOLEENS
 
     virtual antlrcpp::Any visitEq(ifccParser::EqContext *ctx) override {
-        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
-        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation
+        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+            return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() == astRightExpr->getValue());
+        }
+
         return (AST::Expr::Expr*)new AST::Expr::Eq(astLeftExpr, astRightExpr, line, column);
     }
 
     virtual antlrcpp::Any visitNeq(ifccParser::NeqContext *ctx) override {
-        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
-        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation
+        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+            return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() != astRightExpr->getValue());
+        }
+
         return (AST::Expr::Expr*)new AST::Expr::Neq(astLeftExpr, astRightExpr, line, column);
     }
 
     virtual antlrcpp::Any visitLeq(ifccParser::LeqContext *ctx) override {
-    AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
-    AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
-      unsigned line = ctx->getStart()->getLine();
-      unsigned column = ctx->getStart()->getCharPositionInLine();
-    return (AST::Expr::Expr*)new AST::Expr::Leq(astLeftExpr, astRightExpr, line, column);
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation
+        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+            return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() <= astRightExpr->getValue());
+        }
+
+        return (AST::Expr::Expr*)new AST::Expr::Leq(astLeftExpr, astRightExpr, line, column);
     }
 
     virtual antlrcpp::Any visitLow(ifccParser::LowContext *ctx) override {
-    AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
-    AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
-      unsigned line = ctx->getStart()->getLine();
-      unsigned column = ctx->getStart()->getCharPositionInLine();
-    return (AST::Expr::Expr*)new AST::Expr::Low(astLeftExpr, astRightExpr, line, column);
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation
+        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+            return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() < astRightExpr->getValue());
+        }
+
+        return (AST::Expr::Expr*)new AST::Expr::Low(astLeftExpr, astRightExpr, line, column);
     }
 
     virtual antlrcpp::Any visitGeq(ifccParser::GeqContext *ctx) override {
-    AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
-    AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
-      unsigned line = ctx->getStart()->getLine();
-      unsigned column = ctx->getStart()->getCharPositionInLine();
-    return (AST::Expr::Expr*)new AST::Expr::Geq(astLeftExpr, astRightExpr, line, column);
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation
+        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+            return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() >= astRightExpr->getValue());
+        }
+
+        return (AST::Expr::Expr*)new AST::Expr::Geq(astLeftExpr, astRightExpr, line, column);
     }
 
     virtual antlrcpp::Any visitGeat(ifccParser::GeatContext *ctx) override {
-    AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
-    AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
-      unsigned line = ctx->getStart()->getLine();
-      unsigned column = ctx->getStart()->getCharPositionInLine();
-    return (AST::Expr::Expr*)new AST::Expr::Great(astLeftExpr, astRightExpr, line, column);
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation
+        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+            return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() > astRightExpr->getValue());
+        }
+
+        return (AST::Expr::Expr*)new AST::Expr::Great(astLeftExpr, astRightExpr, line, column);
     }
 
     virtual antlrcpp::Any visitNot(ifccParser::NotContext *ctx) override {
         AST::Expr::Expr* astExpr = visit(ctx->expr());
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
+        //optimisation : constant propagation
+        if(astExpr->isConst()){
+            return (AST::Expr::Expr*)new AST::Expr::Const(! astExpr->getValue());
+        }
+
         return (AST::Expr::Expr*)new AST::Expr::Not(astExpr, line, column);
     }
 };
