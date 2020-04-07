@@ -16,9 +16,9 @@ main:
 	movl -4(%rbp), %eax
 	movl %eax , -8(%rbp) # a
 	movl -8(%rbp), %eax
-	movl %eax , -12(%rbp) # -12(%rbp)
+	movl %eax , -12(%rbp) # fct param -12(%rbp)
 	movl -8(%rbp), %eax
-	movl %eax , 1(%rbp) # -12(%rbp)
+	movl %eax , 100(%rbp) # -12(%rbp)
 	movl -8(%rbp), %eax
 	addq $8, %rsp
 	popq %rbp

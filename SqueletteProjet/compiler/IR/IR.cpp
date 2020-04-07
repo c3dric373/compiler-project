@@ -45,13 +45,13 @@ void IRInstr::gen_asm(ostream &o) {
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-                    o << "\tmovl %eax , " << reg_variable << " # " << params[1]
+                    o << "\tmovl %eax , " << reg_variable << " # fct param " << params[1]
                       << endl;
                     break;
                 }
                 case Type::type_char : {
                     o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-                    o << "\tmovb %al , " << reg_variable << " # " << params[1]
+                    o << "\tmovb %al , " << reg_variable << " # fct param " << params[1]
                       << endl;
                     break;
                 }
@@ -481,7 +481,7 @@ std::string CFG::create_new_temp_var(Type t) {
 
 int CFG::find_index(string name) {
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
-        return 1;
+        return 100;
     } else {
         return SymbolIndex.at(name);
     }
