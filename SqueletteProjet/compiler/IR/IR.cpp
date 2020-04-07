@@ -56,6 +56,7 @@ void IRInstr::gen_asm(ostream &o) {
                     break;
                 }
             }
+            break;
         }
         case Operation::copy: {
             AST::Bloc *bloc = bb->bloc;
