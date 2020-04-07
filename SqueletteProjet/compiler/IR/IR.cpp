@@ -58,10 +58,20 @@ void IRInstr::gen_asm(ostream &o) {
             }
             break;
         }
+        case Operation::call_fct: {
+            std::string fct_name =  params[0];
+            o << "\tcall " << fct_name << endl;
+            break;
+        }
         case Operation::copy: {
             AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
-            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string reg_tmp_var;
+            if(params[0]=="%eax"){
+                 reg_tmp_var = params[0];
+            }else{
+                reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            }
             std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             switch (t.type_) {
                 case Type::type_int : {
@@ -287,12 +297,13 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::return_: {
-            o << "\t nop" << endl;
+            o << "\tnop" << endl;
             break;
         }
         case Operation::return_expr: {
-            std::string return_address = params[0];
-            o << "\tmovq " + return_address + ", %eax" << endl;
+            AST::Bloc *bloc = bb->bloc;
+            std::string return_address =  bb->cfg->IR_reg_to_asm(bloc, params[0]);;
+            o << "\tmovl " + return_address + ", %eax" << endl;
             break;
         }
     }

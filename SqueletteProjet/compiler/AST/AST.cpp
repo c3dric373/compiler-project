@@ -69,7 +69,7 @@ std::string AST::InitBloc::buildIR() {
 
 std::string AST::InitInstr::DefProc::buildIR() {
 
-    auto ptr = this->types.begin();
+    vector<TYPES>::iterator ptr = this->types.begin();
     Type t;
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     for (auto &it : this->names) {
@@ -89,11 +89,33 @@ std::string AST::InitInstr::DefProc::buildIR() {
                                         it, t);
         ptr++;
     }
-    
+
     this->bloc->buildIR(nullptr);
     return "";
 }
 
+
+std::string AST::InitInstr::DefFun::buildIR() {
+    vector<TYPES>::iterator ptr = this->types.begin();
+    Type t;
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    for (auto &it : this->names) {
+        switch (*ptr) {
+            case INT:
+                t = Type(Type::type_int);
+                break;
+            case CHAR:
+                t = Type(Type::type_char);
+                break;
+                // Ajout de la variable it à la table des symboles de currentCFG
+        }
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
+                                        it, t);
+        ptr++;
+    }
+    this->bloc->buildIR(nullptr);
+    return "";
+}
 
 std::string AST::InitInstr::DeclFun::buildIR() {
     return "";
@@ -110,12 +132,11 @@ std::string AST::Instr::Return::buildIR() {
     return "";
 }
 
-
-std::string AST::Instr::CallProc::buildIR() {
+std::string AST::Expr::CallFun::buildIR(bool not_flag) {
     int offset = currentCFG->getNextFreeSymbolIndex();
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     for (std::string &name : this->args) {
-        const std::string& name_expr = name;
+        const std::string &name_expr = name;
         Type t = currentCFG->get_var_type(current_bloc, name_expr);
         offset -= t.get_offset();
         std::string rbp = to_string(offset) + "(%rbp)";
@@ -123,13 +144,34 @@ std::string AST::Instr::CallProc::buildIR() {
         currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::add_fct_param, t,
                                             {name_expr, rbp});
     }
+    currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::call_fct, Type(),
+                                        {this->funName});
+
+    return "%eax";
+}
+
+std::string AST::Instr::CallProc::buildIR() {
+    int offset = currentCFG->getNextFreeSymbolIndex();
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    for (std::string &name : this->args) {
+        const std::string &name_expr = name;
+        Type t = currentCFG->get_var_type(current_bloc, name_expr);
+        offset -= t.get_offset();
+        std::string rbp = to_string(offset) + "(%rbp)";
+        // Ajout de l'instruction au current_block
+        currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::add_fct_param, t,
+                                            {name_expr, rbp});
+    }
+    currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::call_fct, Type(),
+                                        {this->procName});
     return "";
 }
 
 std::string AST::Instr::ReturnExpr::buildIR() {
     std::string res = this->expr->buildIR(false);
     currentCFG->current_bb->add_IRInstr(this->line, this->column,
-                                        IRInstr::return_, Type(), {res});
+                                        IRInstr::return_expr, Type(), {res});
+
     return "";
 }
 
@@ -1124,24 +1166,6 @@ void AST::InitInstr::DefFun::pushArg(std::string type, std::string name) {
     names.push_back(name);
 }
 
-std::string AST::InitInstr::DefFun::buildIR() {
-    vector<std::string>::iterator ptr = this->names.begin();
-    Type t;
-    for (auto &it : this->names) {
-        if (*ptr == "int") {
-            t = Type(Type::type_int);
-        } else if (*ptr == "char") {
-            t = Type(Type::type_char);
-        }
-        // Ajout de la variable it à la table des symboles de currentCFG
-        AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
-                                        it, t);
-        ptr++;
-    }
-    this->bloc->buildIR(nullptr);
-    return "";
-}
 
 void AST::InitInstr::DefFun::display() {
     std::cout << "(DEFF " << returnType << ' ' << funName << ' ' << std::flush;
@@ -1152,9 +1176,6 @@ void AST::InitInstr::DefFun::display() {
     std::cout << ')' << std::flush;
 }
 
-std::string AST::Expr::CallFun::buildIR(bool not_flag) {
-    return "";
-}
 
 int AST::Expr::CallFun::getValue() {
     return 0;
@@ -1237,7 +1258,7 @@ std::string AST::InitInstr::DeclFun::get_name() {
 }
 
 AST::Bloc *AST::InitInstr::DefFun::get_bloc() {
-    return nullptr;
+    return this->bloc;
 }
 
 AST::Bloc *AST::InitInstr::DeclFun::get_bloc() {
