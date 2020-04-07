@@ -17,6 +17,6 @@ char h(int i, char c){
 int main(){
     int a=1;
     char b='f';
-    h(a,b);
+    b = h(a,b);
     return  b;
 }

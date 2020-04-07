@@ -98,29 +98,64 @@ std::string AST::InitInstr::DefProc::buildIR() {
 }
 
 
+std::string AST::Expr::CallFun::buildIR(bool not_flag) {
+    int offset = currentCFG->getNextFreeSymbolIndex();
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    for (auto it = this->args.rbegin(); it != this->args.rend(); it++) {
+        std::string arg = *it;
+        Type t = currentCFG->get_var_type(current_bloc, arg);
+        offset -= t.get_offset();
+        std::string rbp = to_string(offset) + "(%rbp)";
+        // Ajout de l'instruction au current_block
+        currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::add_fct_param, t,
+                                            {arg, rbp});
+    }
+    currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::call_fct, Type(),
+                                        {this->funName});
+
+    return "%eax";
+}
+
+
 std::string AST::InitInstr::DefFun::buildIR() {
     vector<TYPES>::iterator ptr = this->types.begin();
-    Type t;
+    Type type_current;
+    Type type_next;
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     int i = 16;
+    vector<TYPES>::iterator ptr_offset = this->types.begin();
+    ptr_offset++;
+
     for (auto &name : this->names) {
         switch (*ptr) {
             case INT:
-                t = Type(Type::type_int);
+                type_current = Type(Type::type_int);
                 break;
             case CHAR:
-                t = Type(Type::type_char);
+                type_current = Type(Type::type_char);
                 break;
                 // Ajout de la variable name à la table des symboles de currentCFG
 
         }
         currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
-                                        name, t);
+                                        name, type_current);
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::get_arg, Type(),
                                             {std::to_string(i), name});
-        i += 8;
+
+        switch (*ptr_offset) {
+            case INT:
+                type_next = Type(Type::type_int);
+                break;
+            case CHAR:
+                type_next = Type(Type::type_char);
+                break;
+                // Ajout de la variable name à la table des symboles de currentCFG
+        }
+
+        i += type_next.get_offset();
         ptr++;
+        ptr_offset++;
     }
     this->bloc->buildIR(nullptr);
     return "";
@@ -141,23 +176,6 @@ std::string AST::Instr::Return::buildIR() {
     return "";
 }
 
-std::string AST::Expr::CallFun::buildIR(bool not_flag) {
-    int offset = currentCFG->getNextFreeSymbolIndex();
-    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    for (std::string &name : this->args) {
-        const std::string &name_expr = name;
-        Type t = currentCFG->get_var_type(current_bloc, name_expr);
-        offset -= t.get_offset();
-        std::string rbp = to_string(offset) + "(%rbp)";
-        // Ajout de l'instruction au current_block
-        currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::add_fct_param, t,
-                                            {name_expr, rbp});
-    }
-    currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::call_fct, Type(),
-                                        {this->funName});
-
-    return "%eax";
-}
 
 std::string AST::Instr::CallProc::buildIR() {
     int offset = currentCFG->getNextFreeSymbolIndex();

@@ -1,11 +1,12 @@
-int test(int c,int b){
-    int g = c + b;
-    return g;
-
+char f(int i, char c){
+    i=i+1;
+    c=c+i;
+    return c;
 }
+
 int main(){
-    int a =20;
-    int f = 4;
-    int b = test(a,f);
-    return b;
+    int a=1;
+    char b='f';
+    b=f(a,b);
+    return  b;
 }

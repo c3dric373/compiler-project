@@ -1,7 +1,7 @@
 TEST-CASE: pld-test-output/tests-Init-test-coco
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-0_test_fct
-TEST OK
+TEST FAIL (different results at execution)
 TEST-CASE: pld-test-output/tests-Init-test-rendu-mi-parcours
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-while-0_simple_while_leq
@@ -167,11 +167,11 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-1_simple
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-4_nested_function2
-TEST OK
+TEST FAIL (different results at execution)
 TEST-CASE: pld-test-output/tests-Init-functions-0_false_return_test
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-2_simple2
-TEST FAIL (different results at execution)
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_add_char_a
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_char_sub
