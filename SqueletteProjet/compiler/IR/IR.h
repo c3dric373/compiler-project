@@ -223,6 +223,8 @@ public:
 
     void set_name(std::string name);
 
+    int getNextFreeSymbolIndex();
+
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */
     map<string, int> SymbolIndex; /**< part of the symbol table  */

@@ -1,9 +1,6 @@
-void test(){
-    int d =5;
-}
 
-int main() {
-    int a = 5;
-    test();
+int main(){
+    int a =5;
+    test(a);
     return a;
 }

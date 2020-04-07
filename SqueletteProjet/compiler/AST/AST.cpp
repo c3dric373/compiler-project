@@ -68,6 +68,20 @@ std::string AST::InitBloc::buildIR() {
 /**---------------------------FUNCTIONS---------------------------------------*/
 
 std::string AST::InitInstr::DefProc::buildIR() {
+
+    vector<std::string>::iterator ptr=this->names.begin();
+    Type t;
+    for (auto &it : this->names) {
+        if(*ptr=="int"){
+            t=Type(Type::type_int);
+        }else if(*ptr=="char"){
+            t=Type(Type::type_char);
+        }
+        // Ajout de la variable it à la table des symboles de currentCFG
+        AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+        currentCFG->add_to_symbol_table(this->line,this->column,current_bloc, it, t);
+        ptr++;
+    }
     this->bloc->buildIR(nullptr);
     return "";
 }
@@ -89,7 +103,16 @@ std::string AST::Instr::Return::buildIR() {
 
 
 std::string AST::Instr::CallProc::buildIR() {
-    for(auto &name : this->args){
+    int offset = currentCFG->getNextFreeSymbolIndex();
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    for(std::string &name : this->args){
+        std::string name_expr = name;
+        Type t = currentCFG->get_var_type(current_bloc,name_expr);
+        offset+=t.get_offset();
+        std::string rbp="-"+to_string(offset)+"(rbp)";
+        // Ajout de l'instruction au current_block
+        currentCFG->current_bb->add_IRInstr(0,0,IRInstr::copy, t,
+                                            {name_expr, rbp});
     }
     return "";
 }
@@ -1053,6 +1076,20 @@ void AST::InitInstr::DefFun::pushArg(std::string type, std::string name) {
 }
 
 std::string AST::InitInstr::DefFun::buildIR() {
+    vector<std::string>::iterator ptr=this->names.begin();
+    Type t;
+    for (auto &it : this->names) {
+        if(*ptr=="int"){
+            t=Type(Type::type_int);
+        }else if(*ptr=="char"){
+            t=Type(Type::type_char);
+        }
+        // Ajout de la variable it à la table des symboles de currentCFG
+        AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+        currentCFG->add_to_symbol_table(this->line,this->column,current_bloc, it, t);
+        ptr++;
+    }
+    this->bloc->buildIR(nullptr);
     return "";
 }
 

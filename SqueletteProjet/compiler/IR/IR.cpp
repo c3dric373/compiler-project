@@ -372,6 +372,8 @@ std::string CFG::IR_reg_to_asm(AST::Bloc *bloc, string reg) {
 void CFG::set_name(std::string name){
     this->name = name;
 }
+int CFG::getNextFreeSymbolIndex(){return nextFreeSymbolIndex;}
+
 
 std::string CFG::get_name(){
     return this->name;
