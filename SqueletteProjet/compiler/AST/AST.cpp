@@ -72,7 +72,8 @@ std::string AST::InitInstr::DefProc::buildIR() {
     vector<TYPES>::iterator ptr = this->types.begin();
     Type t;
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    for (auto &it : this->names) {
+    int i = 16;
+    for (auto &name : this->names) {
         switch (*ptr) {
             case INT:
                 t = Type(Type::type_int);
@@ -80,13 +81,15 @@ std::string AST::InitInstr::DefProc::buildIR() {
             case CHAR:
                 t = Type(Type::type_char);
                 break;
-
-                // Ajout de la variable it à la table des symboles de currentCFG
-
+                // Ajout de la variable name à la table des symboles de currentCFG
 
         }
         currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
-                                        it, t);
+                                        name, t);
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::get_arg, Type(),
+                                            {std::to_string(i), name});
+        i += 8;
         ptr++;
     }
 
@@ -99,7 +102,8 @@ std::string AST::InitInstr::DefFun::buildIR() {
     vector<TYPES>::iterator ptr = this->types.begin();
     Type t;
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    for (auto &it : this->names) {
+    int i = 16;
+    for (auto &name : this->names) {
         switch (*ptr) {
             case INT:
                 t = Type(Type::type_int);
@@ -107,10 +111,15 @@ std::string AST::InitInstr::DefFun::buildIR() {
             case CHAR:
                 t = Type(Type::type_char);
                 break;
-                // Ajout de la variable it à la table des symboles de currentCFG
+                // Ajout de la variable name à la table des symboles de currentCFG
+
         }
         currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
-                                        it, t);
+                                        name, t);
+        currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                            IRInstr::get_arg, Type(),
+                                            {std::to_string(i), name});
+        i += 8;
         ptr++;
     }
     this->bloc->buildIR(nullptr);

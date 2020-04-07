@@ -296,6 +296,15 @@ void IRInstr::gen_asm(ostream &o) {
 
             break;
         }
+        case Operation::get_arg: {
+            AST::Bloc *bloc = bb->bloc;
+            int offset_arg = std::stoi(params[0]);
+            std::string name_arg = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+
+            o << "\tmovl " << offset_arg << "(%rbp), %eax" << "# get arg " << params[1]<<endl;
+            o << "\tmovl %eax , " << name_arg << "  " << "# write arg" << params[1] << endl;
+            break;
+        }
         case Operation::return_: {
             o << "\tnop" << endl;
             break;

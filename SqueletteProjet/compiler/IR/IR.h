@@ -94,6 +94,7 @@ public:
         call_proc,
         add_fct_param,
         call_fct,
+        get_arg,
         neg
     } Operation;
 
