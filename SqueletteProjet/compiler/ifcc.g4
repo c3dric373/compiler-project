@@ -23,7 +23,7 @@ type :
 ;
 
 bloc :
-	instr*  #initFuns
+	instr*  #blocinstr
 ;
 
 instr :

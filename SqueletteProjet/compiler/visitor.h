@@ -35,14 +35,14 @@ public:
       }
       return astInitBloc;
     }
-/*
-  virtual antlrcpp::Any visitBlocinit(ifccParser::BlocinitContext *ctx) override {
+
+  virtual antlrcpp::Any visitBlocinstr(ifccParser::BlocinstrContext *ctx) override {
     AST::Bloc* astBloc = new AST::Bloc();
     for(auto& it : ctx->instr()){
       astBloc->pushInstr(visit(it));
     }
     return astBloc;
-  }*/
+  }
 
   //INSTRUCTIONS
 
