@@ -35,14 +35,14 @@ public:
       }
       return astInitBloc;
     }
-
-  virtual antlrcpp::Any visitBlocinstr(ifccParser::BlocinstrContext *ctx) override {
+/*
+  virtual antlrcpp::Any visitBlocinit(ifccParser::BlocinitContext *ctx) override {
     AST::Bloc* astBloc = new AST::Bloc();
     for(auto& it : ctx->instr()){
       astBloc->pushInstr(visit(it));
     }
     return astBloc;
-  }
+  }*/
 
   //INSTRUCTIONS
 
@@ -71,12 +71,34 @@ public:
         return (AST::Instr::Instr*)(new AST::Instr::DeclChar(names, line, column));
     }
 
+    virtual antlrcpp::Any visitDeclinttab(ifccParser::DeclinttabContext *ctx) override {
+      AST::Expr::Expr* astExpr = visit(ctx->expr());
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)(new AST::Instr::DeclIntTab(ctx->NAME()->getText(), astExpr, line, column));
+    }
+
+    virtual antlrcpp::Any visitDeclchartab(ifccParser::DeclchartabContext *ctx) override {
+        AST::Expr::Expr* astExpr = visit(ctx->expr());
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)(new AST::Instr::DeclCharTab(ctx->NAME()->getText(), astExpr, line, column));
+    }
+
   virtual antlrcpp::Any visitAffexpr(ifccParser::AffexprContext *ctx) override {
     AST::Expr::Expr* astExpr = visit(ctx->expr());
       unsigned line = ctx->getStart()->getLine();
       unsigned column = ctx->getStart()->getCharPositionInLine();
     return (AST::Instr::Instr*)(new AST::Instr::Affct(ctx->NAME()->getText(), astExpr, line, column));
   }
+
+    virtual antlrcpp::Any visitAfftab(ifccParser::AfftabContext *ctx) override {
+        AST::Expr::Expr* astIndex = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astExpr = visit(ctx->expr()[1]);
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)(new AST::Instr::AffctTab(ctx->NAME()->getText(), astIndex, astExpr, line, column));
+    }
 
   virtual antlrcpp::Any visitDefint(ifccParser::DefintContext *ctx) override {
     AST::Expr::Expr* astExpr = visit(ctx->expr());
@@ -174,6 +196,20 @@ public:
         return (AST::Instr::Instr*)(new AST::Instr::DeclChar(names, line, column));
     }
 
+    virtual antlrcpp::Any visitFordeclinttab(ifccParser::FordeclinttabContext *ctx) override {
+        AST::Expr::Expr* astExpr = visit(ctx->expr());
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)(new AST::Instr::DeclIntTab(ctx->NAME()->getText(), astExpr, line, column));
+    }
+
+    virtual antlrcpp::Any visitFordeclchartab(ifccParser::FordeclchartabContext *ctx) override {
+        AST::Expr::Expr* astExpr = visit(ctx->expr());
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)(new AST::Instr::DeclCharTab(ctx->NAME()->getText(), astExpr, line, column));
+    }
+
     virtual antlrcpp::Any visitFordefint(ifccParser::FordefintContext *ctx) override {
         AST::Expr::Expr* astExpr = visit(ctx->expr());
         unsigned line = ctx->getStart()->getLine();
@@ -195,11 +231,27 @@ public:
         return (AST::Instr::Instr*)(new AST::Instr::Affct(ctx->NAME()->getText(), astExpr, line, column));
     }
 
-    virtual antlrcpp::Any visitForaff(ifccParser::ForaffContext *ctx) override {
+    virtual antlrcpp::Any visitForafftab(ifccParser::ForafftabContext *ctx) override {
+        AST::Expr::Expr* astIndex = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astExpr = visit(ctx->expr()[1]);
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)(new AST::Instr::AffctTab(ctx->NAME()->getText(), astIndex, astExpr, line, column));
+    }
+
+    virtual antlrcpp::Any visitLoopaff(ifccParser::LoopaffContext *ctx) override {
         AST::Expr::Expr* astExpr = visit(ctx->expr());
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
         return (AST::Instr::Instr*)new AST::Instr::Affct(ctx->NAME()->getText(), astExpr, line, column);
+    }
+
+    virtual antlrcpp::Any visitLoopafftab(ifccParser::LoopafftabContext *ctx) override {
+        AST::Expr::Expr* astIndex = visit(ctx->expr()[0]);
+        AST::Expr::Expr* astExpr = visit(ctx->expr()[1]);
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Instr::Instr*)(new AST::Instr::AffctTab(ctx->NAME()->getText(), astIndex, astExpr, line, column));
     }
 
     //INIT FUNCTIONS
@@ -340,6 +392,13 @@ public:
       unsigned column = ctx->getStart()->getCharPositionInLine();
     return (AST::Expr::Expr*)new AST::Expr::Name(ctx->NAME()->getText(), line, column);
   }
+
+    virtual antlrcpp::Any visitTabaccess(ifccParser::TabaccessContext *ctx) override {
+      AST::Expr::Expr* astIndex = visit(ctx->expr());
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Expr::Expr*)new AST::Expr::TabAccess(ctx->NAME()->getText(), astIndex, line, column);
+    }
 
     virtual antlrcpp::Any visitCallfun(ifccParser::CallfunContext *ctx) override {
         std::vector<std::string> args = std::vector<std::string>();
