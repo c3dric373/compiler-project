@@ -3,22 +3,9 @@
 
 // Généré à partir de IR.h
 
-/*
-	Pour utiliser l'IR, il faut ajouter 2 attributs à l'AST:
-		- Un attribut CFG* sur le CFG actuellement utilisé
-		- Un attribut vector<CFG*> qui stockerait les CFGs
 
-EN GROS:
-	Les fonctions de l'IR sont appelées dans l'AST, et l'IR traduit les instructions en langage assembleur
-Lors du parcours de l'AST :
-	-Un nouveau CFG est créé à chaque nouvelle fonction
-	-Pour tout autre élément, la visite de l'élément ajoutera juste une instruction à l'attribut current_bb du CFG grâce à la méthode add_IRInstr OU ajoutera la variable à la table des symboles en faisant un appel à la fonction add_to_symbol_table du current CFG
 
-Il est important de préciser que les variables temporaires seront crées dans l'AST avant d'être passées en paramètre à la méthode de l'IR correspondante.
-C'est la méthode create_new_temp_var de l'IR qui s'occupera d'insérer la variable temporaire dans la table des symboles.
-
-*/
-
+//------------------------------IRInstr---------------------------------
 
 IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
                  vector<string> params_) : bb(bb_), op(op_), t(t_),
@@ -344,6 +331,10 @@ void IRInstr::gen_asm(ostream &o) {
     }
 }
 
+
+//------------------------------BasicBlock---------------------------------
+
+
 BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg),
                                                        label(entry_label) {}
 
@@ -407,6 +398,10 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
     }
     instrs.push_back(new IRInstr(this, op, t, params));
 }
+
+
+//------------------------------CFG---------------------------------
+
 
 CFG::CFG(AST::Bloc *ast_, std::string name) : nextFreeSymbolIndex(0),
                                               nextBBnumber(0), ast(ast_) {
@@ -615,10 +610,20 @@ BasicBlock *CFG::get_bb_before_last() {
     return this->basic_blocs.end()[-2];
 }
 
+//------------------------------Erreur---------------------------------
+
 void CFG::addErreur(std::string message) {
     this->error.addErrorMessage(message);
 }
 
 Erreur CFG::getErreur() {
     return error;
+}
+
+bool CFG::hasError() {
+    return error.getError();
+}
+
+std::string CFG::getErrorMessage() {
+    return error.getMessage();
 }

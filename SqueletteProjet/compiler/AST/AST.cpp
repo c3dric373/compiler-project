@@ -60,12 +60,6 @@ std::string AST::InitBloc::buildIR() {
 }
 
 
-
-
-
-//-----------------------------INSTRUCTIONS-------------------------------------
-
-
 /**---------------------------FUNCTIONS---------------------------------------*/
 
 std::string AST::InitInstr::DefProc::buildIR() {
@@ -82,9 +76,10 @@ std::string AST::InitInstr::DefProc::buildIR() {
             case CHAR:
                 t = Type(Type::type_char);
                 break;
-                // Ajout de la variable name à la table des symboles de currentCFG
-
+	   	 	default:
+				break;
         }
+		// Ajout de la variable name à la table des symboles de currentCFG
         currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
                                         name, t);
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
@@ -137,6 +132,8 @@ std::string AST::InitInstr::DefFun::buildIR() {
             case CHAR:
                 type_current = Type(Type::type_char);
                 break;
+	    default:
+		break;
         }
 
         // Ajout de la variable name à la table des symboles de currentCFG
@@ -195,6 +192,10 @@ std::string AST::Instr::ReturnExpr::buildIR() {
 
 
 /**---------------------------------------------------------------------------*/
+
+//-----------------------------INSTRUCTIONS-------------------------------------
+
+
 std::string AST::Instr::If::buildIR() {
     // tester la condition
     AST::Bloc *currentBloc = currentCFG->current_bb->bloc;
@@ -663,28 +664,13 @@ void AST::Expr::Minus::buildReturnIR() {
     this->buildIR(true);
 }
 
-//------------------SymbolTable------------------
-//####################################################################
-// NOT NEEDED ANYMORE !!!!!
-//####################################################################
+//---------------------------------Error--------------------
 
-/*void AST::Instr::Decl::addToTable(SymbolTable &st) {
-    for (auto &it : this->names) {
-        if (st.exists(0, it)) {
-            st.setErrorTrue();
-            std::string error = "error : int " + it + " has already been defined\n";
-            st.addErrorMsg(error);
-        } else {
-            st.addSymbol(0, it, offset = offset + INT_OFFSET);
-        }
-    }
-}
-*/
 
 bool AST::Prog::getError() {
     bool error = false;
     for (auto &it : cfgs) {
-        bool e = it->getErreur().getError();
+        bool e = it->hasError();
         error = error || e;
     }
     return error;
@@ -693,71 +679,11 @@ bool AST::Prog::getError() {
 std::string AST::Prog::getErrorMsg() {
     std::string errorMessage;
     for (auto &it : cfgs) {
-        errorMessage += it->getErreur().getMessage();
+        errorMessage += it->getErrorMessage();
     }
     return errorMessage;
 }
 
-//------------------Exists--------------------
-
-void AST::Expr::Sub::exists(SymbolTable &st) {
-    this->lValue->exists(st);
-    this->rValue->exists(st);
-}
-
-void AST::Expr::Const::exists(SymbolTable &st) {}
-
-
-void AST::Expr::Minus::exists(SymbolTable &st) {
-    this->value->exists(st);
-}
-
-void AST::Expr::Mult::exists(SymbolTable &st) {
-    this->lValue->exists(st);
-    this->rValue->exists(st);
-}
-
-
-void AST::Expr::Name::exists(SymbolTable &st) {
-    if (!st.exists(0, this->name)) {
-        st.setErrorTrue();
-        std::string error =
-                "error : variable " + this->name + " has not been declared\n";
-        st.addErrorMsg(error);
-    }
-}
-
-void AST::Expr::Add::exists(SymbolTable &st) {
-    this->lValue->exists(st);
-    this->rValue->exists(st);
-}
-
-void AST::Expr::Geq::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Low::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Great::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Neq::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Not::exists(SymbolTable &st) {
-}
-
-void AST::Expr::And::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Or::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Xor::exists(SymbolTable &st) {
-}
-
-void AST::Expr::ConstChar::exists(SymbolTable &st) {
-}
 
 //-------------DISPLAY-----------------------
 
@@ -967,17 +893,10 @@ void AST::Expr::Not::display() {
     std::cout << ')' << std::flush;
 }
 
-
-void AST::Expr::Eq::exists(SymbolTable &st) {
-}
-
 int AST::Expr::Leq::getValue() {
     return 0;
 }
 
-void AST::Expr::Leq::exists(SymbolTable &st) {
-
-}
 
 int AST::Expr::Geq::getValue() {
     return 0;
@@ -1199,8 +1118,6 @@ int AST::Expr::CallFun::getValue() {
     return 0;
 }
 
-void AST::Expr::CallFun::exists(SymbolTable &st) {
-}
 
 void AST::Expr::CallFun::buildReturnIR() {
     std::string res = this->buildIR(false);
@@ -1373,9 +1290,6 @@ int AST::Expr::TabAccess::getValue() {
     return 0;
 }
 
-void AST::Expr::TabAccess::exists(SymbolTable &st) {
-
-}
 
 void AST::Expr::TabAccess::buildReturnIR() {
     currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret,
