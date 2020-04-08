@@ -297,8 +297,11 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::call_fct: {
+            AST::Bloc *bloc = bb->bloc;
             std::string fct_name = params[0];
+            std::string location_dest = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             o << "\tcall " << fct_name << endl;
+            o << "\tmovl %eax, " << location_dest << endl;
             break;
         }
         case Operation::get_arg: {
@@ -364,38 +367,38 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
     // Find out if the variable placed in params has already been declared
     // if offset == 1, it hasn't been declared
     for (std::string param : params) {
-        int offset = 0;
-        switch (op) {
-            case IRInstr::copy :
-            case IRInstr::and_ :
-            case IRInstr::xor_ :
-            case IRInstr::or_ :
-            case IRInstr::add :
-            case IRInstr::sub :
-            case IRInstr::mul :
-            case IRInstr::neg :
-                offset = this->cfg->get_var_index(this->bloc, param);
-                break;
-            case IRInstr::ret :
-                // if the param doesn't contain a !, this is not a constant
-                if (param.at(0) != '!') {
+        if (param != "%eax") {
+            int offset = 0;
+            switch (op) {
+                case IRInstr::copy :
+                case IRInstr::and_ :
+                case IRInstr::xor_ :
+                case IRInstr::or_ :
+                case IRInstr::add :
+                case IRInstr::sub :
+                case IRInstr::mul :
+                case IRInstr::neg :
                     offset = this->cfg->get_var_index(this->bloc, param);
-                }
-                break;
-            case IRInstr::cmp_eq :
-            case IRInstr::cmp_low :
-            case IRInstr::cmp_great :
-                if (param.compare("eq") != 0 && param.compare("neq") != 0) {
-                    offset = this->cfg->get_var_index(this->bloc, param);
-                }
-                break;
-                // Do nothing
-            default:
-                break;
-        }
-        // if param has not been declared, launch an error
-        if (offset == 100) {
-            if (params[0] != "%eax") {
+                    break;
+                case IRInstr::ret :
+                    // if the param doesn't contain a !, this is not a constant
+                    if (param.at(0) != '!') {
+                        offset = this->cfg->get_var_index(this->bloc, param);
+                    }
+                    break;
+                case IRInstr::cmp_eq :
+                case IRInstr::cmp_low :
+                case IRInstr::cmp_great :
+                    if (param.compare("eq") != 0 && param.compare("neq") != 0) {
+                        offset = this->cfg->get_var_index(this->bloc, param);
+                    }
+                    break;
+                    // Do nothing
+                default:
+                    break;
+            }
+            // if param has not been declared, launch an error
+            if (offset == 100) {
                 std::string erreur =
                         "error line " + std::to_string(line) + " column " +
                         std::to_string(column) +

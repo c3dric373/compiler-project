@@ -52,6 +52,7 @@ std::string AST::InitBloc::buildIR() {
         CFG *cfg = new CFG(child, function->get_name());
         cfgs.push_back(cfg);
         currentCFG = cfg;
+        cfg->add_to_symbol_table(0,0, nullptr,"!%eax",Type());
         currentCFG->current_bb->bloc = child;
         function->buildIR();
     }
@@ -112,10 +113,13 @@ std::string AST::Expr::CallFun::buildIR(bool not_flag, std::string ret_value) {
                                             {arg, std::to_string(i)});
         i++;
     }
-    currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::call_fct, Type(),
-                                        {this->funName});
+    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
 
-    return "%eax";
+    currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::call_fct, Type(),
+                                        {this->funName,tmp_dest});
+
+
+    return tmp_dest;
 }
 
 
