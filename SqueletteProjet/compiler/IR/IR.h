@@ -19,7 +19,6 @@ class CFG;
 
 using namespace std;
 
-//bullshit class just to compile
 class Type {
 
 public:
@@ -27,7 +26,9 @@ public:
         type_int,
         type_char
     } type_enum;
+
     Type(type_enum type_enum_) : type_(type_enum_){};
+
     Type()=default;
 	
     std::string get_suffix(){
