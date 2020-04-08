@@ -1386,3 +1386,63 @@ void AST::Expr::TabAccess::display() {
     std::cout << ')' << std::flush;
 }
 
+
+//Optimisations
+
+bool AST::Expr::Add::isConst(){
+    return false;
+}
+bool AST::Expr::Sub::isConst(){
+    return false;
+}
+bool AST::Expr::Mult::isConst(){
+    return false;
+}
+bool AST::Expr::Minus::isConst(){
+    return false;
+}
+bool AST::Expr::And::isConst(){
+    return false;
+}
+bool AST::Expr::Or::isConst(){
+    return false;
+}
+bool AST::Expr::Xor::isConst(){
+    return false;
+}
+bool AST::Expr::Const::isConst(){
+    return true;
+}
+bool AST::Expr::ConstChar::isConst(){
+    return false;
+}
+bool AST::Expr::Name::isConst(){
+    return false;
+}
+bool AST::Expr::TabAccess::isConst(){
+    return false;
+}
+bool AST::Expr::CallFun::isConst(){
+    return false;
+}
+bool AST::Expr::Eq::isConst(){
+    return false;
+}
+bool AST::Expr::Neq::isConst(){
+    return false;
+}
+bool AST::Expr::Leq::isConst(){
+    return false;
+}
+bool AST::Expr::Geq::isConst(){
+    return false;
+}
+bool AST::Expr::Low::isConst(){
+    return false;
+}
+bool AST::Expr::Great::isConst(){
+    return false;
+}
+bool AST::Expr::Not::isConst(){
+    return false;
+}
