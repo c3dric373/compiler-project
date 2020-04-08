@@ -4,8 +4,6 @@ char f(int i, char c){
     return c;
 }
 
-
-
 int main(){
     int a=1;
     char b='f';

@@ -28,6 +28,8 @@ IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
 void IRInstr::gen_asm(ostream &o) {
     /* Exemple de ce qu'il faut mettre ici, la + longue méthode*/
     std::string type = t.get_suffix();
+    vector<std::string> registers = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
+                                     "%r9d"};
     switch (op) {
         case Operation::ldconst : {
             AST::Bloc *bloc = bb->bloc;
@@ -37,10 +39,16 @@ void IRInstr::gen_asm(ostream &o) {
               << endl;
             break;
         }
+
         case Operation::copy: {
             AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
-            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            std::string reg_tmp_var;
+            if (params[0] == "%eax") {
+                reg_tmp_var = params[0];
+            } else {
+                reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            }
             std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             switch (t.type_) {
                 case Type::type_int : {
@@ -261,6 +269,75 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\t jmp " << basic_block << endl;
             break;
         }
+        case Operation::call_proc: {
+
+            break;
+        }
+        case Operation::add_fct_param: {
+            AST::Bloc *bloc = bb->bloc;
+            // copy params [0] into params [1]
+            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            int num_arg = std::stoi(params[1]);
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl " << reg_tmp_var << ", "
+                      << registers.at(num_arg)
+                      << " # fct param " << params[0] << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovl " << reg_tmp_var << ", " << registers[num_arg]
+                      << " # fct param " << params[0] << endl;
+                    break;
+                }
+            }
+            break;
+        }
+        case Operation::call_fct: {
+            std::string fct_name = params[0];
+            o << "\tcall " << fct_name << endl;
+            break;
+        }
+        case Operation::get_arg: {
+            // Arguments will be passed from left to right by the caller in the
+            // registers :
+            AST::Bloc *bloc = bb->bloc;
+            int num_arg = std::stoi(params[0]);
+            std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl " << registers[num_arg] << ", " << location_arg
+                      << "# write arg " << params[1] << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovl " << registers[num_arg] << ", " << "%eax"
+                      << "# relocate because arg is a char: " << params[1]
+                      << endl;
+                    o << "\tmovb %al, " << location_arg
+                      << "# write arg " << params[1] << endl;
+                    break;
+                }
+            }
+            break;
+        }
+
+        case Operation::return_: {
+            o << "\tnop" << endl;
+            break;
+        }
+        case Operation::return_expr: {
+            AST::Bloc *bloc = bb->bloc;
+
+            if (params[0] == "%eax") {
+                o << "\tnop" << endl;
+            } else {
+                std::string return_address = bb->cfg->IR_reg_to_asm(bloc,
+                                                                    params[0]);
+                o << "\tmovl " + return_address + ", %eax" << endl;
+            }
+            break;
+        }
     }
 }
 
@@ -269,7 +346,7 @@ BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg),
 
 void BasicBlock::gen_asm(ostream &o) {
     std::string label = this->label;
-    if (label != "essai") {
+    if (!label.empty()) {
         o << this->label << ": " << endl;
     }
     for (auto instr : instrs) {
@@ -278,54 +355,61 @@ void BasicBlock::gen_asm(ostream &o) {
 }
 
 void
-BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t, vector<string> params) {
-	// Analyse statique :
-	// Find out if the variable placed in params has already been declared
-	// if offset == 1, it hasn't been declared
-	for(std::string param : params){
-		int offset = 0;
-	    switch (op) {
-			case IRInstr::copy : 
-			case IRInstr::and_ : 
-			case IRInstr::xor_ : 
-			case IRInstr::or_ : 
-			case IRInstr::add : 
-			case IRInstr::sub : 
-        	case IRInstr::mul : 
-			case IRInstr::neg :
-				offset = this->cfg->get_var_index(this->bloc, param); 
-				break;
-	        case IRInstr::ret : 
-				// if the param doesn't contain a !, this is not a constant
- 				if (param.at(0) != '!') {
-			        offset = this->cfg->get_var_index(this->bloc, param);
-			    }
-				break;
-			case IRInstr::cmp_eq : 
-			case IRInstr::cmp_low :
-			case IRInstr::cmp_great :
-				if(param.compare("eq") != 0 && param.compare("neq") != 0) {
-					offset = this->cfg->get_var_index(this->bloc, param);
-				}
-				break;
-			// Do nothing
-			default:
-				break;
-		}
-		// if param has not been declared, launch an error
-		if (offset==1){
-			std::string erreur =
-            	"error line " + std::to_string(line) + " column " + std::to_string(column) +
-					 " : cannot find the offset, the variable " + param + " has not been declared \n";
-	  		this->cfg->addErreur(erreur);
-		}
-	}
+BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
+                        vector<string> params) {
+    // Analyse statique :
+    // Find out if the variable placed in params has already been declared
+    // if offset == 1, it hasn't been declared
+    for (std::string param : params) {
+        int offset = 0;
+        switch (op) {
+            case IRInstr::copy :
+            case IRInstr::and_ :
+            case IRInstr::xor_ :
+            case IRInstr::or_ :
+            case IRInstr::add :
+            case IRInstr::sub :
+            case IRInstr::mul :
+            case IRInstr::neg :
+                offset = this->cfg->get_var_index(this->bloc, param);
+                break;
+            case IRInstr::ret :
+                // if the param doesn't contain a !, this is not a constant
+                if (param.at(0) != '!') {
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                }
+                break;
+            case IRInstr::cmp_eq :
+            case IRInstr::cmp_low :
+            case IRInstr::cmp_great :
+                if (param.compare("eq") != 0 && param.compare("neq") != 0) {
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                }
+                break;
+                // Do nothing
+            default:
+                break;
+        }
+        // if param has not been declared, launch an error
+        if (offset == 100) {
+            if (params[0] != "%eax") {
+                std::string erreur =
+                        "error line " + std::to_string(line) + " column " +
+                        std::to_string(column) +
+                        " : cannot find the offset, the variable " + param +
+                        " has not been declared \n";
+                this->cfg->addErreur(erreur);
+            }
+        }
+    }
     instrs.push_back(new IRInstr(this, op, t, params));
 }
 
-CFG::CFG(AST::Bloc *ast_) : nextFreeSymbolIndex(0), nextBBnumber(0), ast(ast_) {
-    auto firstBB = new BasicBlock(this, "essai");
+CFG::CFG(AST::Bloc *ast_, std::string name) : nextFreeSymbolIndex(0),
+                                              nextBBnumber(0), ast(ast_) {
+    auto firstBB = new BasicBlock(this, "");
     this->add_bb(firstBB);
+    this->name = name;
 
     // Create just one block
     // In the future, we must create one more
@@ -354,15 +438,30 @@ std::string CFG::IR_reg_to_asm(AST::Bloc *bloc, string reg) {
     return regString;
 }
 
+void CFG::set_name(std::string name) {
+    this->name = name;
+}
+
+int CFG::getNextFreeSymbolIndex() { return nextFreeSymbolIndex; }
+
+
+std::string CFG::get_name() {
+    return this->name;
+}
+
 void CFG::gen_asm_prologue(ostream &o) {
-    std::string label = this->current_bb->label;
-    o << ".globl\tmain" << endl;
-    o << "main:" << endl;
+    std::string label = this->name;
+    if (label == "main") {
+        o << ".globl\tmain" << endl;
+    }
+    o << this->name << ":" << endl;
     o << "\tpushq %rbp" << endl;
     o << "\tmovq %rsp, %rbp" << endl;
+    o << "\tsubq $" << this->nextFreeSymbolIndex * (-1) << ", %rsp" << endl;
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {
+    o << "\taddq $" << this->nextFreeSymbolIndex * (-1) << ", %rsp" << endl;
     o << "\tpopq %rbp" << endl;
     o << "\tret" << endl;
 }
@@ -379,7 +478,9 @@ static std::string get_var_name(AST::Bloc *bloc, std::string name) {
 }
 
 
-void CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name, Type t) {
+void
+CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name,
+                         Type t) {
     std::string type;
     switch (t.type_) {
         case Type::type_int: {
@@ -404,8 +505,10 @@ void CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name
         SymbolIndex[new_name] = nextFreeSymbolIndex;
     } else {
         std::string erreur =
-                "error line " + std::to_string(line) + " column " + std::to_string(column) + " : " + type + " " + name + " has already been defined\n";
-		error.addErrorMessage(erreur);
+                "error line " + std::to_string(line) + " column " +
+                std::to_string(column) + " : " + type + " " + name +
+                " has already been defined\n";
+        error.addErrorMessage(erreur);
     }
 }
 
@@ -424,7 +527,7 @@ std::string CFG::create_new_temp_var(Type t) {
 
 int CFG::find_index(string name) {
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
-        return 1;
+        return 100;
     } else {
         return SymbolIndex.at(name);
     }
@@ -462,8 +565,9 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
 Type CFG::find_type(string name, string realName) {
     if (SymbolType.find(name) == SymbolType.end()) {
         std::string error =
-        	"error : cannot find the type, the variable " + realName + " has not been declared \n";
-	    this->addErreur(error);
+                "error : cannot find the type, the variable " + realName +
+                " has not been declared \n";
+        this->addErreur(error);
         return Type();
     } else {
         return SymbolType.at(name);
@@ -482,7 +586,7 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     std::string new_name = get_var_name(bloc, name);
     if (bloc->parent_bloc == nullptr) {
         return find_type(new_name, name);
-	   		
+
     }
 
     while (SymbolType.find(new_name) == SymbolType.end()) {
@@ -501,17 +605,17 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
 }
 
 std::string CFG::new_BB_name() {
-    return ".L" + std::to_string(nextBBnumber++);
+    return ".L" + this->name + std::to_string(nextBBnumber++);
 }
 
 BasicBlock *CFG::get_bb_before_last() {
     return this->basic_blocs.end()[-2];
 }
 
-void CFG::addErreur(std::string message){
-	this->error.addErrorMessage(message);
+void CFG::addErreur(std::string message) {
+    this->error.addErrorMessage(message);
 }
 
-Erreur CFG::getErreur(){
+Erreur CFG::getErreur() {
     return error;
 }

@@ -143,7 +143,8 @@ namespace AST {
             void exists(SymbolTable &st) override;
 
             And(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
             void buildReturnIR() override;
 
@@ -167,7 +168,8 @@ namespace AST {
             void exists(SymbolTable &st) override;
 
             Or(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
             void buildReturnIR() override;
 
@@ -191,7 +193,8 @@ namespace AST {
             void exists(SymbolTable &st) override;
 
             Xor(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line), column(column) {};
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
 
             void buildReturnIR() override;
 
@@ -497,7 +500,8 @@ namespace AST {
 
         class DeclInt : public Instr {
         public:
-            DeclInt(std::vector<std::string> names, unsigned line, unsigned column) :
+            DeclInt(std::vector<std::string> names, unsigned line,
+                    unsigned column) :
                     names(names), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -514,7 +518,8 @@ namespace AST {
 
         class DeclChar : public Instr {
         public:
-            DeclChar(std::vector<std::string> names, unsigned line, unsigned column) :
+            DeclChar(std::vector<std::string> names, unsigned line,
+                     unsigned column) :
                     names(names), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -567,7 +572,8 @@ namespace AST {
 
         class DefInt : public Instr {
         public:
-            DefInt(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
+            DefInt(std::string name, Expr::Expr *expr, unsigned line,
+                   unsigned column) :
                     name(name), expr(expr), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -585,7 +591,8 @@ namespace AST {
 
         class DefChar : public Instr {
         public:
-            DefChar(std::string name, Expr::Expr *expr, unsigned line, unsigned column) :
+            DefChar(std::string name, Expr::Expr *expr, unsigned line,
+                    unsigned column) :
                     name(name), expr(expr), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -722,8 +729,9 @@ namespace AST {
 
         class Return : public Instr {
         public:
-            Return(unsigned line, unsigned column):
-            line(line), column(column){};
+            Return(unsigned line, unsigned column) :
+                    line(line), column(column) {};
+
             void display() override;
 
             std::string buildIR() override;
@@ -737,8 +745,8 @@ namespace AST {
 
         class ReturnExpr : public Instr {
         public:
-            ReturnExpr(Expr::Expr* expr, unsigned line, unsigned column):
-            expr(expr), line(line), column(column){};
+            ReturnExpr(Expr::Expr *expr, unsigned line, unsigned column) :
+                    expr(expr), line(line), column(column) {};
 
             void display() override;
 
@@ -747,7 +755,7 @@ namespace AST {
             bool wrongReturnType(bool returnType) override;
 
         private:
-            Expr::Expr* expr;
+            Expr::Expr *expr;
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
@@ -759,18 +767,26 @@ namespace AST {
             virtual std::string buildIR() = 0;
 
             virtual void display() = 0;
+
+            virtual std::string get_name() = 0;
+            virtual AST::Bloc* get_bloc()=0;
         };
 
         class DeclProc : InitInstr {
         public:
             DeclProc(std::string procName, unsigned line, unsigned column) :
-            procName(procName), line(line), column(column) {};
+                    procName(procName), line(line), column(column) {};
 
             void pushArg(std::string type, std::string name);
 
             std::string buildIR() override;
 
             void display() override;
+
+            std::string get_name()  override ;
+            AST::Bloc* get_bloc() override;
+
+
 
         private:
             std::string procName;
@@ -782,13 +798,19 @@ namespace AST {
 
         class DeclFun : InitInstr {
         public:
-            DeclFun(std::string returnType, std::string procName, unsigned line, unsigned column);
+            DeclFun(std::string returnType, std::string procName, unsigned line,
+                    unsigned column);
 
             void pushArg(std::string type, std::string name);
 
             std::string buildIR() override;
 
             void display() override;
+
+            std::string get_name()  override ;
+            AST::Bloc* get_bloc() override;
+
+
 
         private:
             TYPES returnType;
@@ -812,6 +834,11 @@ namespace AST {
 
             void display() override;
 
+            std::string get_name()  override ;
+
+            AST::Bloc* get_bloc() override;
+
+
         private:
             std::string procName;
             std::vector<TYPES> types;
@@ -823,7 +850,8 @@ namespace AST {
 
         class DefFun : public InitInstr {
         public:
-            DefFun(std::string returnType, std::string procName, AST::Bloc* bloc, unsigned line, unsigned column);
+            DefFun(std::string returnType, std::string procName,
+                   AST::Bloc *bloc, unsigned line, unsigned column);
 
             void pushArg(std::string type, std::string name);
 
@@ -831,14 +859,18 @@ namespace AST {
 
             void display() override;
 
+            std::string get_name()  override ;
+            AST::Bloc* get_bloc() override;
+
+
+
         private:
             std::string funName;
             TYPES returnType;
             std::vector<TYPES> types;
             std::vector<std::string> names;
-            Bloc* bloc;
-            unsigned line; // the line of the ex
-            // pression
+            Bloc *bloc;
+            unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
     }
@@ -852,7 +884,7 @@ namespace AST {
         void display();
 
     private:
-        std::vector<InitInstr::InitInstr *> blocinstr;
+        std::vector<InitInstr::InitInstr *> initFuns;
     };
 
     class Bloc {
