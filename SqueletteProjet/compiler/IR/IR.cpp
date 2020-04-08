@@ -102,8 +102,16 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\taddl " << reg2String << ", %eax" << " # " << params[1]
               << " + " << params[2] << endl;
-            o << "\tmovl %eax, " << regDestString << endl;
-            break;
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl %eax, " << regDestString << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovb %al, " << regDestString << endl;
+                    break;
+                }
+            }            break;
         }
         case Operation::and_: {
             AST::Bloc *bloc = bb->bloc;

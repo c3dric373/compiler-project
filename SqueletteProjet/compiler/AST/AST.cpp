@@ -364,11 +364,13 @@ std::string AST::Expr::Add::buildIR(bool not_flag, std::string ret_value) {
     } else {
         dest = currentCFG->create_new_temp_var(Type());
     }
-
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     std::string tmp_expr1 = this->lValue->buildIR(not_flag, std::string());
     std::string tmp_expr2 = this->rValue->buildIR(not_flag, std::string());
+    Type t = currentCFG->get_var_type(current_bloc, tmp_expr1);
+
     currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::add,
-                                        Type(),
+                                        t,
                                         {dest, tmp_expr1, tmp_expr2});
     return dest;
 }
