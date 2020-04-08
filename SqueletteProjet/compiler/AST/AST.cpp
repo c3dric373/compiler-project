@@ -321,7 +321,7 @@ std::string AST::Instr::DefChar::buildIR() {
                                     this->name, Type::type_char);
     // récupérer le nom de la variable temporaire dans laquelle est stockée l'expr
     std::string name_expr = this->expr->buildIR(false, this->name);
-    
+
     // Ajout de l'instruction au current_block
     currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::copy,
                                         Type::type_char,
@@ -515,20 +515,25 @@ std::string AST::Expr::Eq::buildIR(bool not_flag, std::string ret_value) {
     } else {
         dest = currentCFG->create_new_temp_var(Type());
     }
+
+
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_lValue = this->lValue->buildIR(not_flag, std::string());
     // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
     std::string name_rValue = this->rValue->buildIR(not_flag, std::string());
 
+    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    Type t = currentCFG->get_var_type(current_bloc, name_lValue);
+
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
-                                            IRInstr::cmp_eq, Type(),
+                                            IRInstr::cmp_eq, t,
                                             {dest, name_lValue, name_rValue,
                                              "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
-                                            IRInstr::cmp_eq, Type(),
+                                            IRInstr::cmp_eq, t,
                                             {dest, name_lValue, name_rValue,
                                              "eq"});
     }
@@ -712,27 +717,27 @@ void AST::Bloc::pushInstr(Instr::Instr *instr) {
 //------------------buildReturnIR------------------
 
 void AST::Expr::Add::buildReturnIR() {
-    this->buildIR(true, nullptr);
+    this->buildIR(true, std::string());
 }
 
 void AST::Expr::Sub::buildReturnIR() {
-    this->buildIR(true, nullptr);
+    this->buildIR(true, std::string());
 }
 
 void AST::Expr::Mult::buildReturnIR() {
-    this->buildIR(true, nullptr);
+    this->buildIR(true, std::string());
 }
 
 void AST::Expr::And::buildReturnIR() {
-    this->buildIR(true, nullptr);
+    this->buildIR(true, std::string());
 }
 
 void AST::Expr::Or::buildReturnIR() {
-    this->buildIR(true, nullptr);
+    this->buildIR(true, std::string());
 }
 
 void AST::Expr::Xor::buildReturnIR() {
-    this->buildIR(true, nullptr);
+    this->buildIR(true, std::string());
 }
 
 void AST::Expr::Const::buildReturnIR() {
@@ -754,7 +759,7 @@ void AST::Expr::Name::buildReturnIR() {
 }
 
 void AST::Expr::Minus::buildReturnIR() {
-    this->buildIR(true, nullptr);
+    this->buildIR(true, std::string());
 }
 
 //------------------SymbolTable------------------
@@ -1297,7 +1302,7 @@ void AST::Expr::CallFun::exists(SymbolTable &st) {
 }
 
 void AST::Expr::CallFun::buildReturnIR() {
-    std::string res = this->buildIR(false, nullptr);
+    std::string res = this->buildIR(false, std::string());
     currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                         IRInstr::return_expr, Type(), {res});
 }
