@@ -1,12 +1,10 @@
-char f(int i, char c){
-    i=i+1;
-    c=c+i;
-    return c;
+int main(){
+    char a = 'a';
+    char b = 'b';
+    char c = 'e';
+    char d = a<=b;
+    char e = d<=c;
+    char i = e +d;
+    return i;
 }
 
-int main(){
-    int a=1;
-    char b='f';
-    b=f(a,b);
-    return  b;
-}

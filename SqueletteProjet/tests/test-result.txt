@@ -3,7 +3,7 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-0_test_fct
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-test-rendu-mi-parcours
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-while-0_simple_while_leq
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-while-0_simple_while_greater
@@ -23,7 +23,7 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-while-3_nested_while
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-for-1_for_nested_while
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-for-0_simple
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-for-1_no_first_argument
@@ -71,13 +71,13 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-analyse-statique-3variable_non_affecte_expr_complexe_mult1
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-superieur-0_superieur_simple
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-superieur-1_superieur_if_1
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-superieur-2_superieur_complexe
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-superieur-3_superieur_multiple_assign
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-superieur-1_superieur_if
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-superieur-2_superieur_complexe _1
@@ -89,9 +89,9 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-mix-1_if_inf_int_char
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-mix-0_multAddSub_IntChar
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-inferieur-0_inferieur_simple
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-inferieur-2_inferieur_complexe _1
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-inferieur-1_inferieur_if_1
@@ -103,21 +103,21 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-inferieur-1_inferieur_if
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-inferieur-3_inferieur_multiple_assign
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-sub-substraction3
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-sub-substraction4
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-sub-substraction2
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-sup_egal-0_superieur_egal_simple
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-sup_egal-1_superieur_egal_if
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-sup_egal-1_superieur_egal_if_1
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-sup_egal-3_superieur_egal_multiple_assign
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-sup_egal-0_superieur_egal_if
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-sup_egal-2_superieur_egal_complexe
@@ -125,9 +125,9 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-sup_egal-2_superieur_egal_complexe _1
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-egal-3_egal_multiple_assign
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-egal-0_egal_simple
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-egal-0_egal_if
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-egal-1_egal_if
@@ -137,9 +137,9 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-add-3_addition
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-add-3_addition_overflow
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-add-3_addition_overflow_aff
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-add-2_addition
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-add-2-expr-neg
@@ -155,15 +155,15 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-inf_egal-2_inferieur_egal_complexe _1
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-inf_egal-3_inferieur_egal_multiple_assign
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-inf_egal-0_inferieur_egal_simple
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-mult-8_multiplicationSimple
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-mult-8_multiplicationAff
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-char-mult-8_multiplicationReturn
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-functions--1_combination
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-1_simple
@@ -171,36 +171,38 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-4_nested_function2
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-5_return_fct_call
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-functions-0_false_return_test
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-4_nested_3functions
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-functions-2_simple2
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-6_fct_if
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-4_nested_6_args
+TEST FAIL (your compiler rejects a valid program)
+TEST-CASE: pld-test-output/tests-Init-functions-recursive-0_factorial_fct
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_add_char_a
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_char_sub
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_char_int_tab
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_add_char_1
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-tableaux-affectation_int
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_add_char_1_2
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-tableaux-affectation_char
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_char_add
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_char
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_int
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_int_complex
-TEST OK
+TEST FAIL (your compiler rejects a valid program)
