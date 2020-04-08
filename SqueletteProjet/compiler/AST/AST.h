@@ -25,6 +25,8 @@ namespace AST {
         public:
             virtual int getValue() = 0;
 
+            virtual bool isConst() = 0;
+
             virtual std::string buildIR(bool not_flag) = 0;
 
             virtual void exists(SymbolTable &st) = 0;
@@ -41,6 +43,8 @@ namespace AST {
             std::string buildIR(bool not_flag) override;
 
             int getValue() override;
+
+            bool isConst() override;
 
             void exists(SymbolTable &st) override;
 
@@ -67,6 +71,8 @@ namespace AST {
 
             int getValue() override;
 
+            bool isConst() override;
+
             void exists(SymbolTable &st) override;
 
             Sub(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
@@ -92,6 +98,8 @@ namespace AST {
             std::string buildIR(bool not_flag) override;
 
             int getValue() override;
+
+            bool isConst() override;
 
             void exists(SymbolTable &st) override;
 
@@ -120,6 +128,8 @@ namespace AST {
 
             int getValue() override;
 
+            bool isConst() override;
+
             void exists(SymbolTable &st) override;
 
             void buildReturnIR() override;
@@ -139,6 +149,8 @@ namespace AST {
             std::string buildIR(bool not_flag) override;
 
             int getValue() override;
+
+            bool isConst() override;
 
             void exists(SymbolTable &st) override;
 
@@ -165,6 +177,8 @@ namespace AST {
 
             int getValue() override;
 
+            bool isConst() override;
+
             void exists(SymbolTable &st) override;
 
             Or(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
@@ -189,6 +203,8 @@ namespace AST {
             std::string buildIR(bool not_flag) override;
 
             int getValue() override;
+
+            bool isConst() override;
 
             void exists(SymbolTable &st) override;
 
@@ -215,6 +231,8 @@ namespace AST {
 
             int getValue() override;
 
+            bool isConst() override;
+
             void exists(SymbolTable &st) override;
 
             Const(int value, unsigned line, unsigned column) :
@@ -237,6 +255,8 @@ namespace AST {
             std::string buildIR(bool not_flag) override;
 
             int getValue() override;
+
+            bool isConst() override;
 
             void exists(SymbolTable &st) override;
 
@@ -261,6 +281,8 @@ namespace AST {
 
             int getValue() override;
 
+            bool isConst() override;
+
             void exists(SymbolTable &st) override;
 
             Name(std::string name, unsigned line, unsigned column) :
@@ -283,6 +305,8 @@ namespace AST {
             std::string buildIR(bool not_flag) override;
 
             int getValue() override;
+
+            bool isConst() override;
 
             void exists(SymbolTable &st) override;
 
@@ -309,6 +333,8 @@ namespace AST {
 
             int getValue() override;
 
+            bool isConst() override;
+
             void exists(SymbolTable &st) override;
 
             CallFun(std::string funName, std::vector<std::string> args, unsigned line, unsigned column):
@@ -334,6 +360,8 @@ namespace AST {
                     lValue(lValue), rValue(rValue) {};
 
             int getValue() override;
+
+            bool isConst() override;
 
             std::string buildIR(bool not_flag) override;
 
@@ -367,6 +395,8 @@ namespace AST {
 
             int getValue() override;
 
+            bool isConst() override;
+
         private:
             AST::Expr::Expr *lValue;
             AST::Expr::Expr *rValue;
@@ -385,6 +415,8 @@ namespace AST {
             void exists(SymbolTable &st) override;
 
             int getValue() override;
+
+            bool isConst() override;
 
             void buildReturnIR() override {};
 
@@ -409,6 +441,8 @@ namespace AST {
 
             int getValue() override;
 
+            bool isConst() override;
+
             void buildReturnIR() override {};
 
             void exists(SymbolTable &st) override;
@@ -431,6 +465,8 @@ namespace AST {
             std::string buildIR(bool not_flag) override;
 
             int getValue() override;
+
+            bool isConst() override;
 
             void buildReturnIR() override {};
 
@@ -455,6 +491,8 @@ namespace AST {
 
             int getValue() override;
 
+            bool isConst() override;
+
             void buildReturnIR() override {};
 
             void exists(SymbolTable &st) override;
@@ -474,6 +512,8 @@ namespace AST {
             std::string buildIR(bool not_flag) override;
 
             int getValue() override;
+
+            bool isConst() override;
 
             void display() override;
 
