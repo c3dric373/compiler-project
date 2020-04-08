@@ -1,5 +1,5 @@
 int main(){
-    int a = 3;
+    int a = ! (3+2);
     int c =2;
     {
         int d =3;
