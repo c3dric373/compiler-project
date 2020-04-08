@@ -328,11 +328,12 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::return_expr: {
             AST::Bloc *bloc = bb->bloc;
-            std::string return_address = bb->cfg->IR_reg_to_asm(bloc,
-                                                                params[0]);;
+
             if (params[0] == "%eax") {
                 o << "\tnop" << endl;
             } else {
+                std::string return_address = bb->cfg->IR_reg_to_asm(bloc,
+                                                                    params[0]);
                 o << "\tmovl " + return_address + ", %eax" << endl;
             }
             break;
@@ -390,13 +391,15 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
                 break;
         }
         // if param has not been declared, launch an error
-        if (offset == 1) {
-            std::string erreur =
-                    "error line " + std::to_string(line) + " column " +
-                    std::to_string(column) +
-                    " : cannot find the offset, the variable " + param +
-                    " has not been declared \n";
-            this->cfg->addErreur(erreur);
+        if (offset == 100) {
+            if (params[0] != "%eax") {
+                std::string erreur =
+                        "error line " + std::to_string(line) + " column " +
+                        std::to_string(column) +
+                        " : cannot find the offset, the variable " + param +
+                        " has not been declared \n";
+                this->cfg->addErreur(erreur);
+            }
         }
     }
     instrs.push_back(new IRInstr(this, op, t, params));
@@ -524,7 +527,7 @@ std::string CFG::create_new_temp_var(Type t) {
 
 int CFG::find_index(string name) {
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
-        return 1;
+        return 100;
     } else {
         return SymbolIndex.at(name);
     }
