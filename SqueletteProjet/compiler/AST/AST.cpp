@@ -1198,7 +1198,11 @@ int AST::Expr::CallFun::getValue() {
 void AST::Expr::CallFun::exists(SymbolTable &st) {
 }
 
-void AST::Expr::CallFun::buildReturnIR() {}
+void AST::Expr::CallFun::buildReturnIR() {
+    std::string res = this->buildIR(false);
+    currentCFG->current_bb->add_IRInstr(this->line, this->column,
+                                        IRInstr::return_expr, Type(), {res});
+}
 
 
 void AST::InitInstr::DeclProc::pushArg(std::string type, std::string name) {

@@ -1,17 +1,10 @@
-int f(int i, int c){
-    return 2;
+int f(int i){
+    i=i+1;
+    return i;
 }
-
-int h(int i, int c){
-    c = f(i,c);
-    return c + i  ;
-}
-
-
 
 int main(){
     int a=1;
-    int b=0;
-    b = h(a,b);
-    return  b;
+    return  f(a);
 }
+

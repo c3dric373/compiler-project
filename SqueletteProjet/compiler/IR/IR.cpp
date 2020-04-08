@@ -312,7 +312,8 @@ void IRInstr::gen_asm(ostream &o) {
                 }
                 case Type::type_char : {
                     o << "\tmovl " << registers[num_arg] << ", " << "%eax"
-                      << "# relocate because arg is a char: " << params[1] << endl;
+                      << "# relocate because arg is a char: " << params[1]
+                      << endl;
                     o << "\tmovb %al, " << location_arg
                       << "# write arg " << params[1] << endl;
                     break;
@@ -329,7 +330,11 @@ void IRInstr::gen_asm(ostream &o) {
             AST::Bloc *bloc = bb->bloc;
             std::string return_address = bb->cfg->IR_reg_to_asm(bloc,
                                                                 params[0]);;
-            o << "\tmovl " + return_address + ", %eax" << endl;
+            if (params[0] == "%eax") {
+                o << "\tnop" << endl;
+            } else {
+                o << "\tmovl " + return_address + ", %eax" << endl;
+            }
             break;
         }
     }
@@ -519,7 +524,7 @@ std::string CFG::create_new_temp_var(Type t) {
 
 int CFG::find_index(string name) {
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
-        return 100;
+        return 1;
     } else {
         return SymbolIndex.at(name);
     }

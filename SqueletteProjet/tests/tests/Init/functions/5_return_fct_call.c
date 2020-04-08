@@ -7,6 +7,5 @@ int f(int i){
 
 int main(){
     int a=1;
-    int b = f(a);
-    return  b;
+    return  f(a);
 }
