@@ -207,10 +207,6 @@ public:
 
     Type get_var_type(AST::Bloc *bloc, string name);
 
-    Erreur getErreur();
-
-	void addErreur(std::string message);
-
     // basic block management
     string new_BB_name();
 
@@ -227,6 +223,14 @@ public:
     void set_name(std::string name);
 
     int getNextFreeSymbolIndex();
+
+	Erreur getErreur();
+
+	void addErreur(std::string message);
+	
+	bool hasError();
+
+	std::string getErrorMessage();
 
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */

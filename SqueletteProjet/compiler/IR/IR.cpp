@@ -622,3 +622,11 @@ void CFG::addErreur(std::string message) {
 Erreur CFG::getErreur() {
     return error;
 }
+
+bool CFG::hasError() {
+    return error.getError();
+}
+
+std::string CFG::getErrorMessage() {
+    return error.getMessage();
+}
