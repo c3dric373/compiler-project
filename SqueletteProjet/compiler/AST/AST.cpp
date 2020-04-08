@@ -102,7 +102,7 @@ std::string AST::Expr::CallFun::buildIR(bool not_flag) {
     int offset = currentCFG->getNextFreeSymbolIndex();
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     int i = 0;
-    for (auto it = this->args.rbegin(); it != this->args.rend(); it++) {
+    for (auto it = this->args.begin(); it != this->args.end(); it++) {
         std::string arg = *it;
         Type t = currentCFG->get_var_type(current_bloc, arg);
         offset -= 4;

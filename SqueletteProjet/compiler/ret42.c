@@ -1,17 +1,17 @@
-char f(int i, char c){
+int f(int i, int c){
     return 2;
 }
 
-char h(int i, char c){
+int h(int i, int c){
     c = f(i,c);
-   return c + i  ;
+    return c + i  ;
 }
 
 
 
 int main(){
     int a=1;
-    char b='f';
+    int b=0;
     b = h(a,b);
     return  b;
 }

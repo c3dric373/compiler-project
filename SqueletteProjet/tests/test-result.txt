@@ -167,7 +167,7 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-1_simple
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-4_nested_function2
-TEST FAIL (different results at execution)
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-0_false_return_test
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-2_simple2
