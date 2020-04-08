@@ -1,10 +1,8 @@
-int main(){
+int main() {
     char a = 'a';
     char b = 'b';
-    char c = 'e';
-    char d = a<=b;
-    char e = d<=c;
-    char i = e +d;
+    char e = a <= b;
+    char l = e <=b;
+    char i = e + b + l;
     return i;
 }
-

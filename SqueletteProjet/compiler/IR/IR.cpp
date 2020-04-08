@@ -207,7 +207,16 @@ void IRInstr::gen_asm(ostream &o) {
                   << endl;
             }
             o << "\tmovzbl %dl, %eax" << endl;
-            o << "\tmovl %eax, " << dest_location << endl;
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl %eax, " << dest_location << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovb %al, " << dest_location << endl;
+                    break;
+                }
+            }
             break;
 
         }
