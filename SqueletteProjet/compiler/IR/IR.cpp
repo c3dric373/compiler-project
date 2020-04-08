@@ -28,6 +28,8 @@ IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
 void IRInstr::gen_asm(ostream &o) {
     /* Exemple de ce qu'il faut mettre ici, la + longue méthode*/
     std::string type = t.get_suffix();
+    vector<std::string> registers = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
+                                     "%r9d"};
     switch (op) {
         case Operation::ldconst : {
             AST::Bloc *bloc = bb->bloc;
@@ -37,39 +39,14 @@ void IRInstr::gen_asm(ostream &o) {
               << endl;
             break;
         }
-        case Operation::add_fct_param: {
-            AST::Bloc *bloc = bb->bloc;
-            // copy params [0] into params [1]
-            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
-            std::string reg_variable =  params[1];
-            switch (t.type_) {
-                case Type::type_int : {
-                    o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-                    o << "\tmovl %eax , " << reg_variable << " # fct param " << params[1]
-                      << endl;
-                    break;
-                }
-                case Type::type_char : {
-                    o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
-                    o << "\tmovb %al , " << reg_variable << " # fct param " << params[1]
-                      << endl;
-                    break;
-                }
-            }
-            break;
-        }
-        case Operation::call_fct: {
-            std::string fct_name =  params[0];
-            o << "\tcall " << fct_name << endl;
-            break;
-        }
+
         case Operation::copy: {
             AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
             std::string reg_tmp_var;
-            if(params[0]=="%eax"){
-                 reg_tmp_var = params[0];
-            }else{
+            if (params[0] == "%eax") {
+                reg_tmp_var = params[0];
+            } else {
                 reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             }
             std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc, params[1]);
@@ -296,22 +273,62 @@ void IRInstr::gen_asm(ostream &o) {
 
             break;
         }
-        case Operation::get_arg: {
+        case Operation::add_fct_param: {
             AST::Bloc *bloc = bb->bloc;
-            int offset_arg = std::stoi(params[0]);
-            std::string name_arg = bb->cfg->IR_reg_to_asm(bloc, params[1]);
-
-            o << "\tmovl " << offset_arg << "(%rbp), %eax" << "# get arg " << params[1]<<endl;
-            o << "\tmovl %eax , " << name_arg << "  " << "# write arg" << params[1] << endl;
+            // copy params [0] into params [1]
+            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            int num_arg = std::stoi(params[1]);
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl " << reg_tmp_var << ", "
+                      << registers.at(num_arg)
+                      << " # fct param " << params[0] << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovl " << reg_tmp_var << ", " << registers[num_arg]
+                      << " # fct param " << params[0] << endl;
+                    break;
+                }
+            }
             break;
         }
+        case Operation::call_fct: {
+            std::string fct_name = params[0];
+            o << "\tcall " << fct_name << endl;
+            break;
+        }
+        case Operation::get_arg: {
+            // Arguments will be passed from left to right by the caller in the
+            // registers :
+            AST::Bloc *bloc = bb->bloc;
+            int num_arg = std::stoi(params[0]);
+            std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl " << registers[num_arg] << ", " << location_arg
+                      << "# write arg " << params[1] << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovl " << registers[num_arg] << ", " << "%eax"
+                      << "# relocate because arg is a char: " << params[1] << endl;
+                    o << "\tmovb %al, " << location_arg
+                      << "# write arg " << params[1] << endl;
+                    break;
+                }
+            }
+            break;
+        }
+
         case Operation::return_: {
             o << "\tnop" << endl;
             break;
         }
         case Operation::return_expr: {
             AST::Bloc *bloc = bb->bloc;
-            std::string return_address =  bb->cfg->IR_reg_to_asm(bloc, params[0]);;
+            std::string return_address = bb->cfg->IR_reg_to_asm(bloc,
+                                                                params[0]);;
             o << "\tmovl " + return_address + ", %eax" << endl;
             break;
         }
@@ -432,11 +449,11 @@ void CFG::gen_asm_prologue(ostream &o) {
     o << this->name << ":" << endl;
     o << "\tpushq %rbp" << endl;
     o << "\tmovq %rsp, %rbp" << endl;
-    o << "\tsubq $" << this->nextFreeSymbolIndex*(-1) << ", %rsp" << endl;
+    o << "\tsubq $" << this->nextFreeSymbolIndex * (-1) << ", %rsp" << endl;
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {
-    o << "\taddq $" << this->nextFreeSymbolIndex*(-1) << ", %rsp" << endl;
+    o << "\taddq $" << this->nextFreeSymbolIndex * (-1) << ", %rsp" << endl;
     o << "\tpopq %rbp" << endl;
     o << "\tret" << endl;
 }

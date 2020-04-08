@@ -101,6 +101,7 @@ std::string AST::InitInstr::DefProc::buildIR() {
 std::string AST::Expr::CallFun::buildIR(bool not_flag) {
     int offset = currentCFG->getNextFreeSymbolIndex();
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+    int i = 0;
     for (auto it = this->args.rbegin(); it != this->args.rend(); it++) {
         std::string arg = *it;
         Type t = currentCFG->get_var_type(current_bloc, arg);
@@ -108,7 +109,8 @@ std::string AST::Expr::CallFun::buildIR(bool not_flag) {
         std::string rbp = to_string(offset) + "(%rbp)";
         // Ajout de l'instruction au current_block
         currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::add_fct_param, t,
-                                            {arg, rbp});
+                                            {arg, std::to_string(i)});
+        i++;
     }
     currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::call_fct, Type(),
                                         {this->funName});
@@ -120,11 +122,8 @@ std::string AST::Expr::CallFun::buildIR(bool not_flag) {
 std::string AST::InitInstr::DefFun::buildIR() {
     vector<TYPES>::iterator ptr = this->types.begin();
     Type type_current;
-    Type type_next;
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    int i = 16;
-    vector<TYPES>::iterator ptr_offset = this->types.begin();
-    ptr_offset++;
+    int i = 0;
 
     for (auto &name : this->names) {
         switch (*ptr) {
@@ -134,28 +133,16 @@ std::string AST::InitInstr::DefFun::buildIR() {
             case CHAR:
                 type_current = Type(Type::type_char);
                 break;
-                // Ajout de la variable name à la table des symboles de currentCFG
-
         }
+
+        // Ajout de la variable name à la table des symboles de currentCFG
         currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
                                         name, type_current);
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
-                                            IRInstr::get_arg, Type(),
+                                            IRInstr::get_arg, type_current,
                                             {std::to_string(i), name});
-
-        switch (*ptr_offset) {
-            case INT:
-                type_next = Type(Type::type_int);
-                break;
-            case CHAR:
-                type_next = Type(Type::type_char);
-                break;
-                // Ajout de la variable name à la table des symboles de currentCFG
-        }
-
-        i +=4;
+        i++;
         ptr++;
-        ptr_offset++;
     }
     this->bloc->buildIR(nullptr);
     return "";
