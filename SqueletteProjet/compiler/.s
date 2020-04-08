@@ -23,7 +23,7 @@ main:
 	movl %eax , -8(%rbp) # a
 	movl -8(%rbp), %edi # fct param a
 	call f
-	nop
+	movl 100(%rbp), %eax
 	addq $8, %rsp
 	popq %rbp
 	ret

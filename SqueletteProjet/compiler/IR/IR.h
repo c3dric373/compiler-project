@@ -89,6 +89,12 @@ public:
         cmp_low,
         cmp_great,
         ret,
+        return_,
+        return_expr,
+        call_proc,
+        add_fct_param,
+        call_fct,
+        get_arg,
         neg
     } Operation;
 
@@ -177,7 +183,7 @@ protected:
  */
 class CFG {
 public:
-    CFG(AST::Bloc *ast);
+    CFG(AST::Bloc *ast, std::string name);
 
     AST::Bloc *ast; /**< The AST this CFG comes from */
 
@@ -216,6 +222,12 @@ public:
 
     Type find_type(string name, string realName);
 
+    std::string get_name();
+
+    void set_name(std::string name);
+
+    int getNextFreeSymbolIndex();
+
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */
     map<string, int> SymbolIndex; /**< part of the symbol table  */
@@ -223,6 +235,7 @@ protected:
     int nextBBnumber; /**< just for naming */
     vector<BasicBlock *> basic_blocs; /**< all the basic blocks of this CFG*/
     Erreur error;
+    std::string name;
 };
 
 
