@@ -50,7 +50,7 @@ void IRInstr::gen_asm(ostream &o) {
                 reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             }
             std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc, params[1]);
-            if(reg_tmp_var == reg_variable){
+            if (reg_tmp_var == reg_variable) {
                 break;
             }
             switch (t.type_) {
@@ -225,7 +225,8 @@ void IRInstr::gen_asm(ostream &o) {
                     break;
                 }
                 case Type::type_char : {
-                    o << "\tmovzbl " << rValue << ", %eax" << endl;
+                    o << "\tmovzbl " << rValue << ", %eax" << "# " << params[0]
+                      << ">" << params[1] << endl;
                     o << "\tcmpb  %al, " << lValue << endl;
                     break;
                 }
