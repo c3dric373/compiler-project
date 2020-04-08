@@ -1,7 +1,12 @@
-int main(){
-    int a = 3;
-    int b = 5+6;
-    int c = 5*b;
+char f(int i, char c){
+    i=i+1;
+    c=c+i;
     return c;
 }
 
+int main(){
+    int a=1;
+    char b='f';
+    b=f(a,b);
+    return  b;
+}
