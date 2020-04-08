@@ -698,66 +698,6 @@ std::string AST::Prog::getErrorMsg() {
     return errorMessage;
 }
 
-//------------------Exists--------------------
-
-void AST::Expr::Sub::exists(SymbolTable &st) {
-    this->lValue->exists(st);
-    this->rValue->exists(st);
-}
-
-void AST::Expr::Const::exists(SymbolTable &st) {}
-
-
-void AST::Expr::Minus::exists(SymbolTable &st) {
-    this->value->exists(st);
-}
-
-void AST::Expr::Mult::exists(SymbolTable &st) {
-    this->lValue->exists(st);
-    this->rValue->exists(st);
-}
-
-
-void AST::Expr::Name::exists(SymbolTable &st) {
-    if (!st.exists(0, this->name)) {
-        st.setErrorTrue();
-        std::string error =
-                "error : variable " + this->name + " has not been declared\n";
-        st.addErrorMsg(error);
-    }
-}
-
-void AST::Expr::Add::exists(SymbolTable &st) {
-    this->lValue->exists(st);
-    this->rValue->exists(st);
-}
-
-void AST::Expr::Geq::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Low::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Great::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Neq::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Not::exists(SymbolTable &st) {
-}
-
-void AST::Expr::And::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Or::exists(SymbolTable &st) {
-}
-
-void AST::Expr::Xor::exists(SymbolTable &st) {
-}
-
-void AST::Expr::ConstChar::exists(SymbolTable &st) {
-}
 
 //-------------DISPLAY-----------------------
 
@@ -967,17 +907,10 @@ void AST::Expr::Not::display() {
     std::cout << ')' << std::flush;
 }
 
-
-void AST::Expr::Eq::exists(SymbolTable &st) {
-}
-
 int AST::Expr::Leq::getValue() {
     return 0;
 }
 
-void AST::Expr::Leq::exists(SymbolTable &st) {
-
-}
 
 int AST::Expr::Geq::getValue() {
     return 0;
@@ -1199,8 +1132,6 @@ int AST::Expr::CallFun::getValue() {
     return 0;
 }
 
-void AST::Expr::CallFun::exists(SymbolTable &st) {
-}
 
 void AST::Expr::CallFun::buildReturnIR() {
     std::string res = this->buildIR(false);
@@ -1373,9 +1304,6 @@ int AST::Expr::TabAccess::getValue() {
     return 0;
 }
 
-void AST::Expr::TabAccess::exists(SymbolTable &st) {
-
-}
 
 void AST::Expr::TabAccess::buildReturnIR() {
     currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret,
