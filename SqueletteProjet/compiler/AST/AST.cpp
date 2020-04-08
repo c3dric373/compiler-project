@@ -309,7 +309,7 @@ std::string AST::Instr::DefChar::buildIR() {
 }
 
 std::string AST::Instr::Affct::buildIR() {
-    std::string name_expr = this->expr->buildIR(false, std::string());
+    std::string name_expr = this->expr->buildIR(false, this->name);
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     Type t = currentCFG->get_var_type(current_bloc, this->name);
     // Ajout de l'instruction au current_block

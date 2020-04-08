@@ -1,15 +1,12 @@
-int factorielle(int valeur) {
-    if (valeur == 0) {
-        return 1;
-    } else {
-        int b = valeur -1;
-        return (valeur * factorielle(b));
-    }
+char f(int i, char c){
+    i=i+1;
+    c=c+i;
+    return c;
 }
 
-int main() {
-    int a = 7;
-    int b;
-    b = factorielle(a);
-    return b;
+int main(){
+    int a=1;
+    char b='f';
+    b=f(a,b);
+    return  b;
 }
