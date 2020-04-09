@@ -937,8 +937,8 @@ namespace AST {
 
     class Prog {
     public:
-        Prog(InitBloc *initBloc, Bloc *bloc, Expr::Expr *returnValue) :
-                initBloc(initBloc), bloc(bloc), returnValue(returnValue) {};
+        Prog(InitBloc *initBloc, Bloc *bloc) :
+                initBloc(initBloc), bloc(bloc) {};
 
         std::string buildIR();
 
@@ -946,7 +946,7 @@ namespace AST {
 
         std::vector<CFG *> generateIR();
 
-	bool getError();
+        bool getError();
 
         std::string getErrorMsg();
 
@@ -955,7 +955,6 @@ namespace AST {
     private:
         InitBloc *initBloc;
         Bloc *bloc;
-        Expr::Expr *returnValue;
     };
 }
 
