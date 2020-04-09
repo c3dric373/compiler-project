@@ -1,53 +1,103 @@
 factorielle:
 	pushq %rbp
 	movq %rsp, %rbp
-	subq $40, %rsp
-	movl %edi, -8(%rbp)# write arg valeur
-	movl $0, -12(%rbp)
-	movl -8(%rbp), %eax
-	cmpl  %eax, -12(%rbp)
-	sete %dl # valeur==!tmp12
-	movzbl %dl, %eax
+	subq $21, %rsp
+	movl %edi, -8(%rbp)# write arg i
+	movl %esi, %eax# relocate because arg is a char: c
+	movb %al, -9(%rbp)# write arg c
+	movl $1, -13(%rbp)
+	movl -8(%rbp) , %eax
+	addl -13(%rbp), %eax # i + !tmp13
+	movl %eax, -17(%rbp)
+	movl -17(%rbp), %eax
+	movl %eax , -8(%rbp) # i
+	movl -9(%rbp) , %eax
+	addl -8(%rbp), %eax # c + i
+	movl %eax, -21(%rbp)
+	movl -21(%rbp), %eax
+	addq $21, %rsp
+	popq %rbp
+	ret
+g:
+	pushq %rbp
+	movq %rsp, %rbp
+	subq $16, %rsp
+	movl %edi, -8(%rbp)# write arg j
+	movl $2, -12(%rbp)
+	movl -8(%rbp) , %eax
+	addl -12(%rbp), %eax # j + !tmp12
 	movl %eax, -16(%rbp)
-	cmpl $1, -16(%rbp)
-	je .Lfactorielle1
-	jmp .Lfactorielle2
-.Lfactorielle1: 
-	movl $1, -20(%rbp)
-	movl -20(%rbp), %eax
-	 jmp .Lfactorielle0
-.Lfactorielle2: 
-	movl $1, -24(%rbp)
-	movl -8(%rbp) , %eax
-	subl -24(%rbp), %eax# valeur - !tmp24
-	movl %eax, -28(%rbp)
-	movl -28(%rbp), %eax
-	movl %eax , -32(%rbp) # b
-	movl -32(%rbp), %edi # fct param b
-	call factorielle
-	movl %eax, -36(%rbp)
-	movl -8(%rbp) , %eax
-	imull -36(%rbp), %eax # valeur * !tmp36
-	movl %eax, -40(%rbp)
-	movl -40(%rbp), %eax
-.Lfactorielle0: 
-	addq $40, %rsp
+	movl -16(%rbp), %eax
+	addq $16, %rsp
+	popq %rbp
+	ret
+h:
+	pushq %rbp
+	movq %rsp, %rbp
+	subq $46, %rsp
+	movl %edi, -8(%rbp)# write arg i
+	movl %esi, %eax# relocate because arg is a char: c
+	movb %al, -9(%rbp)# write arg c
+	movl %edx, -13(%rbp)# write arg z
+	movl %ecx, -17(%rbp)# write arg x
+	movl %r8d, -21(%rbp)# write arg y
+	movl %r9d, %eax# relocate because arg is a char: l
+	movb %al, -22(%rbp)# write arg l
+	movl -8(%rbp), %edi # fct param i
+	movl -9(%rbp), %esi # fct param c
+	call f
+	movl %eax, -26(%rbp)
+	movl -26(%rbp), %eax
+	movb %al , -9(%rbp) # c
+	movl -9(%rbp), %edi # fct param c
+	call g
+	movl %eax, -30(%rbp)
+	movl -30(%rbp), %eax
+	movl %eax , -34(%rbp) # d
+	movl -9(%rbp) , %eax
+	addl -8(%rbp), %eax # c + i
+	movl %eax, -38(%rbp)
+	movl $3, -42(%rbp)
+	movl -38(%rbp) , %eax
+	addl -42(%rbp), %eax # !tmp38 + !tmp42
+	movl %eax, -46(%rbp)
+	movl -46(%rbp), %eax
+	addq $46, %rsp
 	popq %rbp
 	ret
 .globl	main
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	subq $16, %rsp
-	movl $7, -4(%rbp)
+	subq $41, %rsp
+	movl $1, -4(%rbp)
 	movl -4(%rbp), %eax
 	movl %eax , -8(%rbp) # a
+	movb $99, -21(%rbp)
+	movl -21(%rbp), %eax
+	movb %al , -22(%rbp) # l
+	movb $102, -23(%rbp)
+	movl $2, -27(%rbp)
+	movl -23(%rbp) , %eax
+	addl -27(%rbp), %eax # !tmp23 + !tmp27
+	movl %eax, -31(%rbp)
+	movb $97, -32(%rbp)
+	movl -31(%rbp) , %eax
+	addl -32(%rbp), %eax # !tmp31 + !tmp32
+	movl %eax, -36(%rbp)
+	movl -36(%rbp), %eax
+	movb %al , -37(%rbp) # b
 	movl -8(%rbp), %edi # fct param a
-	call factorielle
-	movl %eax, -16(%rbp)
-	movl -16(%rbp), %eax
-	movl %eax , -12(%rbp) # b
-	movl -12(%rbp), %eax
-	addq $16, %rsp
+	movl -37(%rbp), %esi # fct param b
+	movl -12(%rbp), %edx # fct param z
+	movl -16(%rbp), %ecx # fct param x
+	movl -20(%rbp), %r8d # fct param y
+	movl -22(%rbp), %r9d # fct param l
+	call h
+	movl %eax, -41(%rbp)
+	movl -41(%rbp), %eax
+	movb %al , -37(%rbp) # b
+	movl -37(%rbp), %eax
+	addq $41, %rsp
 	popq %rbp
 	ret
