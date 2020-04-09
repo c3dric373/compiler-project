@@ -1403,3 +1403,32 @@ bool AST::Expr::Great::isConst(){
 bool AST::Expr::Not::isConst(){
     return false;
 }
+
+
+//Ajout d putchar et getchar
+
+std::string AST::Expr::GetChar::buildIR(bool not_flag){
+    return "";
+}
+int AST::Expr::GetChar::getValue(){
+    return 0;
+}
+bool AST::Expr::GetChar::isConst(){
+    return false;
+}
+void AST::Expr::GetChar::buildReturnIR(){
+
+}
+void AST::Expr::GetChar::display(){
+    std::cout << " CG " << std::flush;
+}
+
+void AST::Instr::Putchar::display(){
+    std::cout << "(PC " << arg << ')' << std::flush;
+}
+std::string AST::Instr::Putchar::buildIR(){
+    return "";
+}
+bool AST::Instr::Putchar::wrongReturnType(bool returnType){
+    return false;
+}
