@@ -314,11 +314,15 @@ TEST-CASE: pld-test-output/tests-Init-functions--1_combination
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-1_simple
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-functions-10_2_fibonacci_iter_tab
+unexpected error: linker failed to produce exe-gcc !
 TEST-CASE: pld-test-output/tests-Init-functions-8_fun_factoriel
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-9_fun_7args+char
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-4_nested_function2
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-functions-8_1_iter_factorial
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-7_fun_7args
 TEST OK
