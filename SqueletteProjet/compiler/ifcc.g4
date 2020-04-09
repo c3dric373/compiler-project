@@ -41,6 +41,7 @@ instr :
     |'for' OPENPAR initfor? ';' expr? ';' (loopinstr(',' loopinstr)*)? CLOSEPAR OPENBRACE bloc CLOSEBRACE  #forbloc
 	|OPENBRACE bloc CLOSEBRACE                                                                             #instrbloc
 	|NAME OPENPAR (NAME (',' NAME)*)? CLOSEPAR ';'                                                         #callproc
+	|'putchar' OPENPAR NAME CLOSEPAR ';'                                                                   #putchar
 	|RETURN ';'                                                                                            #return
   	|RETURN expr ';'                                                                                       #returnexpr
 ;
@@ -78,6 +79,7 @@ expr :
     |expr '^' expr                              #xor
     |expr '|' expr                              #or
 	|NAME OPENPAR (NAME (',' NAME)*)? CLOSEPAR  #callfun
+	|'getchar' OPENPAR CLOSEPAR                 #getchar
 	|CONST                                      #const
 	|CONSTCHAR                                  #constchar
 	|NAME                                       #name
