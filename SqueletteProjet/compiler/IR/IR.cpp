@@ -3,22 +3,9 @@
 
 // Généré à partir de IR.h
 
-/*
-	Pour utiliser l'IR, il faut ajouter 2 attributs à l'AST:
-		- Un attribut CFG* sur le CFG actuellement utilisé
-		- Un attribut vector<CFG*> qui stockerait les CFGs
 
-EN GROS:
-	Les fonctions de l'IR sont appelées dans l'AST, et l'IR traduit les instructions en langage assembleur
-Lors du parcours de l'AST :
-	-Un nouveau CFG est créé à chaque nouvelle fonction
-	-Pour tout autre élément, la visite de l'élément ajoutera juste une instruction à l'attribut current_bb du CFG grâce à la méthode add_IRInstr OU ajoutera la variable à la table des symboles en faisant un appel à la fonction add_to_symbol_table du current CFG
 
-Il est important de préciser que les variables temporaires seront crées dans l'AST avant d'être passées en paramètre à la méthode de l'IR correspondante.
-C'est la méthode create_new_temp_var de l'IR qui s'occupera d'insérer la variable temporaire dans la table des symboles.
-
-*/
-
+//------------------------------IRInstr---------------------------------
 
 IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
                  vector<string> params_) : bb(bb_), op(op_), t(t_),
@@ -276,17 +263,42 @@ void IRInstr::gen_asm(ostream &o) {
         case Operation::add_fct_param: {
             AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
+            string registers[] = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
+                                  "%r9d"};
+            int num=std::stoi(params[1]);
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
-            int num_arg = std::stoi(params[1]);
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << reg_tmp_var << ", "
-                      << registers.at(num_arg)
+                      << registers[num]
                       << " # fct param " << params[0] << endl;
                     break;
                 }
                 case Type::type_char : {
-                    o << "\tmovl " << reg_tmp_var << ", " << registers[num_arg]
+                    o << "\tmovl " << reg_tmp_var << ", " << registers[num]
+                      << " # fct param " << params[0] << endl;
+                    break;
+                }
+            }
+            break;
+        }
+        case Operation::add_fct_param_stack: {
+            AST::Bloc *bloc = bb->bloc;
+            // copy params [0] into params [1]
+            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            int offset=std::stoi(params[1]);
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl " << reg_tmp_var << ", "
+                      << "%eax"<<endl;
+                    o <<"\tmovl %eax, "<<offset<<"(%rbp)"
+                      << " # fct param " << params[0] << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovl " << reg_tmp_var << ", "
+                      << "%eax"<<endl;
+                    o <<"\tmovl %eax, "<<offset<<"(%rbp)"
                       << " # fct param " << params[0] << endl;
                     break;
                 }
@@ -294,8 +306,11 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::call_fct: {
+            AST::Bloc *bloc = bb->bloc;
             std::string fct_name = params[0];
+            std::string location_dest = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             o << "\tcall " << fct_name << endl;
+            o << "\tmovl %eax, " << location_dest << endl;
             break;
         }
         case Operation::get_arg: {
@@ -341,6 +356,10 @@ void IRInstr::gen_asm(ostream &o) {
     }
 }
 
+
+//------------------------------BasicBlock---------------------------------
+
+
 BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg),
                                                        label(entry_label) {}
 
@@ -361,38 +380,38 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
     // Find out if the variable placed in params has already been declared
     // if offset == 1, it hasn't been declared
     for (std::string param : params) {
-        int offset = 0;
-        switch (op) {
-            case IRInstr::copy :
-            case IRInstr::and_ :
-            case IRInstr::xor_ :
-            case IRInstr::or_ :
-            case IRInstr::add :
-            case IRInstr::sub :
-            case IRInstr::mul :
-            case IRInstr::neg :
-                offset = this->cfg->get_var_index(this->bloc, param);
-                break;
-            case IRInstr::ret :
-                // if the param doesn't contain a !, this is not a constant
-                if (param.at(0) != '!') {
+        if (param != "%eax") {
+            int offset = 0;
+            switch (op) {
+                case IRInstr::copy :
+                case IRInstr::and_ :
+                case IRInstr::xor_ :
+                case IRInstr::or_ :
+                case IRInstr::add :
+                case IRInstr::sub :
+                case IRInstr::mul :
+                case IRInstr::neg :
                     offset = this->cfg->get_var_index(this->bloc, param);
-                }
-                break;
-            case IRInstr::cmp_eq :
-            case IRInstr::cmp_low :
-            case IRInstr::cmp_great :
-                if (param.compare("eq") != 0 && param.compare("neq") != 0) {
-                    offset = this->cfg->get_var_index(this->bloc, param);
-                }
-                break;
-                // Do nothing
-            default:
-                break;
-        }
-        // if param has not been declared, launch an error
-        if (offset == 100) {
-            if (params[0] != "%eax") {
+                    break;
+                case IRInstr::ret :
+                    // if the param doesn't contain a !, this is not a constant
+                    if (param.at(0) != '!') {
+                        offset = this->cfg->get_var_index(this->bloc, param);
+                    }
+                    break;
+                case IRInstr::cmp_eq :
+                case IRInstr::cmp_low :
+                case IRInstr::cmp_great :
+                    if (param.compare("eq") != 0 && param.compare("neq") != 0) {
+                        offset = this->cfg->get_var_index(this->bloc, param);
+                    }
+                    break;
+                    // Do nothing
+                default:
+                    break;
+            }
+            // if param has not been declared, launch an error
+            if (offset == 100) {
                 std::string erreur =
                         "error line " + std::to_string(line) + " column " +
                         std::to_string(column) +
@@ -404,6 +423,10 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
     }
     instrs.push_back(new IRInstr(this, op, t, params));
 }
+
+
+//------------------------------CFG---------------------------------
+
 
 CFG::CFG(AST::Bloc *ast_, std::string name) : nextFreeSymbolIndex(0),
                                               nextBBnumber(0), ast(ast_) {
@@ -612,10 +635,20 @@ BasicBlock *CFG::get_bb_before_last() {
     return this->basic_blocs.end()[-2];
 }
 
+//------------------------------Erreur---------------------------------
+
 void CFG::addErreur(std::string message) {
     this->error.addErrorMessage(message);
 }
 
 Erreur CFG::getErreur() {
     return error;
+}
+
+bool CFG::hasError() {
+    return error.getError();
+}
+
+std::string CFG::getErrorMessage() {
+    return error.getMessage();
 }

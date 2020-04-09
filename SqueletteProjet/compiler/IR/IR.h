@@ -19,7 +19,6 @@ class CFG;
 
 using namespace std;
 
-//bullshit class just to compile
 class Type {
 
 public:
@@ -27,7 +26,9 @@ public:
         type_int,
         type_char
     } type_enum;
+
     Type(type_enum type_enum_) : type_(type_enum_){};
+
     Type()=default;
 	
     std::string get_suffix(){
@@ -93,6 +94,7 @@ public:
         return_expr,
         call_proc,
         add_fct_param,
+        add_fct_param_stack,
         call_fct,
         get_arg,
         neg
@@ -207,10 +209,6 @@ public:
 
     Type get_var_type(AST::Bloc *bloc, string name);
 
-    Erreur getErreur();
-
-	void addErreur(std::string message);
-
     // basic block management
     string new_BB_name();
 
@@ -227,6 +225,14 @@ public:
     void set_name(std::string name);
 
     int getNextFreeSymbolIndex();
+
+	Erreur getErreur();
+
+	void addErreur(std::string message);
+	
+	bool hasError();
+
+	std::string getErrorMessage();
 
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */
