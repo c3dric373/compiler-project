@@ -31,7 +31,7 @@ std::string AST::Prog::buildIR() {
     // Construit les CFGs
     child->buildIR(nullptr);
 
-    this->returnValue->buildReturnIR();
+    //this->returnValue->buildReturnIR();
     return "";
 }
 
@@ -810,8 +810,6 @@ void AST::Prog::display() {
     std::cout << "(AST " << std::flush;
     initBloc->display();
     bloc->display();
-    std::cout << ", " << std::flush;
-    returnValue->display();
     std::cout << ")" << std::endl;
 }
 
@@ -991,7 +989,7 @@ void AST::InitInstr::DefProc::pushArg(std::string type, std::string name) {
 }
 
 void AST::Instr::Return::display() {
-    std::cout << "RETURN" << std::endl;
+    std::cout << " RET " << std::flush;
 }
 
 void AST::Instr::CallProc::display() {
