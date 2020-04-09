@@ -9,7 +9,7 @@ int fibonacci_rec_debile(int n) {
 }
 
 int main() {
-    int a = 7;
+    int a = 13;
     int b;
     b = fibonacci_rec_debile(a);
     return b;
