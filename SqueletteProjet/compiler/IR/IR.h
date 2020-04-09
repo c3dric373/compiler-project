@@ -94,6 +94,7 @@ public:
         return_expr,
         call_proc,
         add_fct_param,
+        add_fct_param_stack,
         call_fct,
         get_arg,
         neg
