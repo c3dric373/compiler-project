@@ -1,9 +1,11 @@
 int factorielle(int valeur) {
-    if (valeur == 0)
+    if (valeur == 0) {
         return 1;
-    else
+    } else {
         int step = valeur - 1;
-    return valeur * factorielle(step);
+        return valeur * factorielle(step);
+    }
+
 }
 
 int main() {
