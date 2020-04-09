@@ -54,6 +54,8 @@ TEST-CASE: pld-test-output/tests-Init-functions-9_fun_7args+char
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-4_nested_function2
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-functions-recursive-0_factorial_fct
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-if_else-0_simple_ifelse
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-if_else-1_nested_ifElse
