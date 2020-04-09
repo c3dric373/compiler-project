@@ -1,6 +1,6 @@
 int iter_fact(int valeur) {
     int res = 1;
-    for (int i = 1 ; i <= valeur ; i++) {
+    for (int i = 1 ; i <= valeur ; i = i + 1) {
         res = res * i;
     }
     return(res);
