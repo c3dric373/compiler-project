@@ -27,7 +27,7 @@ main:
 	movl -9(%rbp), %eax
 	movb %al , -10(%rbp) # b
 	movl -8(%rbp), %eax
-	movl %eax, -38(%rbp) # fct param a
+	movl %eax, -30(%rbp) # fct param a
 	movl -8(%rbp), %edi # fct param a
 	movl -10(%rbp), %esi # fct param b
 	movl -8(%rbp), %edx # fct param a
