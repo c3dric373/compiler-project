@@ -95,7 +95,8 @@ std::string AST::InitInstr::DefProc::buildIR() {
 
 
 std::string AST::Expr::CallFun::buildIR(bool not_flag) {
-    int offset = currentCFG->getNextFreeSymbolIndex()-24;
+    int offset = currentCFG->getNextFreeSymbolIndex();
+    offset-=24;
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     int i = 0;
     /*for (auto it = this->args.begin(); it != this->args.end(); it++) {
