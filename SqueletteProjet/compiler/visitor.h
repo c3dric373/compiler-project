@@ -24,8 +24,7 @@ public:
     AST::InitBloc* astInitBloc = visit(ctx->initbloc());
     AST::Bloc* astBloc = visit(ctx->bloc());
     astBloc->wrongReturnType(true);
-    AST::Expr::Expr* astExpr = visit(ctx->expr());
-    return new AST::Prog(astInitBloc, astBloc, astExpr);
+    return new AST::Prog(astInitBloc, astBloc);
   }
 
     virtual antlrcpp::Any visitBlocinit(ifccParser::BlocinitContext *ctx) override {
