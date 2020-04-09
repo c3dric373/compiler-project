@@ -168,6 +168,10 @@ public:
         return (AST::Instr::Instr*)new AST::Instr::CallProc(ctx->NAME()[0]->getText(), args);
     }
 
+    virtual antlrcpp::Any visitPutchar(ifccParser::PutcharContext *ctx) override {
+        return (AST::Instr::Instr*)new AST::Instr::Putchar(ctx->NAME()->getText());
+    }
+
     virtual antlrcpp::Any visitReturn(ifccParser::ReturnContext *ctx) override {
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
@@ -503,6 +507,12 @@ public:
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
         return (AST::Expr::Expr*)new AST::Expr::CallFun(ctx->NAME()[0]->getText(), args, line, column);
+    }
+
+    virtual antlrcpp::Any visitGetchar(ifccParser::GetcharContext *ctx) override {
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Expr::Expr*)new AST::Expr::GetChar(line, column);
     }
 
   //COMPARAISONS ET BOOLEENS
