@@ -6,6 +6,8 @@ TEST-CASE: pld-test-output/tests-Init-0_test_fct
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-test-rendu-mi-parcours
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-2-No_PointVirgule
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-while-0_simple_while_leq
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-while-0_simple_while_greater
