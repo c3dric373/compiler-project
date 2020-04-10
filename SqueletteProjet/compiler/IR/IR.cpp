@@ -430,6 +430,8 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
                     }
                     break;
                     // Do nothing
+                case IRInstr::return_expr :
+                    offset = this->cfg->get_var_index(this->bloc, params[0]);
                 default:
                     break;
             }
