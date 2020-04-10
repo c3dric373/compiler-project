@@ -8,6 +8,7 @@ std::vector<CFG *> cfgs;
 CFG *currentCFG;
 // Map to distinguish between procedures and functions
 map<std::string, bool> functions;
+map<std::string, bool> def_functions;
 
 
 //-------------------generateIR-----------------------
@@ -49,6 +50,9 @@ std::string AST::Bloc::buildIR(AST::Bloc *previousBloc) {
 
 std::string AST::InitBloc::buildIR() {
     for (auto &function : initFuns) {
+        function->is_fun();
+    }
+    for (auto &function : initFuns) {
         AST::Bloc *child = function->get_bloc();
         std::string();
         CFG *cfg = new CFG(child, function->get_name());
@@ -64,8 +68,10 @@ std::string AST::InitBloc::buildIR() {
 
 /**---------------------------FUNCTIONS---------------------------------------*/
 
+
+
+
 std::string AST::InitInstr::DefProc::buildIR() {
-    functions[this->get_name()] = false;
     vector<TYPES>::iterator ptr = this->types.begin();
     Type type_current;
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
@@ -119,8 +125,13 @@ std::string AST::InitInstr::DefProc::buildIR() {
 
 
 std::string AST::Expr::CallFun::buildIR(bool not_flag) {
-    if(functions[this->funName]) {
-
+    if (functions.count(this->funName) == 0) {
+        currentCFG->addErreur(
+                "function " + this->funName + " has not been declared");
+        return std::string();
+    }
+    bool is_fun = functions[this->funName];
+    if (is_fun) {
         int offset = currentCFG->getNextFreeSymbolIndex() - 24;
         AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
         int i = 0;
@@ -165,14 +176,16 @@ std::string AST::Expr::CallFun::buildIR(bool not_flag) {
 
 
         return tmp_dest;
-    }else{
-        currentCFG->addErreur("trying to assign procedure to variable");
+    } else {
+        currentCFG->addErreur(
+                "trying to assign procedure to variable or function is not defined");
     }
 }
 
 
 std::string AST::InitInstr::DefFun::buildIR() {
-    functions[this->get_name()] = true;
+    std::string function_name = funName;
+    functions[this->funName] = true;
     vector<TYPES>::iterator ptr = this->types.begin();
     Type type_current;
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
@@ -223,14 +236,6 @@ std::string AST::InitInstr::DefFun::buildIR() {
     this->bloc->buildIR(nullptr);
 }
 
-std::string AST::InitInstr::DeclFun::buildIR() {
-    return "";
-}
-
-
-std::string AST::InitInstr::DeclProc::buildIR() {
-    return "";
-}
 
 std::string AST::Instr::Return::buildIR() {
     currentCFG->current_bb->add_IRInstr(this->line, this->column,
@@ -240,6 +245,11 @@ std::string AST::Instr::Return::buildIR() {
 
 
 std::string AST::Instr::CallProc::buildIR() {
+    if (functions.count(this->procName) == 0) {
+        currentCFG->addErreur(
+                "procedure " + this->procName + " has not been declared");
+        return std::string();
+    }
     int offset = currentCFG->getNextFreeSymbolIndex() - 24;
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
     int i = 0;
@@ -1304,12 +1314,21 @@ AST::Bloc *AST::InitInstr::DeclFun::get_bloc() {
     return nullptr;
 }
 
+void AST::InitInstr::DeclFun::is_fun() {
+
+}
+
 AST::Bloc *AST::InitInstr::DefProc::get_bloc() {
     return this->bloc;
 }
 
+
 AST::Bloc *AST::InitInstr::DeclProc::get_bloc() {
     return nullptr;
+}
+
+void AST::InitInstr::DeclProc::is_fun() {
+
 }
 
 //Ajout des tableaux
@@ -1599,3 +1618,21 @@ bool AST::Instr::Putchar::wrongReturnType(bool returnType) {
 bool AST::Instr::Putchar::containsReturn() {
     return false;
 }
+
+void AST::InitInstr::DefFun::is_fun() {
+    functions[this->get_name()] = true;
+
+}
+
+void AST::InitInstr::DefProc::is_fun() {
+    functions[this->get_name()] = false;
+
+}
+
+std::string AST::InitInstr::DeclFun::buildIR() {
+}
+
+
+std::string AST::InitInstr::DeclProc::buildIR() {
+}
+
