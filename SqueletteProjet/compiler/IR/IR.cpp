@@ -143,9 +143,9 @@ void IRInstr::gen_asm(ostream &o) {
             std::string expr = bb->cfg->IR_reg_to_asm(bloc, params[0]);
 
             // Create assembly code
-            o << "\tcmpl $1, " << expr << endl;
-            o << "\tje " << bb->exit_true->label << endl;
-            o << "\tjmp " << bb->exit_false->label << endl;
+            o << "\tcmpl $0, " << expr << endl;
+            o << "\tje " << bb->exit_false->label << endl;
+            o << "\tjmp " << bb->exit_true->label << endl;
             break;
         }
         case Operation::cmp_eq: {
@@ -391,9 +391,9 @@ void IRInstr::gen_asm(ostream &o) {
             std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[0]);
 
             // Create assembly code
-            o<<"\tmovsbl "<<location_arg<<", %eax"<<std::endl
-            <<"\tmovl %eax, %edi"<<std::endl
-            <<"\tcall putchar"<<std::endl;
+            o << "\tmovsbl " << location_arg << ", %eax" << std::endl
+              << "\tmovl %eax, %edi" << std::endl
+              << "\tcall putchar" << std::endl;
             break;
         }
     }
@@ -452,6 +452,8 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
                     }
                     break;
                     // Do nothing
+                case IRInstr::return_expr :
+                    offset = this->cfg->get_var_index(this->bloc, params[0]);
                 default:
                     break;
             }
