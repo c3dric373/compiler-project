@@ -1526,3 +1526,7 @@ std::string AST::Instr::Putchar::buildIR(){
 bool AST::Instr::Putchar::wrongReturnType(bool returnType){
     return false;
 }
+
+bool AST::Instr::Putchar::containsReturn() {
+    return false;
+}

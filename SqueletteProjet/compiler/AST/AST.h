@@ -340,6 +340,7 @@ namespace AST {
 
             void display() override;
 
+
         private:
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
@@ -785,6 +786,8 @@ namespace AST {
             std::string buildIR() override;
 
             bool wrongReturnType(bool returnType) override;
+            bool containsReturn() override;
+
 
         private:
             std::string arg;
