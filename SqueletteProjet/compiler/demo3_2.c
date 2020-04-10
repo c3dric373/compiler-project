@@ -2,7 +2,6 @@ int main() {
     int a = 1;
     int b = 0;
     int d = 2;
-    int c = 30;
     while (a == 1) {
         if (b == 0) {
             a = 2;
@@ -13,5 +12,5 @@ int main() {
         }
         d = b + d;
     }
-    return c-d;
+    return d;
 }
