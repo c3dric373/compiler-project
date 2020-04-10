@@ -13,13 +13,12 @@ IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
 
 // TODO
 void IRInstr::gen_asm(ostream &o) {
-    /* Exemple de ce qu'il faut mettre ici, la + longue méthode*/
     std::string type = t.get_suffix();
+    AST::Bloc *bloc = bb->bloc;
     vector<std::string> registers = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
                                      "%r9d"};
     switch (op) {
         case Operation::ldconst : {
-            AST::Bloc *bloc = bb->bloc;
             // for const : params = [ name | value ]
             std::string regString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             o << "\tmov" + type + " $" << params[1] << ", " << regString
@@ -28,7 +27,6 @@ void IRInstr::gen_asm(ostream &o) {
         }
 
         case Operation::copy: {
-            AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
             std::string reg_tmp_var;
             if (params[0] == "%eax") {
@@ -54,7 +52,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::sub: {
-            AST::Bloc *bloc = bb->bloc;
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
@@ -66,7 +63,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::mul: {
-            AST::Bloc *bloc = bb->bloc;
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
@@ -78,7 +74,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::add : {
-            AST::Bloc *bloc = bb->bloc;
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
@@ -90,7 +85,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::and_: {
-            AST::Bloc *bloc = bb->bloc;
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
@@ -102,7 +96,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::xor_: {
-            AST::Bloc *bloc = bb->bloc;
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
@@ -114,7 +107,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::or_: {
-            AST::Bloc *bloc = bb->bloc;
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
@@ -125,17 +117,7 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\tmovl %eax, " << regDestString << endl;
             break;
         }
-        case Operation::rmem: {
-            break;
-        }
-        case Operation::wmem: {
-            break;
-        }
-        case Operation::call: {
-            break;
-        }
         case Operation::if_: {
-            AST::Bloc *bloc = bb->bloc;
             std::string expr = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             o << "\tcmpl $1, " << expr << endl;
             o << "\tje " << bb->exit_true->label << endl;
@@ -143,7 +125,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::cmp_eq: {
-            AST::Bloc *bloc = bb->bloc;
             std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
@@ -164,7 +145,6 @@ void IRInstr::gen_asm(ostream &o) {
         }
 
         case Operation::cmp_low: {
-            AST::Bloc *bloc = bb->bloc;
             std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
@@ -196,7 +176,6 @@ void IRInstr::gen_asm(ostream &o) {
 
         }
         case Operation::cmp_great: {
-            AST::Bloc *bloc = bb->bloc;
             std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
@@ -228,7 +207,6 @@ void IRInstr::gen_asm(ostream &o) {
 
         }
         case Operation::ret: {
-            AST::Bloc *bloc = bb->bloc;
             // Récupère le paramètre
             std::string param = params[0];
             //Si le paramètre ne contient pas de ! c'est que c'est une variable
@@ -243,7 +221,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::neg: {
-            AST::Bloc *bloc = bb->bloc;
             std::string tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string dest_var = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             o << "\tmovl " << tmp_var << ", %eax" << endl;
@@ -257,7 +234,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::add_fct_param: {
-            AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
             string registers[] = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
                                   "%r9d"};
@@ -279,7 +255,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::add_fct_param_stack: {
-            AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             int offset = std::stoi(params[1]);
@@ -302,7 +277,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::call_fct: {
-            AST::Bloc *bloc = bb->bloc;
             std::string fct_name = params[0];
             std::string location_dest = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             o << "\tcall " << fct_name << endl;
@@ -317,7 +291,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::call_proc: {
-            AST::Bloc *bloc = bb->bloc;
             std::string fct_name = params[0];
             o << "\tcall " << fct_name << endl;
             break;
@@ -325,7 +298,6 @@ void IRInstr::gen_asm(ostream &o) {
         case Operation::get_arg: {
             // Arguments will be passed from left to right by the caller in the
             // registers :
-            AST::Bloc *bloc = bb->bloc;
             int num_arg = std::stoi(params[0]);
             std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             switch (t.type_) {
@@ -354,8 +326,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::return_expr: {
-            AST::Bloc *bloc = bb->bloc;
-
             if (params[0] == "%eax") {
                 o << "\tnop" << endl;
             } else {
@@ -369,7 +339,6 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::putchar: {
-            AST::Bloc *bloc = bb->bloc;
             std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             o<<"\tmovsbl "<<location_arg<<", %eax"<<std::endl
             <<"\tmovl %eax, %edi"<<std::endl
