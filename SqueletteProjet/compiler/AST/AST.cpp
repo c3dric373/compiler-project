@@ -1169,7 +1169,7 @@ void AST::InitInstr::DeclFun::display() {
 }
 
 void AST::Expr::CallFun::display() {
-    std::cout << "(CALLF " << std::flush;
+    std::cout << "(CALLF " << funName << ' ' << std::flush;
     for (auto &it : args) {
         std::cout << it << ' ' << std::flush;
     }
