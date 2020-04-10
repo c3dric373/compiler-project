@@ -2,6 +2,8 @@ TEST-CASE: pld-test-output/tests-Init-test-coco
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-3_multiple_return_ifElse
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-0_pas-de-point-virgule
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-0_test_fct
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-test-rendu-mi-parcours
@@ -52,9 +54,13 @@ TEST-CASE: pld-test-output/tests-Init-bloc-3_reassessment_in_else
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-bloc-3_ifElseWhile+blocs
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-if_else-6_mix_of_all_addIntToIf_0
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-if_else-1_nested_ifElse
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-if_else-0_simple_ifelse
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-if_else-6_mix_of_all_addIntToIf_1
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-if_else-2_combined_ifElse
 TEST OK

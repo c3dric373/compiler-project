@@ -137,9 +137,9 @@ void IRInstr::gen_asm(ostream &o) {
         case Operation::if_: {
             AST::Bloc *bloc = bb->bloc;
             std::string expr = bb->cfg->IR_reg_to_asm(bloc, params[0]);
-            o << "\tcmpl $1, " << expr << endl;
-            o << "\tje " << bb->exit_true->label << endl;
-            o << "\tjmp " << bb->exit_false->label << endl;
+            o << "\tcmpl $0, " << expr << endl;
+            o << "\tje " << bb->exit_false->label << endl;
+            o << "\tjmp " << bb->exit_true->label << endl;
             break;
         }
         case Operation::cmp_eq: {
@@ -371,9 +371,9 @@ void IRInstr::gen_asm(ostream &o) {
         case Operation::putchar: {
             AST::Bloc *bloc = bb->bloc;
             std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[0]);
-            o<<"\tmovsbl "<<location_arg<<", %eax"<<std::endl
-            <<"\tmovl %eax, %edi"<<std::endl
-            <<"\tcall putchar"<<std::endl;
+            o << "\tmovsbl " << location_arg << ", %eax" << std::endl
+              << "\tmovl %eax, %edi" << std::endl
+              << "\tcall putchar" << std::endl;
             break;
         }
     }

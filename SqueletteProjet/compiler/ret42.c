@@ -1,15 +1,10 @@
 int main() {
-    int a = 20;
-    int b = 4;
-    int c = 9;
-    int d = c * b - a;
-    int e = d * 4;
-    int f = (b > e) | (d <= a);
-    int g = (c < b) * (e > a) * a;
-    int m = 125;
-    if (a+b) {
-        m = (b == c) * (e & a) + a;
-        int w = 78;
+    int a = 5;
+    int b, c;
+    if (a == 5) {
+        int d=3;
+    }else{
+        b=4;
     }
-    return m;
+    return d;
 }
