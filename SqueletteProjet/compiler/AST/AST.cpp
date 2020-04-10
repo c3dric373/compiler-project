@@ -1345,80 +1345,80 @@ void AST::Expr::TabAccess::display() {
 
 //Optimisations
 
-bool AST::Expr::Add::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Add::getType() {
+    return ADD;
 }
 
-bool AST::Expr::Sub::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Sub::getType() {
+    return SUB;
 }
 
-bool AST::Expr::Mult::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Mult::getType() {
+    return MULT;
 }
 
-bool AST::Expr::Minus::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Minus::getType() {
+    return MINUS;
 }
 
-bool AST::Expr::And::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::And::getType() {
+    return AND;
 }
 
-bool AST::Expr::Or::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Or::getType() {
+    return OR;
 }
 
-bool AST::Expr::Xor::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Xor::getType() {
+    return XOR;
 }
 
-bool AST::Expr::Const::isConst() {
-    return true;
+TYPE_EXPR AST::Expr::Const::getType() {
+    return CONST;
 }
 
-bool AST::Expr::ConstChar::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::ConstChar::getType() {
+    return CONSTCHAR;
 }
 
-bool AST::Expr::Name::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Name::getType() {
+    return NAME;
 }
 
-bool AST::Expr::TabAccess::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::TabAccess::getType() {
+    return TABACCESS;
 }
 
-bool AST::Expr::CallFun::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::CallFun::getType() {
+    return CALLFUN;
 }
 
-bool AST::Expr::Eq::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Eq::getType() {
+    return EQ;
 }
 
-bool AST::Expr::Neq::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Neq::getType() {
+    return NEQ;
 }
 
-bool AST::Expr::Leq::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Leq::getType() {
+    return LEQ;
 }
 
-bool AST::Expr::Geq::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Geq::getType() {
+    return GEQ;
 }
 
-bool AST::Expr::Low::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Low::getType() {
+    return LOW;
 }
 
-bool AST::Expr::Great::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Great::getType() {
+    return GREAT;
 }
 
-bool AST::Expr::Not::isConst() {
-    return false;
+TYPE_EXPR AST::Expr::Not::getType() {
+    return NOT;
 }
 
 
@@ -1505,8 +1505,8 @@ std::string AST::Expr::GetChar::buildIR(bool not_flag){
 int AST::Expr::GetChar::getValue(){
     return 0;
 }
-bool AST::Expr::GetChar::isConst(){
-    return false;
+TYPE_EXPR AST::Expr::GetChar::getType(){
+    return GETCHAR;
 }
 void AST::Expr::GetChar::buildReturnIR(){
 
@@ -1530,3 +1530,145 @@ bool AST::Instr::Putchar::wrongReturnType(bool returnType){
 bool AST::Instr::Putchar::containsReturn() {
     return false;
 }
+
+//yet another opti
+AST::Expr::Expr* AST::Expr::Add::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::Add::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Sub::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::Sub::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Mult::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::Mult::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Minus::getLValue() const{
+    return nullptr;
+}
+AST::Expr::Expr* AST::Expr::Minus::getRValue() const{
+    return nullptr;
+}
+
+AST::Expr::Expr* AST::Expr::And::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::And::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Or::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::Or::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Xor::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::Xor::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Const::getLValue() const{
+    return nullptr;
+}
+AST::Expr::Expr* AST::Expr::Const::getRValue() const{
+    return nullptr;
+}
+
+AST::Expr::Expr* AST::Expr::ConstChar::getLValue() const{
+    return nullptr;
+}
+AST::Expr::Expr* AST::Expr::ConstChar::getRValue() const{
+    return nullptr;
+}
+
+AST::Expr::Expr* AST::Expr::Name::getLValue() const{
+    return nullptr;
+}
+AST::Expr::Expr* AST::Expr::Name::getRValue() const{
+    return nullptr;
+}
+
+AST::Expr::Expr* AST::Expr::TabAccess::getLValue() const{
+    return nullptr;
+}
+AST::Expr::Expr* AST::Expr::TabAccess::getRValue() const{
+    return nullptr;
+}
+
+AST::Expr::Expr* AST::Expr::CallFun::getLValue() const{
+    return nullptr;
+}
+AST::Expr::Expr* AST::Expr::CallFun::getRValue() const{
+    return nullptr;
+}
+
+AST::Expr::Expr* AST::Expr::GetChar::getLValue() const{
+    return nullptr;
+}
+AST::Expr::Expr* AST::Expr::GetChar::getRValue() const{
+    return nullptr;
+}
+
+AST::Expr::Expr* AST::Expr::Eq::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::Eq::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Neq::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::Neq::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Leq::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::Leq::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Low::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::Low::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Geq::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::Geq::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Great::getLValue() const{
+    return lValue;
+}
+AST::Expr::Expr* AST::Expr::Great::getRValue() const{
+    return rValue;
+}
+
+AST::Expr::Expr* AST::Expr::Not::getLValue() const{
+    return nullptr;
+}
+AST::Expr::Expr* AST::Expr::Not::getRValue() const{
+    return nullptr;
+}
+
