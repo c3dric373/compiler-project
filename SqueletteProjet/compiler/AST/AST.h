@@ -516,6 +516,8 @@ namespace AST {
             virtual void display() = 0;
 
             virtual bool wrongReturnType(bool returnType) = 0;
+
+            virtual bool containsReturn() = 0;
         };
 
         class DeclInt : public Instr {
@@ -529,6 +531,8 @@ namespace AST {
             void display() override;
 
             bool wrongReturnType(bool returnType) override;
+
+            bool containsReturn() override;
 
         private:
             std::vector<std::string> names;
@@ -548,6 +552,8 @@ namespace AST {
 
             bool wrongReturnType(bool returnType) override;
 
+            bool containsReturn() override;
+
         private:
             std::vector<std::string> names;
             unsigned line; // the line of the expression
@@ -564,6 +570,8 @@ namespace AST {
             void display() override;
 
             bool wrongReturnType(bool returnType) override;
+
+            bool containsReturn() override;
 
         private:
             std::string name;
@@ -582,6 +590,8 @@ namespace AST {
             void display() override;
 
             bool wrongReturnType(bool returnType) override;
+
+            bool containsReturn() override;
 
         private:
             std::string name;
@@ -602,6 +612,8 @@ namespace AST {
 
             bool wrongReturnType(bool returnType) override;
 
+            bool containsReturn() override;
+
         private:
             std::string name;
             Expr::Expr *expr;
@@ -620,6 +632,8 @@ namespace AST {
             void display() override;
 
             bool wrongReturnType(bool returnType) override;
+
+            bool containsReturn() override;
 
         private:
             std::string name;
@@ -640,6 +654,8 @@ namespace AST {
 
             bool wrongReturnType(bool returnType) override;
 
+            bool containsReturn() override;
+
         private:
             std::string name;
             Expr::Expr *expr;
@@ -658,6 +674,8 @@ namespace AST {
             void display() override;
 
             bool wrongReturnType(bool returnType) override;
+
+            bool containsReturn() override;
 
         private:
             std::string name;
@@ -678,6 +696,8 @@ namespace AST {
 
             bool wrongReturnType(bool returnType) override;
 
+            bool containsReturn() override;
+
         private:
             Expr::Expr *expr;
             AST::Bloc *bloc;
@@ -693,6 +713,8 @@ namespace AST {
             std::string buildIR() override;
 
             bool wrongReturnType(bool returnType) override;
+
+            bool containsReturn() override;
 
         private:
             Expr::Expr *expr;
@@ -711,6 +733,8 @@ namespace AST {
 
             bool wrongReturnType(bool returnType) override;
 
+            bool containsReturn() override;
+
         private:
             Expr::Expr *expr;
             AST::Bloc *bloc;
@@ -727,6 +751,8 @@ namespace AST {
 
             bool wrongReturnType(bool returnType) override;
 
+            bool containsReturn() override;
+
         private:
             AST::Bloc *bloc;
         };
@@ -741,6 +767,8 @@ namespace AST {
             std::string buildIR() override;
 
             bool wrongReturnType(bool returnType) override;
+
+            bool containsReturn() override;
 
         private:
             std::string procName;
@@ -773,6 +801,8 @@ namespace AST {
 
             bool wrongReturnType(bool returnType) override;
 
+            bool containsReturn() override;
+
         private:
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
@@ -788,6 +818,8 @@ namespace AST {
             std::string buildIR() override;
 
             bool wrongReturnType(bool returnType) override;
+
+            bool containsReturn() override;
 
         private:
             Expr::Expr *expr;
@@ -932,6 +964,8 @@ namespace AST {
 
         bool wrongReturnType(bool returnType);
 
+        bool containsReturn();
+
         AST::Bloc *parent_bloc = nullptr;
     private:
         std::vector<Instr::Instr *> blocinstr;
@@ -939,8 +973,8 @@ namespace AST {
 
     class Prog {
     public:
-        Prog(InitBloc *initBloc, Bloc *bloc, Expr::Expr *returnValue) :
-                initBloc(initBloc), bloc(bloc), returnValue(returnValue) {};
+        Prog(InitBloc *initBloc, Bloc *bloc) :
+                initBloc(initBloc), bloc(bloc) {};
 
         std::string buildIR();
 
@@ -948,7 +982,7 @@ namespace AST {
 
         std::vector<CFG *> generateIR();
 
-	bool getError();
+        bool getError();
 
         std::string getErrorMsg();
 
@@ -957,7 +991,6 @@ namespace AST {
     private:
         InitBloc *initBloc;
         Bloc *bloc;
-        Expr::Expr *returnValue;
     };
 }
 
