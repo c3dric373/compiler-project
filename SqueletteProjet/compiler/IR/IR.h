@@ -380,7 +380,7 @@ public:
 
     /**
      * @brief hasError
-     * @return boo
+     * @return bool
      *
      * Return true if an error has been raised
      * Else return False
