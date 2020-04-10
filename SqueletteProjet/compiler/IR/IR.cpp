@@ -339,6 +339,7 @@ void IRInstr::gen_asm(ostream &o) {
 
         case Operation::return_: {
             o << "\tnop" << endl;
+            this->bb->cfg->gen_asm_epilogue(o);
             break;
         }
         case Operation::return_expr: {
@@ -351,6 +352,7 @@ void IRInstr::gen_asm(ostream &o) {
                                                                     params[0]);
                 o << "\tmovl " + return_address + ", %eax" << endl;
             }
+            this->bb->cfg->gen_asm_epilogue(o);
             break;
         }
     }
@@ -451,7 +453,7 @@ void CFG::gen_asm(ostream &o) {
     for (auto bb : basic_blocs) {
         bb->gen_asm(o);
     }
-    gen_asm_epilogue(o);
+    //gen_asm_epilogue(o);
 }
 
 // take a variable and transform it to "-offset(%rbp)"
