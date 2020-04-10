@@ -34,35 +34,34 @@ int main(int argn, const char **argv) {
     ifccParser parser(&tokens);
     tree::ParseTree *tree = parser.axiom();
 
-    int nbError = parser.getNumberOfSyntaxErrors(); 
+    int nbError = parser.getNumberOfSyntaxErrors();
 
-    if(nbError<1) {
-	    Visitor visitor;
-	    AST::Prog *ast = visitor.visit(tree);
-	    stringstream resultAssembly;
+    if (nbError < 1) {
+        Visitor visitor;
+        AST::Prog *ast = visitor.visit(tree);
+        stringstream resultAssembly;
 
-		ast->display();
+        //ast->display();
 
-	    std::vector<CFG *> cfgs = ast->generateIR();
+        std::vector<CFG *> cfgs = ast->generateIR();
 
-	    bool error = ast->getError();
-	    if (!error) {
+        bool error = ast->getError();
+        if (!error) {
+            for (auto &it : cfgs) {
+                it->gen_asm(resultAssembly);
+            }
 
-			for (auto &it : cfgs) {
-				it->gen_asm(resultAssembly);
-			}
-
-		ofstream output;
-		output.open(filename_stripped + ".s");
-		output << resultAssembly.str();
-		output.close();
-	    } else {
-		cout << ast->getErrorMsg();
-		return 1;
-	    }
+            ofstream output;
+            output.open(filename_stripped + ".s");
+            output << resultAssembly.str();
+            output.close();
+        } else {
+            cout << ast->getErrorMsg();
+            return 1;
+        }
     } else {
-		return 1;
-	}
+        return 1;
+    }
 
     return 0;
 }

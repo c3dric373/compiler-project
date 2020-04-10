@@ -11,25 +11,30 @@ IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
                  vector<string> params_) : bb(bb_), op(op_), t(t_),
                                            params(params_) {}
 
-// TODO
 void IRInstr::gen_asm(ostream &o) {
-    /* Exemple de ce qu'il faut mettre ici, la + longue méthode*/
+    // Suffix of assembly code corresponding to the Type
     std::string type = t.get_suffix();
+    // Ast::Bloc of the BasicBlock
+    AST::Bloc *bloc = bb->bloc;
     vector<std::string> registers = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
                                      "%r9d"};
     switch (op) {
         case Operation::ldconst : {
-            AST::Bloc *bloc = bb->bloc;
-            // for const : params = [ name | value ]
+            // For const : params = [ name | value ]
+
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+
+            // Create assembly code
             o << "\tmov" + type + " $" << params[1] << ", " << regString
               << endl;
             break;
         }
 
         case Operation::copy: {
-            AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
+
+            // Get the "-Index(%rbp)" corresponding to params
             std::string reg_tmp_var;
             if (params[0] == "%eax") {
                 reg_tmp_var = params[0];
@@ -37,6 +42,8 @@ void IRInstr::gen_asm(ostream &o) {
                 reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             }
             std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
@@ -54,11 +61,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::sub: {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\tsubl " << reg2String << ", %eax" << "# " << params[1]
               << " - " << params[2] << endl;
@@ -66,11 +74,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::mul: {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\timull " << reg2String << ", %eax" << " # " << params[1]
               << " * " << params[2] << endl;
@@ -78,11 +87,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::add : {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\taddl " << reg2String << ", %eax" << " # " << params[1]
               << " + " << params[2] << endl;
@@ -90,11 +100,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::and_: {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\tand " << reg2String << ", %eax" << " # " << params[1]
               << " and " << params[2] << endl;
@@ -102,11 +113,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::xor_: {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\txor " << reg2String << ", %eax" << " # " << params[1]
               << " xor " << params[2] << endl;
@@ -114,41 +126,36 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::or_: {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\tor " << reg2String << ", %eax" << " # " << params[1]
               << " or" << params[2] << endl;
             o << "\tmovl %eax, " << regDestString << endl;
             break;
         }
-        case Operation::rmem: {
-            break;
-        }
-        case Operation::wmem: {
-            break;
-        }
-        case Operation::call: {
-            break;
-        }
         case Operation::if_: {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string expr = bb->cfg->IR_reg_to_asm(bloc, params[0]);
-            o << "\tcmpl $1, " << expr << endl;
-            o << "\tje " << bb->exit_true->label << endl;
-            o << "\tjmp " << bb->exit_false->label << endl;
+
+            // Create assembly code
+            o << "\tcmpl $0, " << expr << endl;
+            o << "\tje " << bb->exit_false->label << endl;
+            o << "\tjmp " << bb->exit_true->label << endl;
             break;
         }
         case Operation::cmp_eq: {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
+            // Create assembly code
             o << "\tmovl " << lValue << ", %eax" << endl;
             o << "\tcmpl  %eax, " << rValue << endl;
             if (equal) {
@@ -164,12 +171,13 @@ void IRInstr::gen_asm(ostream &o) {
         }
 
         case Operation::cmp_low: {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << rValue << ", %eax" << endl;
@@ -196,12 +204,13 @@ void IRInstr::gen_asm(ostream &o) {
 
         }
         case Operation::cmp_great: {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << rValue << ", %eax" << endl;
@@ -228,7 +237,6 @@ void IRInstr::gen_asm(ostream &o) {
 
         }
         case Operation::ret: {
-            AST::Bloc *bloc = bb->bloc;
             // Récupère le paramètre
             std::string param = params[0];
             //Si le paramètre ne contient pas de ! c'est que c'est une variable
@@ -243,9 +251,11 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::neg: {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string dest_var = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+
+            // Create assembly code
             o << "\tmovl " << tmp_var << ", %eax" << endl;
             o << "\tNEG %eax" << endl;
             o << "\tmovl %eax, " << dest_var << endl;
@@ -253,16 +263,20 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::jmp: {
             std::string basic_block = params[0];
+
+            // Create assembly code
             o << "\t jmp " << basic_block << endl;
             break;
         }
         case Operation::add_fct_param: {
-            AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
             string registers[] = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
                                   "%r9d"};
             int num = std::stoi(params[1]);
+            // Get the "-Index(%rbp)" corresponding to params
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << reg_tmp_var << ", "
@@ -279,10 +293,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::add_fct_param_stack: {
-            AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
+            // Get the "-Index(%rbp)" corresponding to params
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             int offset = std::stoi(params[1]);
+
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << reg_tmp_var << ", "
@@ -302,9 +318,11 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::call_fct: {
-            AST::Bloc *bloc = bb->bloc;
             std::string fct_name = params[0];
+            // Get the "-Index(%rbp)" corresponding to params
             std::string location_dest = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+
+            // Create assembly code
             o << "\tcall " << fct_name << endl;
             switch (t.type_) {
                 case Type::type_char : {
@@ -317,17 +335,20 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::call_proc: {
-            AST::Bloc *bloc = bb->bloc;
             std::string fct_name = params[0];
+
+            // Create assembly code
             o << "\tcall " << fct_name << endl;
             break;
         }
         case Operation::get_arg: {
             // Arguments will be passed from left to right by the caller in the
             // registers :
-            AST::Bloc *bloc = bb->bloc;
             int num_arg = std::stoi(params[0]);
+            // Get the "-Index(%rbp)" corresponding to params
             std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << registers[num_arg] << ", " << location_arg
@@ -347,15 +368,13 @@ void IRInstr::gen_asm(ostream &o) {
         }
 
         case Operation::return_: {
+            // Create assembly code
             o << "\tnop" << endl;
-            // this->bb->cfg->gen_asm_epilogue(o);
             std::string epilogue_label = "." + this->bb->cfg->name + "_ret";
             o << "\t jmp " << epilogue_label << endl;
             break;
         }
         case Operation::return_expr: {
-            AST::Bloc *bloc = bb->bloc;
-
             if (params[0] == "%eax") {
                 o << "\tnop" << endl;
             } else {
@@ -363,17 +382,18 @@ void IRInstr::gen_asm(ostream &o) {
                                                                     params[0]);
                 o << "\tmovl " + return_address + ", %eax" << endl;
             }
-            // this->bb->cfg->gen_asm_epilogue(o);
             std::string epilogue_label = "." + this->bb->cfg->name + "_ret";
             o << "\t jmp " << epilogue_label << endl;
             break;
         }
         case Operation::putchar: {
-            AST::Bloc *bloc = bb->bloc;
+            // Get the "-Index(%rbp)" corresponding to params
             std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[0]);
-            o<<"\tmovsbl "<<location_arg<<", %eax"<<std::endl
-            <<"\tmovl %eax, %edi"<<std::endl
-            <<"\tcall putchar"<<std::endl;
+
+            // Create assembly code
+            o << "\tmovsbl " << location_arg << ", %eax" << std::endl
+              << "\tmovl %eax, %edi" << std::endl
+              << "\tcall putchar" << std::endl;
             break;
         }
     }
@@ -388,9 +408,11 @@ BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg),
 
 void BasicBlock::gen_asm(ostream &o) {
     std::string label = this->label;
+    // Add the label of the BasicBlock if it exists
     if (!label.empty()) {
         o << this->label << ": " << endl;
     }
+    // Generate assembly code for each instruction contained in the instrs vector
     for (auto instr : instrs) {
         instr->gen_asm(o);
     }
@@ -399,20 +421,27 @@ void BasicBlock::gen_asm(ostream &o) {
 void
 BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
                         vector<string> params) {
-    // Analyse statique :
+    // Syntactic analysis:
     // Find out if the variable placed in params has already been declared
-    // if offset == 1, it hasn't been declared
+    // if offset == 12000, it hasn't been declared
     for (std::string param : params) {
         if (param != "%eax") {
             int offset = 0;
             switch (op) {
                 case IRInstr::copy :
+
                 case IRInstr::and_ :
+
                 case IRInstr::xor_ :
+
                 case IRInstr::or_ :
+
                 case IRInstr::add :
+
                 case IRInstr::sub :
+
                 case IRInstr::mul :
+
                 case IRInstr::neg :
                     offset = this->cfg->get_var_index(this->bloc, param);
                     break;
@@ -430,6 +459,8 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
                     }
                     break;
                     // Do nothing
+                case IRInstr::return_expr :
+                    offset = this->cfg->get_var_index(this->bloc, params[0]);
                 default:
                     break;
             }
@@ -444,6 +475,7 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
             }
         }
     }
+    // If there is no error, we can push the instruction to the instrs vector
     instrs.push_back(new IRInstr(this, op, t, params));
 }
 
@@ -453,15 +485,17 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
 
 CFG::CFG(AST::Bloc *ast_, std::string name) : nextFreeSymbolIndex(0),
                                               nextBBnumber(0), ast(ast_) {
+    // Create a BasicBlock
     auto firstBB = new BasicBlock(this, "");
+    // Add the firstBB to the BasicBlocks vector
     this->add_bb(firstBB);
     this->name = name;
 
-    // Create just one block
-    // In the future, we must create one more
+    // Create just one block with no next Block
     firstBB->exit_false = nullptr;
     firstBB->exit_true = nullptr;
 
+    // Set the current Block
     current_bb = firstBB;
 }
 
@@ -470,15 +504,20 @@ void CFG::add_bb(BasicBlock *bb) {
 }
 
 void CFG::gen_asm(ostream &o) {
+    // Generate assembly code of the prologue
     gen_asm_prologue(o);
+    // Generate assembly code for each BasicBlock contained in the CFG
     for (auto bb : basic_blocs) {
         bb->gen_asm(o);
     }
+    // Generate assembly code of the epilogue
     gen_asm_epilogue(o);
 }
 
-// take a variable and transform it to "-offset(%rbp)"
+
 std::string CFG::IR_reg_to_asm(AST::Bloc *bloc, string reg) {
+    // Take a variable and transform it to "-offset(%rbp)"
+    // Get the offset of the variable
     int offset = this->get_var_index(bloc, reg);
     std::string regString = std::to_string(offset) + "(%rbp)";
     return regString;
@@ -530,14 +569,15 @@ void
 CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name,
                          Type t) {
     std::string type;
+    // Get the nex free index in the SymbolIndex
+    nextFreeSymbolIndex -= t.get_offset();
+
     switch (t.type_) {
-        case Type::type_int: {
-            nextFreeSymbolIndex -= t.get_offset();
+        case Type::type_int: {    
             type = "int";
             break;
         }
         case Type::type_char: {
-            nextFreeSymbolIndex -= t.get_offset();
             type = "char";
             break;
         }
@@ -547,11 +587,14 @@ CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name,
     // pointer
     std::string new_name = get_var_name(bloc, name);
 
-
     if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
+        // The new_name has not been found in the SymbolIndex
+        // We can add new_name to SymbolIndex and SymbolType
         SymbolType[new_name] = t;
         SymbolIndex[new_name] = nextFreeSymbolIndex;
     } else {
+        // The new_name already exists in the SymbolIndex
+
         std::string erreur =
                 "error line " + std::to_string(line) + " column " +
                 std::to_string(column) + " : " + type + " " + name +
@@ -561,7 +604,7 @@ CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name,
 }
 
 std::string CFG::create_new_temp_var(Type t) {
-
+    // Get the nex free index in the SymbolIndex
     nextFreeSymbolIndex -= t.get_offset();
 
     // nextFreeSymbolIndex is negative, so we put -nextFreeSymbolIndex in the tmp name
@@ -575,8 +618,12 @@ std::string CFG::create_new_temp_var(Type t) {
 
 int CFG::find_index(string name) {
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
+        // The name has not been found in the SymbolIndex
+        // An error should be raised : here return 12000
         return 12000;
     } else {
+        // The name has been found in the SymbolIndex
+        // Return the index corresponding to the name
         return SymbolIndex.at(name);
     }
 }
@@ -612,12 +659,16 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
 
 Type CFG::find_type(string name, string realName) {
     if (SymbolType.find(name) == SymbolType.end()) {
+        // The name has not been found in the SymbolIndex
+        // An error should be raised
         std::string error =
                 "error : cannot find the type, the variable " + realName +
                 " has not been declared \n";
         this->addErreur(error);
         return Type();
     } else {
+        // The name has been found in the SymbolIndex
+        // Return the index corresponding to the name
         return SymbolType.at(name);
     }
 }
@@ -634,7 +685,6 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     std::string new_name = get_var_name(bloc, name);
     if (bloc->parent_bloc == nullptr) {
         return find_type(new_name, name);
-
     }
 
     while (SymbolType.find(new_name) == SymbolType.end()) {
@@ -649,6 +699,7 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
 
         }
     }
+    // Return the index corresponding to the new_name
     return SymbolType.at(new_name);
 }
 

@@ -1,109 +1,91 @@
-pair:
+f:
 	pushq %rbp
 	movq %rsp, %rbp
-	subq $40, %rsp
-	movl %edi, -8(%rbp)# write arg valeur
-	movl $0, -16(%rbp)
-	movl -8(%rbp), %eax
-	cmpl  %eax, -16(%rbp)
-	sete %dl # valeur==!tmp16
-	movzbl %dl, %eax
-	movl %eax, -20(%rbp)
-	cmpl $1, -20(%rbp)
-	je .Lpair1
-	jmp .Lpair2
-.Lpair1: 
-	movl $1, -24(%rbp)
-	movl -24(%rbp), %eax
-	 jmp .pair_ret
-	 jmp .Lpair0
-.Lpair2: 
-	movl $1, -28(%rbp)
+	subq $21, %rsp
+	movl %edi, -8(%rbp)# write arg i
+	movl %esi, %eax# relocate because arg is a char: c
+	movb %al, -9(%rbp)# write arg c
+	movl $1, -13(%rbp)
 	movl -8(%rbp) , %eax
-	subl -28(%rbp), %eax# valeur - !tmp28
-	movl %eax, -32(%rbp)
-	movl -32(%rbp), %eax
-	movl %eax , -36(%rbp) # x
-	movl -36(%rbp), %edi # fct param x
-	call impair
-	movl %eax, -40(%rbp)
-	movl -40(%rbp), %eax
-	movl %eax , -12(%rbp) # resultat
-	movl -12(%rbp), %eax
-	 jmp .pair_ret
-.Lpair0: 
-.pair_ret:
-	addq $40, %rsp
+	addl -13(%rbp), %eax # i + !tmp13
+	movl %eax, -17(%rbp)
+	movl -17(%rbp), %eax
+	movl %eax , -8(%rbp) # i
+	movl -9(%rbp) , %eax
+	addl -8(%rbp), %eax # c + i
+	movl %eax, -21(%rbp)
+	movl -21(%rbp), %eax
+	 jmp .f_ret
+.f_ret:
+	addq $21, %rsp
 	popq %rbp
 	ret
-impair:
+g:
 	pushq %rbp
 	movq %rsp, %rbp
-	subq $52, %rsp
-	movl %edi, -8(%rbp)# write arg valeur
-	movl $1, -16(%rbp)
-	movl -8(%rbp), %eax
-	cmpl  %eax, -16(%rbp)
-	sete %dl # valeur==!tmp16
-	movzbl %dl, %eax
-	movl %eax, -20(%rbp)
-	cmpl $1, -20(%rbp)
-	je .Limpair1
-	jmp .Limpair2
-.Limpair1: 
-	movl $1, -24(%rbp)
-	movl -24(%rbp), %eax
-	 jmp .impair_ret
-	 jmp .Limpair0
-.Limpair2: 
-	movl $0, -28(%rbp)
-	movl -8(%rbp), %eax
-	cmpl  %eax, -28(%rbp)
-	sete %dl # valeur==!tmp28
-	movzbl %dl, %eax
-	movl %eax, -32(%rbp)
-	cmpl $1, -32(%rbp)
-	je .Limpair3
-	jmp .Limpair4
-.Limpair3: 
-	movl $0, -36(%rbp)
-	movl -36(%rbp), %eax
-	 jmp .impair_ret
-.Limpair4: 
-	movl $1, -40(%rbp)
+	subq $16, %rsp
+	movl %edi, -8(%rbp)# write arg j
+	movl $2, -12(%rbp)
 	movl -8(%rbp) , %eax
-	subl -40(%rbp), %eax# valeur - !tmp40
-	movl %eax, -44(%rbp)
-	movl -44(%rbp), %eax
-	movl %eax , -48(%rbp) # x
-	movl -48(%rbp), %edi # fct param x
-	call pair
-	movl %eax, -52(%rbp)
-	movl -52(%rbp), %eax
-	movl %eax , -12(%rbp) # resultat
-	movl -12(%rbp), %eax
-	 jmp .impair_ret
-.Limpair0: 
-.impair_ret:
-	addq $52, %rsp
+	addl -12(%rbp), %eax # j + !tmp12
+	movl %eax, -16(%rbp)
+	movl -16(%rbp), %eax
+	 jmp .g_ret
+.g_ret:
+	addq $16, %rsp
+	popq %rbp
+	ret
+h:
+	pushq %rbp
+	movq %rsp, %rbp
+	subq $33, %rsp
+	movl %edi, -8(%rbp)# write arg i
+	movl %esi, %eax# relocate because arg is a char: c
+	movb %al, -9(%rbp)# write arg c
+	movl -8(%rbp), %edi # fct param i
+	movl -9(%rbp), %esi # fct param c
+	call f
+	movl $2, -13(%rbp)
+	movl -13(%rbp), %eax
+	movl %eax , -17(%rbp) # d
+	movl -9(%rbp) , %eax
+	addl -8(%rbp), %eax # c + i
+	movl %eax, -21(%rbp)
+	movl -21(%rbp) , %eax
+	addl -17(%rbp), %eax # !tmp21 + d
+	movl %eax, -25(%rbp)
+	movl $3, -29(%rbp)
+	movl -25(%rbp) , %eax
+	addl -29(%rbp), %eax # !tmp25 + !tmp29
+	movl %eax, -33(%rbp)
+	movl -33(%rbp), %eax
+	 jmp .h_ret
+.h_ret:
+	addq $33, %rsp
 	popq %rbp
 	ret
 .globl	main
 main:
 	pushq %rbp
 	movq %rsp, %rbp
-	subq $16, %rsp
-	movl $22, -4(%rbp)
+	subq $14, %rsp
+	movl $1, -4(%rbp)
 	movl -4(%rbp), %eax
 	movl %eax , -8(%rbp) # a
+	movb $102, -9(%rbp)
+	movl -9(%rbp), %eax
+	movb %al , -10(%rbp) # b
 	movl -8(%rbp), %edi # fct param a
-	call pair
-	movl %eax, -16(%rbp)
-	movl -16(%rbp), %eax
-	movl %eax , -12(%rbp) # b
-	movl -12(%rbp), %eax
+	call g
+	movl -8(%rbp), %edi # fct param a
+	movl -10(%rbp), %esi # fct param b
+	call h
+	movl %eax, -14(%rbp)
+	movl -14(%rbp), %eax
+	movb %al , -10(%rbp) # b
+	movl -10(%rbp), %eax
 	 jmp .main_ret
 .main_ret:
-	addq $16, %rsp
+	addq $14, %rsp
 	popq %rbp
 	ret
