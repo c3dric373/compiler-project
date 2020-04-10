@@ -77,7 +77,7 @@ public:
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
       AST::Expr::Expr* astExpr = visit(ctx->expr());
-      if(!astExpr->isConst()){
+      if(astExpr->getType() != CONST){
           std::string errorMessage =
                   "line" + std::to_string(line) + ':' + std::to_string(column)
                   + " array size must be a constant";
@@ -126,11 +126,11 @@ public:
       AST::Expr::Expr* astExpr = visit(ctx->expr());
       AST::Bloc* astBloc = visit(ctx->bloc());
       //optimization : unreachable code
-      if(astExpr->isConst() && astExpr->getValue() == 0){
+      if(astExpr->getType() == CONST && astExpr->getValue() == 0){
           return (AST::Instr::Instr*)nullptr;
       }
       //optimisation : always reached code
-      if(astExpr->isConst() && astExpr->getValue() > 0){
+      if(astExpr->getType() == CONST && astExpr->getValue() > 0){
           return (AST::Instr::Instr*)new AST::Instr::Bloci(astBloc);
       }
 
@@ -142,10 +142,10 @@ public:
         AST::Bloc* astIfBloc = visit(ctx->bloc()[0]);
         AST::Bloc* astElseBloc = visit(ctx->bloc()[1]);
         //optimization : unreachable code
-        if(astExpr->isConst() && astExpr->getValue() == 0){
+        if(astExpr->getType() == CONST && astExpr->getValue() == 0){
             return (AST::Instr::Instr*)new AST::Instr::Bloci(astElseBloc);
         }
-        if(astExpr->isConst() && astExpr->getValue() > 0){
+        if(astExpr->getType() == CONST && astExpr->getValue() > 0){
             return (AST::Instr::Instr*)new AST::Instr::Bloci(astIfBloc);
         }
 
@@ -158,11 +158,11 @@ public:
         AST::Expr::Expr* astExpr = visit(ctx->expr());
         AST::Bloc* astBloc = visit(ctx->bloc());
         //optimization : unreachable code
-        if(astExpr->isConst() && astExpr->getValue() == 0){
+        if(astExpr->getType() == CONST && astExpr->getValue() == 0){
             return (AST::Instr::Instr*)nullptr;
         }
         //optimization : detection of an endless loop
-        if(astExpr->isConst() && astExpr->getValue() > 0 && !astBloc->containsReturn()){
+        if(astExpr->getType() == CONST && astExpr->getValue() > 0 && !astBloc->containsReturn()){
             std::string errorMessage =
                     "line" + std::to_string(line) + ':' + std::to_string(column)
                     + " warning : endless loop";
@@ -217,11 +217,11 @@ public:
             astBloc->pushInstr(visit(it));
         }
         //optimization : unreachable code
-        if(astExpr->isConst() && astExpr->getValue() == 0){
+        if(astExpr->getType() == CONST && astExpr->getValue() == 0){
             return (AST::Instr::Instr*)nullptr;
         }
         //optimization : detection of an endless loop
-        if(astExpr->isConst() && astExpr->getValue() > 0 && !astBloc->containsReturn()){
+        if(astExpr->getType() == CONST && astExpr->getValue() > 0 && !astBloc->containsReturn()){
             std::string errorMessage =
                     "line" + std::to_string(line) + ':' + std::to_string(column)
                     + " warning : endless loop";
@@ -378,15 +378,25 @@ public:
       unsigned column = ctx->getStart()->getCharPositionInLine();
     AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
     AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+    //optimisation : constant propagation and associativity of +
+    if(astLeftExpr->getType() == ADD && astLeftExpr->getRValue()->getType() == CONST){
+        if(astRightExpr->getType() == CONST){
+            AST::Expr::Const* astConst = new AST::Expr::Const(astRightExpr->getValue() + astLeftExpr->getRValue()->getValue());
+            return (AST::Expr::Expr*)new AST::Expr::Add(astLeftExpr->getLValue(), astConst, line, column);
+        }else{
+            AST::Expr::Add* astAdd = new AST::Expr::Add(astLeftExpr->getLValue(), astRightExpr);
+            return (AST::Expr::Expr*)new AST::Expr::Add(astAdd, astLeftExpr->getRValue(), line, column);
+        }
+    }
     //optimisation : constant propagation
-    if(astRightExpr->isConst() && astLeftExpr->isConst()){
+    if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
         return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() + astRightExpr->getValue());
     }
     //optimisation : neutrality of 0
-    if(astLeftExpr->isConst() && astLeftExpr->getValue() == 0){
+    if(astLeftExpr->getType() == CONST && astLeftExpr->getValue() == 0){
         return astRightExpr;
     }
-    if(astRightExpr->isConst() && astRightExpr->getValue() == 0){
+    if(astRightExpr->getType() == CONST && astRightExpr->getValue() == 0){
         return astLeftExpr;
     }
 
@@ -399,14 +409,14 @@ public:
       AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
       AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
       //optimisation : constant propagation
-      if(astRightExpr->isConst() && astLeftExpr->isConst()){
+      if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
           return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() - astRightExpr->getValue());
       }
       //optimisation : neutrality of 0
-      if(astLeftExpr->isConst() && astLeftExpr->getValue() == 0){
+      if(astLeftExpr->getType() == CONST && astLeftExpr->getValue() == 0){
           return (AST::Expr::Expr*)new AST::Expr::Minus(astRightExpr, line, column);
       }
-      if(astRightExpr->isConst() && astRightExpr->getValue() == 0){
+      if(astRightExpr->getType() == CONST && astRightExpr->getValue() == 0){
           return astLeftExpr;
       }
 
@@ -418,7 +428,7 @@ public:
       unsigned line = ctx->getStart()->getLine();
       unsigned column = ctx->getStart()->getCharPositionInLine();
       //optimisation : constant propagation
-      if(astExpr->isConst()){
+      if(astExpr->getType() == CONST){
           return (AST::Expr::Expr*)new AST::Expr::Const(- astExpr->getValue());
       }
 
@@ -430,20 +440,30 @@ public:
       unsigned column = ctx->getStart()->getCharPositionInLine();
       AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
       AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+      //optimisation : constant propagation and associativity of *
+      if(astLeftExpr->getType() == MULT && astLeftExpr->getRValue()->getType() == CONST){
+          if(astRightExpr->getType() == CONST){
+              AST::Expr::Const* astConst = new AST::Expr::Const(astRightExpr->getValue() * astLeftExpr->getRValue()->getValue());
+              return (AST::Expr::Expr*)new AST::Expr::Add(astLeftExpr->getLValue(), astConst, line, column);
+          }else{
+              AST::Expr::Mult* astAdd = new AST::Expr::Mult(astLeftExpr->getLValue(), astRightExpr);
+              return (AST::Expr::Expr*)new AST::Expr::Mult(astAdd, astLeftExpr->getRValue(), line, column);
+          }
+      }
       //optimisation : constant propagation
-      if(astRightExpr->isConst() && astLeftExpr->isConst()){
+      if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
           return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() * astRightExpr->getValue());
       }
       //optimisation : neutrality of 1
-      if(astLeftExpr->isConst() && astLeftExpr->getValue() == 1){
+      if(astLeftExpr->getType() == CONST && astLeftExpr->getValue() == 1){
           return astRightExpr;
       }
-      if(astRightExpr->isConst() && astRightExpr->getValue() == 1){
+      if(astRightExpr->getType() == CONST && astRightExpr->getValue() == 1){
           return astLeftExpr;
       }
       //optimisation : absorbance de 0
-      if((astLeftExpr->isConst() && astLeftExpr->getValue() == 0) ||
-              (astRightExpr->isConst() && astRightExpr->getValue() == 1)){
+      if((astLeftExpr->getType() == CONST && astLeftExpr->getValue() == 0) ||
+         (astRightExpr->getType() == CONST && astRightExpr->getValue() == 1)){
           return (AST::Expr::Expr*)new AST::Expr::Const(0);
       }
 
@@ -455,8 +475,18 @@ public:
         unsigned column = ctx->getStart()->getCharPositionInLine();
         AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
         AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation and associativity of &
+        if(astLeftExpr->getType() == AND && astLeftExpr->getRValue()->getType() == CONST){
+            if(astRightExpr->getType() == CONST){
+                AST::Expr::Const* astConst = new AST::Expr::Const(astRightExpr->getValue() & astLeftExpr->getRValue()->getValue());
+                return (AST::Expr::Expr*)new AST::Expr::Add(astLeftExpr->getLValue(), astConst, line, column);
+            }else{
+                AST::Expr::And* astAdd = new AST::Expr::And(astLeftExpr->getLValue(), astRightExpr);
+                return (AST::Expr::Expr*)new AST::Expr::And(astAdd, astLeftExpr->getRValue(), line, column);
+            }
+        }
         //optimisation : constant propagation
-        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+        if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
             return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() & astRightExpr->getValue());
         }
 
@@ -468,15 +498,25 @@ public:
         unsigned column = ctx->getStart()->getCharPositionInLine();
         AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
         AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation and associativity of |
+        if(astLeftExpr->getType() == OR && astLeftExpr->getRValue()->getType() == CONST){
+            if(astRightExpr->getType() == CONST){
+                AST::Expr::Const* astConst = new AST::Expr::Const(astRightExpr->getValue() | astLeftExpr->getRValue()->getValue());
+                return (AST::Expr::Expr*)new AST::Expr::Add(astLeftExpr->getLValue(), astConst, line, column);
+            }else{
+                AST::Expr::Or* astAdd = new AST::Expr::Or(astLeftExpr->getLValue(), astRightExpr);
+                return (AST::Expr::Expr*)new AST::Expr::Or(astAdd, astLeftExpr->getRValue(), line, column);
+            }
+        }
         //optimisation : constant propagation
-        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+        if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
             return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() | astRightExpr->getValue());
         }
         //optimisation : neutrality of 0
-        if(astLeftExpr->isConst() && astLeftExpr->getValue() == 0){
+        if(astLeftExpr->getType() == CONST && astLeftExpr->getValue() == 0){
             return astRightExpr;
         }
-        if(astRightExpr->isConst() && astRightExpr->getValue() == 0){
+        if(astRightExpr->getType() == CONST && astRightExpr->getValue() == 0){
             return astLeftExpr;
         }
 
@@ -488,8 +528,18 @@ public:
         unsigned column = ctx->getStart()->getCharPositionInLine();
         AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
         AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
+        //optimisation : constant propagation and associativity of ^
+        if(astLeftExpr->getType() == XOR && astLeftExpr->getRValue()->getType() == CONST){
+            if(astRightExpr->getType() == CONST){
+                AST::Expr::Const* astConst = new AST::Expr::Const(astRightExpr->getValue() ^ astLeftExpr->getRValue()->getValue());
+                return (AST::Expr::Expr*)new AST::Expr::Add(astLeftExpr->getLValue(), astConst, line, column);
+            }else{
+                AST::Expr::Xor* astAdd = new AST::Expr::Xor(astLeftExpr->getLValue(), astRightExpr);
+                return (AST::Expr::Expr*)new AST::Expr::Xor(astAdd, astLeftExpr->getRValue(), line, column);
+            }
+        }
         //optimisation : constant propagation
-        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+        if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
             return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() ^ astRightExpr->getValue());
         }
 
@@ -549,7 +599,7 @@ public:
         AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
         AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
         //optimisation : constant propagation
-        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+        if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
             return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() == astRightExpr->getValue());
         }
 
@@ -562,7 +612,7 @@ public:
         AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
         AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
         //optimisation : constant propagation
-        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+        if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
             return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() != astRightExpr->getValue());
         }
 
@@ -575,7 +625,7 @@ public:
         AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
         AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
         //optimisation : constant propagation
-        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+        if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
             return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() <= astRightExpr->getValue());
         }
 
@@ -588,7 +638,7 @@ public:
         AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
         AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
         //optimisation : constant propagation
-        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+        if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
             return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() < astRightExpr->getValue());
         }
 
@@ -601,7 +651,7 @@ public:
         AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
         AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
         //optimisation : constant propagation
-        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+        if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
             return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() >= astRightExpr->getValue());
         }
 
@@ -614,7 +664,7 @@ public:
         AST::Expr::Expr* astLeftExpr = visit(ctx->expr()[0]);
         AST::Expr::Expr* astRightExpr = visit(ctx->expr()[1]);
         //optimisation : constant propagation
-        if(astRightExpr->isConst() && astLeftExpr->isConst()){
+        if(astRightExpr->getType() == CONST && astLeftExpr->getType() == CONST){
             return (AST::Expr::Expr*)new AST::Expr::Const(astLeftExpr->getValue() > astRightExpr->getValue());
         }
 
@@ -626,7 +676,7 @@ public:
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
         //optimisation : constant propagation
-        if(astExpr->isConst()){
+        if(astExpr->getType() == CONST){
             return (AST::Expr::Expr*)new AST::Expr::Const(! astExpr->getValue());
         }
 
