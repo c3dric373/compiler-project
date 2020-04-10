@@ -1,4 +1,4 @@
-char f(int i, char c){
+int f(int i, int c){
     i=i+1;	
     c=c+i;
     return c;
@@ -6,7 +6,7 @@ char f(int i, char c){
 
 int main(){
     int a=1;
-    char b='f';
+    int b=3;
     b=f(a,b);
     return  b;
 }

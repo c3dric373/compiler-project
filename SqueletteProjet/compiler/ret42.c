@@ -1,17 +1,15 @@
 int main() {
-    int a = 1;
-    int b = 0;
-    int d = 2;
-    int c = 30;
-    while (a == 1) {
-        if (b == 0) {
-            a = 2;
-        }
-        while (b < 3) {
-            int c = 1;
-            b = b + c;
-        }
-        d = b + d;
+    int a = 20;
+    int b = 4;
+    int c = 9;
+    int d = c * b - a;
+    int e = d * 4;
+    int f = (b > e) | (d <= a);
+    int g = (c < b) * (e > a) * a;
+    int m = 125;
+    if (a+b) {
+        m = (b == c) * (e & a) + a;
+        int w = 78;
     }
-    return c-d;
+    return m;
 }

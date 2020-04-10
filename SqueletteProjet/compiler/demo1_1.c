@@ -1,12 +1,7 @@
-int main() {
-    int a = 3;
-    int b = 2;
-    int c = 7;
-    if (a == 4) {
-        c = 2;
-    } else {
-        c = 4;
-    }
-    int d = 5;
-    return c;
+int main(){
+    char a='a';
+    char c='b';
+    char b=a*c;
+    char d = a +b ;
+    return d -a;
 }
