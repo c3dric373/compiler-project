@@ -1,31 +1,15 @@
-int pair(int valeur) {
-    int resultat;
-    if (valeur == 0) {
-        return 1;
-    } else {
-        int x = valeur - 1;
-        resultat = impair(x);
-        return resultat;
-    }
-}
-
-int impair(int valeur) {
-    int resultat;
-    if (valeur == 1) {
-        return 1;
-    } else {
-        if (valeur == 0) {
-            return 0;
-        }
-        int x = valeur - 1;
-        resultat = pair(x);
-        return resultat;
-    }
-}
-
 int main() {
-    int a = 22;
-    int b;
-    b = pair(a);
-    return b;
+    int a = 20;
+    int b = 4;
+    int c = 9;
+    int d = c * b - a;
+    int e = d * 4;
+    int f = (b > e) | (d <= a);
+    int g = (c < b) * (e > a) * a;
+    int m = 125;
+    if (a+b) {
+        m = (b == c) * (e & a) + a;
+        int w = 78;
+    }
+    return m;
 }
