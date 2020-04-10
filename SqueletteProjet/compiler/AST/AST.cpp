@@ -703,49 +703,36 @@ void AST::Bloc::pushInstr(Instr::Instr *instr) {
 //------------------buildReturnIR------------------
 
 void AST::Expr::Add::buildReturnIR() {
-    this->buildIR(true);
 }
 
 void AST::Expr::Sub::buildReturnIR() {
-    this->buildIR(true);
 }
 
 void AST::Expr::Mult::buildReturnIR() {
-    this->buildIR(true);
 }
 
 void AST::Expr::And::buildReturnIR() {
-    this->buildIR(true);
 }
 
 void AST::Expr::Or::buildReturnIR() {
-    this->buildIR(true);
 }
 
 void AST::Expr::Xor::buildReturnIR() {
-    this->buildIR(true);
 }
 
 void AST::Expr::Const::buildReturnIR() {
-    std::string value = std::to_string(this->value);
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret,
-                                        Type(), {"!" + value});
+
 }
 
 void AST::Expr::ConstChar::buildReturnIR() {
-    std::string value = std::to_string(this->value);
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret,
-                                        Type(), {"!" + value});
+
 }
 
 void AST::Expr::Name::buildReturnIR() {
-    auto ntm = currentCFG->current_bb;
-    currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::ret,
-                                        Type(), {this->name});
+
 }
 
 void AST::Expr::Minus::buildReturnIR() {
-    this->buildIR(true);
 }
 
 //---------------------------------Error--------------------
