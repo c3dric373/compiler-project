@@ -16,7 +16,28 @@ class IRInstr;
 
 class Type;
 
-enum TYPE_EXPR {ADD, SUB, MULT, MINUS, AND, OR, XOR, CONST, CONSTCHAR, NAME, TABACCESS, CALLFUN, GETCHAR, EQ, NEQ, LEQ, LOW, GEQ, GREAT, NOT};
+enum TYPE_EXPR {
+    ADD,
+    SUB,
+    MULT,
+    MINUS,
+    AND,
+    OR,
+    XOR,
+    CONST,
+    CONSTCHAR,
+    NAME,
+    TABACCESS,
+    CALLFUN,
+    GETCHAR,
+    EQ,
+    NEQ,
+    LEQ,
+    LOW,
+    GEQ,
+    GREAT,
+    NOT
+};
 
 namespace AST {
     class Bloc;
@@ -34,9 +55,9 @@ namespace AST {
 
             virtual void display() = 0;
 
-            virtual Expr* getLValue() const = 0;
+            virtual Expr *getLValue() const = 0;
 
-            virtual Expr* getRValue() const = 0;
+            virtual Expr *getRValue() const = 0;
         };
 
         class Add : public Expr {
@@ -57,9 +78,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             Expr *lValue;
@@ -86,9 +107,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             Expr *lValue;
@@ -116,9 +137,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             Expr *lValue;
@@ -143,9 +164,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             Expr *value;
@@ -171,9 +192,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             Expr *lValue;
@@ -200,9 +221,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             Expr *lValue;
@@ -229,9 +250,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             Expr *lValue;
@@ -257,9 +278,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             int value;
@@ -284,9 +305,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             char value;
@@ -311,9 +332,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             std::string name;
@@ -339,9 +360,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             std::string name;
@@ -369,9 +390,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             std::string funName;
@@ -396,9 +417,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             unsigned line; // the line of the expression
@@ -423,9 +444,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -451,9 +472,9 @@ namespace AST {
 
             TYPE_EXPR getType() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -478,9 +499,9 @@ namespace AST {
 
             void display() override;
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -505,9 +526,9 @@ namespace AST {
 
             void buildReturnIR() override {};
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -532,9 +553,9 @@ namespace AST {
 
             void buildReturnIR() override {};
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -559,9 +580,9 @@ namespace AST {
 
             void buildReturnIR() override {};
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -585,9 +606,9 @@ namespace AST {
 
             void buildReturnIR() override {};
 
-            Expr* getLValue() const override;
+            Expr *getLValue() const override;
 
-            Expr* getRValue() const override;
+            Expr *getRValue() const override;
 
         private:
             Expr *value;
@@ -925,6 +946,7 @@ namespace AST {
 
     namespace InitInstr {
         class InitInstr {
+
         public:
             virtual std::string buildIR() = 0;
 
@@ -935,6 +957,9 @@ namespace AST {
             virtual AST::Bloc *get_bloc() = 0;
 
             virtual void is_fun() = 0;
+
+            virtual bool is_decl() = 0;
+
         };
 
         class DeclProc : InitInstr {
@@ -954,6 +979,7 @@ namespace AST {
 
             void is_fun() override;
 
+            bool is_decl() override;
 
         private:
             std::string procName;
@@ -979,6 +1005,8 @@ namespace AST {
             AST::Bloc *get_bloc() override;
 
             void is_fun() override;
+
+            bool is_decl() override;
 
 
         private:
@@ -1009,6 +1037,8 @@ namespace AST {
 
             void is_fun() override;
 
+            bool is_decl() override;
+
 
         private:
             std::string procName;
@@ -1035,6 +1065,8 @@ namespace AST {
             AST::Bloc *get_bloc() override;
 
             void is_fun() override;
+
+            bool is_decl() override;
 
 
         private:
