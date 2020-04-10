@@ -1,24 +1,26 @@
 int pair(int valeur) {
     int resultat;
-    if (valeur == 0) {
-        return 1;
-    } else {
-        int x = valeur - 1;
-        resultat = impair(x);
+    if(valeur==0){
+        return 1 ;
+    }
+    else {
+        int x = valeur-1;
+        resultat=impair(x);
         return resultat;
     }
 }
 
 int impair(int valeur) {
     int resultat;
-    if (valeur == 1) {
+    if(valeur==1){
         return 1;
-    } else {
-        if (valeur == 0) {
+    }
+    else {
+        if(valeur==0){
             return 0;
         }
-        int x = valeur - 1;
-        resultat = pair(x);
+        int x = valeur-1;
+        resultat=pair(x);
         return resultat;
     }
 }

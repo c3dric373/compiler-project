@@ -256,24 +256,45 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\t jmp " << basic_block << endl;
             break;
         }
-        case Operation::call_proc: {
-
-            break;
-        }
         case Operation::add_fct_param: {
             AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
+            string registers[] = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
+                                  "%r9d"};
+            int num = std::stoi(params[1]);
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
-            int num_arg = std::stoi(params[1]);
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << reg_tmp_var << ", "
-                      << registers.at(num_arg)
+                      << registers[num]
                       << " # fct param " << params[0] << endl;
                     break;
                 }
                 case Type::type_char : {
-                    o << "\tmovl " << reg_tmp_var << ", " << registers[num_arg]
+                    o << "\tmovl " << reg_tmp_var << ", " << registers[num]
+                      << " # fct param " << params[0] << endl;
+                    break;
+                }
+            }
+            break;
+        }
+        case Operation::add_fct_param_stack: {
+            AST::Bloc *bloc = bb->bloc;
+            // copy params [0] into params [1]
+            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            int offset = std::stoi(params[1]);
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl " << reg_tmp_var << ", "
+                      << "%eax" << endl;
+                    o << "\tmovl %eax, " << offset << "(%rbp)"
+                      << " # fct param " << params[0] << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovl " << reg_tmp_var << ", "
+                      << "%eax" << endl;
+                    o << "\tmovl %eax, " << offset << "(%rbp)"
                       << " # fct param " << params[0] << endl;
                     break;
                 }
@@ -285,7 +306,20 @@ void IRInstr::gen_asm(ostream &o) {
             std::string fct_name = params[0];
             std::string location_dest = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             o << "\tcall " << fct_name << endl;
-            o << "\tmovl %eax, " << location_dest << endl;
+            switch (t.type_) {
+                case Type::type_char : {
+                    o << "\tmovb %al, " << location_dest << endl;
+                    break;
+                }
+                default:
+                    o << "\tmovl %eax, " << location_dest << endl;
+            }
+            break;
+        }
+        case Operation::call_proc: {
+            AST::Bloc *bloc = bb->bloc;
+            std::string fct_name = params[0];
+            o << "\tcall " << fct_name << endl;
             break;
         }
         case Operation::get_arg: {
@@ -314,6 +348,9 @@ void IRInstr::gen_asm(ostream &o) {
 
         case Operation::return_: {
             o << "\tnop" << endl;
+            // this->bb->cfg->gen_asm_epilogue(o);
+            std::string epilogue_label = "." + this->bb->cfg->name + "_ret";
+            o << "\t jmp " << epilogue_label << endl;
             break;
         }
         case Operation::return_expr: {
@@ -326,6 +363,17 @@ void IRInstr::gen_asm(ostream &o) {
                                                                     params[0]);
                 o << "\tmovl " + return_address + ", %eax" << endl;
             }
+            // this->bb->cfg->gen_asm_epilogue(o);
+            std::string epilogue_label = "." + this->bb->cfg->name + "_ret";
+            o << "\t jmp " << epilogue_label << endl;
+            break;
+        }
+        case Operation::putchar: {
+            AST::Bloc *bloc = bb->bloc;
+            std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            o<<"\tmovsbl "<<location_arg<<", %eax"<<std::endl
+            <<"\tmovl %eax, %edi"<<std::endl
+            <<"\tcall putchar"<<std::endl;
             break;
         }
     }
@@ -386,7 +434,7 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
                     break;
             }
             // if param has not been declared, launch an error
-            if (offset == 100) {
+            if (offset == 12000) {
                 std::string erreur =
                         "error line " + std::to_string(line) + " column " +
                         std::to_string(column) +
@@ -459,6 +507,8 @@ void CFG::gen_asm_prologue(ostream &o) {
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {
+    std::string epilogue_label = "." + this->name + "_ret";
+    o << epilogue_label << ":" << endl;
     o << "\taddq $" << this->nextFreeSymbolIndex * (-1) << ", %rsp" << endl;
     o << "\tpopq %rbp" << endl;
     o << "\tret" << endl;
@@ -525,7 +575,7 @@ std::string CFG::create_new_temp_var(Type t) {
 
 int CFG::find_index(string name) {
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
-        return 100;
+        return 12000;
     } else {
         return SymbolIndex.at(name);
     }
