@@ -7,12 +7,9 @@ int main() {
     int f = (b > e) | (d <= a);
     int g = (c < b) * (e > a) * a;
     int m = 125;
-    if ((a < b) & (e > d) * (f > e) | (c > d)) {
+    if ((a < b) & (e > d) * (f > e) | (c > d) + 252) {
         m = (b == c) * (e & a) + a;
-        int w;
-        char a = 'e';
-        int s = (((w * a + m) > g) + 245) & 425;
-        m = m * s;
+        int w = 78;
     }
     return m;
 }
