@@ -2,6 +2,8 @@ TEST-CASE: pld-test-output/tests-Init-test-coco
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-3_multiple_return_ifElse
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-0_pas-de-point-virgule
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-0_test_fct
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-test-rendu-mi-parcours
