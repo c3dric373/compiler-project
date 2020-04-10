@@ -60,9 +60,11 @@ namespace AST {
             virtual Expr *getRValue() const = 0;
         };
 
-        class Add : public Expr {
+        class Minus : public Expr {
         public:
-            Add(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
+            Minus(Expr *value, unsigned line, unsigned column) : value(value),
+                                                                 line(line),
+                                                                 column(column) {};
 
             std::string buildIR(bool not_flag) override;
 
@@ -70,7 +72,32 @@ namespace AST {
 
             TYPE_EXPR getType() override;
 
-            Add(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
+            void buildReturnIR() override;
+
+            void display() override;
+
+            Expr *getLValue() const override;
+
+            Expr *getRValue() const override;
+
+        private:
+            Expr *value;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Mult : public Expr {
+        public:
+            Mult(Expr *lValue, Expr *rValue) : lValue(lValue),
+                                               rValue(rValue) {};
+
+            std::string buildIR(bool not_flag) override;
+
+            int getValue() override;
+
+            TYPE_EXPR getType() override;
+
+            Mult(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line),
                     column(column) {};
 
@@ -118,10 +145,9 @@ namespace AST {
             unsigned column; // even more: the column in this line
         };
 
-        class Mult : public Expr {
+        class Add : public Expr {
         public:
-            Mult(Expr *lValue, Expr *rValue) : lValue(lValue),
-                                               rValue(rValue) {};
+            Add(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
 
             std::string buildIR(bool not_flag) override;
 
@@ -129,7 +155,7 @@ namespace AST {
 
             TYPE_EXPR getType() override;
 
-            Mult(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
+            Add(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line),
                     column(column) {};
 
@@ -148,11 +174,12 @@ namespace AST {
             unsigned column; // even more: the column in this line
         };
 
-        class Minus : public Expr {
+        //COMPARAISONS ET BOOLEENS
+
+        class Not : public Expr {
         public:
-            Minus(Expr *value, unsigned line, unsigned column) : value(value),
-                                                                 line(line),
-                                                                 column(column) {};
+            Not(Expr *value, unsigned line, unsigned column) :
+                    value(value), line(line), column(column) {};
 
             std::string buildIR(bool not_flag) override;
 
@@ -160,9 +187,9 @@ namespace AST {
 
             TYPE_EXPR getType() override;
 
-            void buildReturnIR() override;
-
             void display() override;
+
+            void buildReturnIR() override {};
 
             Expr *getLValue() const override;
 
@@ -173,6 +200,171 @@ namespace AST {
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
+
+        class Eq : public Expr {
+        public:
+            Eq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
+               unsigned column) :
+                    lValue(lValue), rValue(rValue) {};
+
+            int getValue() override;
+
+            TYPE_EXPR getType() override;
+
+            std::string buildIR(bool not_flag) override;
+
+            void buildReturnIR() override {};
+
+            void display() override;
+
+            Expr *getLValue() const override;
+
+            Expr *getRValue() const override;
+
+        private:
+            Expr *lValue;
+            Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Neq : public Expr {
+        public:
+            Neq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
+                unsigned column) :
+                    lValue(lValue), rValue(rValue) {};
+
+            void display() override;
+
+
+            std::string buildIR(bool not_flag) override;
+
+            void buildReturnIR() override {};
+
+            int getValue() override;
+
+            TYPE_EXPR getType() override;
+
+            Expr *getLValue() const override;
+
+            Expr *getRValue() const override;
+
+        private:
+            AST::Expr::Expr *lValue;
+            AST::Expr::Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Leq : public Expr {
+        public:
+            Leq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
+                unsigned column) :
+                    lValue(lValue), rValue(rValue) {};
+
+            std::string buildIR(bool not_flag) override;
+
+            int getValue() override;
+
+            TYPE_EXPR getType() override;
+
+            void buildReturnIR() override {};
+
+            void display() override;
+
+            Expr *getLValue() const override;
+
+            Expr *getRValue() const override;
+
+        private:
+            AST::Expr::Expr *lValue;
+            AST::Expr::Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Geq : public Expr {
+        public:
+            Geq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
+                unsigned column) :
+                    lValue(lValue), rValue(rValue) {};
+
+            void display() override;
+
+            std::string buildIR(bool not_flag) override;
+
+            int getValue() override;
+
+            TYPE_EXPR getType() override;
+
+            void buildReturnIR() override {};
+
+            Expr *getLValue() const override;
+
+            Expr *getRValue() const override;
+
+        private:
+            AST::Expr::Expr *lValue;
+            AST::Expr::Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Low : public Expr {
+        public:
+            Low(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
+                unsigned column) :
+                    lValue(lValue), rValue(rValue) {};
+
+            virtual void display() override;
+
+            std::string buildIR(bool not_flag) override;
+
+            int getValue() override;
+
+            TYPE_EXPR getType() override;
+
+            void buildReturnIR() override {};
+
+            Expr *getLValue() const override;
+
+            Expr *getRValue() const override;
+
+        private:
+            AST::Expr::Expr *lValue;
+            AST::Expr::Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Great : public Expr {
+        public:
+            Great(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue,
+                  unsigned line, unsigned column) :
+                    lValue(lValue), rValue(rValue) {};
+
+            void display() override;
+
+            std::string buildIR(bool not_flag) override;
+
+            int getValue() override;
+
+            TYPE_EXPR getType() override;
+
+            void buildReturnIR() override {};
+
+            Expr *getLValue() const override;
+
+            Expr *getRValue() const override;
+
+        private:
+            AST::Expr::Expr *lValue;
+            AST::Expr::Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        //BITWISE OPERATOR
 
         class And : public Expr {
         public:
@@ -185,6 +377,35 @@ namespace AST {
             TYPE_EXPR getType() override;
 
             And(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
+                    lValue(lValue), rValue(rValue), line(line),
+                    column(column) {};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+            Expr *getLValue() const override;
+
+            Expr *getRValue() const override;
+
+        private:
+            Expr *lValue;
+            Expr *rValue;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class Xor : public Expr {
+        public:
+            Xor(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
+
+            std::string buildIR(bool not_flag) override;
+
+            int getValue() override;
+
+            TYPE_EXPR getType() override;
+
+            Xor(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line),
                     column(column) {};
 
@@ -232,9 +453,10 @@ namespace AST {
             unsigned column; // even more: the column in this line
         };
 
-        class Xor : public Expr {
+        class CallFun : public Expr {
         public:
-            Xor(Expr *lValue, Expr *rValue) : lValue(lValue), rValue(rValue) {};
+            CallFun(std::string funName, std::vector<std::string> args) :
+                    funName(funName), args(args) {};
 
             std::string buildIR(bool not_flag) override;
 
@@ -242,9 +464,9 @@ namespace AST {
 
             TYPE_EXPR getType() override;
 
-            Xor(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue), line(line),
-                    column(column) {};
+            CallFun(std::string funName, std::vector<std::string> args,
+                    unsigned line, unsigned column) :
+                    funName(funName), args(args), line(line), column(column) {};
 
             void buildReturnIR() override;
 
@@ -255,8 +477,33 @@ namespace AST {
             Expr *getRValue() const override;
 
         private:
-            Expr *lValue;
-            Expr *rValue;
+            std::string funName;
+            std::vector<std::string> args;
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
+        class GetChar : public Expr {
+        public:
+
+            std::string buildIR(bool not_flag) override;
+
+            int getValue() override;
+
+            TYPE_EXPR getType() override;
+
+            GetChar(unsigned line, unsigned column) :
+                    line(line), column(column) {};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+            Expr *getLValue() const override;
+
+            Expr *getRValue() const override;
+
+        private:
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
@@ -367,251 +614,6 @@ namespace AST {
         private:
             std::string name;
             Expr *index;
-            unsigned line; // the line of the expression
-            unsigned column; // even more: the column in this line
-        };
-
-        class CallFun : public Expr {
-        public:
-            CallFun(std::string funName, std::vector<std::string> args) :
-                    funName(funName), args(args) {};
-
-            std::string buildIR(bool not_flag) override;
-
-            int getValue() override;
-
-            TYPE_EXPR getType() override;
-
-            CallFun(std::string funName, std::vector<std::string> args,
-                    unsigned line, unsigned column) :
-                    funName(funName), args(args), line(line), column(column) {};
-
-            void buildReturnIR() override;
-
-            void display() override;
-
-            Expr *getLValue() const override;
-
-            Expr *getRValue() const override;
-
-        private:
-            std::string funName;
-            std::vector<std::string> args;
-            unsigned line; // the line of the expression
-            unsigned column; // even more: the column in this line
-        };
-
-        class GetChar : public Expr {
-        public:
-
-            std::string buildIR(bool not_flag) override;
-
-            int getValue() override;
-
-            TYPE_EXPR getType() override;
-
-            GetChar(unsigned line, unsigned column) :
-                    line(line), column(column) {};
-
-            void buildReturnIR() override;
-
-            void display() override;
-
-            Expr *getLValue() const override;
-
-            Expr *getRValue() const override;
-
-        private:
-            unsigned line; // the line of the expression
-            unsigned column; // even more: the column in this line
-        };
-
-        //COMPARAISONS ET BOOLEENS
-
-        class Eq : public Expr {
-        public:
-            Eq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
-               unsigned column) :
-                    lValue(lValue), rValue(rValue) {};
-
-            int getValue() override;
-
-            TYPE_EXPR getType() override;
-
-            std::string buildIR(bool not_flag) override;
-
-            void buildReturnIR() override {};
-
-            void display() override;
-
-            Expr *getLValue() const override;
-
-            Expr *getRValue() const override;
-
-        private:
-            AST::Expr::Expr *lValue;
-            AST::Expr::Expr *rValue;
-            unsigned line; // the line of the expression
-            unsigned column; // even more: the column in this line
-        };
-
-        class Neq : public Expr {
-        public:
-            Neq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
-                unsigned column) :
-                    lValue(lValue), rValue(rValue) {};
-
-            void display() override;
-
-
-            std::string buildIR(bool not_flag) override;
-
-            void buildReturnIR() override {};
-
-            int getValue() override;
-
-            TYPE_EXPR getType() override;
-
-            Expr *getLValue() const override;
-
-            Expr *getRValue() const override;
-
-        private:
-            AST::Expr::Expr *lValue;
-            AST::Expr::Expr *rValue;
-            unsigned line; // the line of the expression
-            unsigned column; // even more: the column in this line
-        };
-
-        class Leq : public Expr {
-        public:
-            Leq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
-                unsigned column) :
-                    lValue(lValue), rValue(rValue) {};
-
-            std::string buildIR(bool not_flag) override;
-
-            int getValue() override;
-
-            TYPE_EXPR getType() override;
-
-            void buildReturnIR() override {};
-
-            void display() override;
-
-            Expr *getLValue() const override;
-
-            Expr *getRValue() const override;
-
-        private:
-            AST::Expr::Expr *lValue;
-            AST::Expr::Expr *rValue;
-            unsigned line; // the line of the expression
-            unsigned column; // even more: the column in this line
-        };
-
-        class Low : public Expr {
-        public:
-            Low(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
-                unsigned column) :
-                    lValue(lValue), rValue(rValue) {};
-
-            virtual void display() override;
-
-            std::string buildIR(bool not_flag) override;
-
-            int getValue() override;
-
-            TYPE_EXPR getType() override;
-
-            void buildReturnIR() override {};
-
-            Expr *getLValue() const override;
-
-            Expr *getRValue() const override;
-
-        private:
-            AST::Expr::Expr *lValue;
-            AST::Expr::Expr *rValue;
-            unsigned line; // the line of the expression
-            unsigned column; // even more: the column in this line
-        };
-
-        class Geq : public Expr {
-        public:
-            Geq(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue, unsigned line,
-                unsigned column) :
-                    lValue(lValue), rValue(rValue) {};
-
-            void display() override;
-
-            std::string buildIR(bool not_flag) override;
-
-            int getValue() override;
-
-            TYPE_EXPR getType() override;
-
-            void buildReturnIR() override {};
-
-            Expr *getLValue() const override;
-
-            Expr *getRValue() const override;
-
-        private:
-            AST::Expr::Expr *lValue;
-            AST::Expr::Expr *rValue;
-            unsigned line; // the line of the expression
-            unsigned column; // even more: the column in this line
-        };
-
-        class Great : public Expr {
-        public:
-            Great(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue,
-                  unsigned line, unsigned column) :
-                    lValue(lValue), rValue(rValue) {};
-
-            void display() override;
-
-            std::string buildIR(bool not_flag) override;
-
-            int getValue() override;
-
-            TYPE_EXPR getType() override;
-
-            void buildReturnIR() override {};
-
-            Expr *getLValue() const override;
-
-            Expr *getRValue() const override;
-
-        private:
-            AST::Expr::Expr *lValue;
-            AST::Expr::Expr *rValue;
-            unsigned line; // the line of the expression
-            unsigned column; // even more: the column in this line
-        };
-
-        class Not : public Expr {
-        public:
-            Not(Expr *value, unsigned line, unsigned column) :
-                    value(value), line(line), column(column) {};
-
-            std::string buildIR(bool not_flag) override;
-
-            int getValue() override;
-
-            TYPE_EXPR getType() override;
-
-            void display() override;
-
-            void buildReturnIR() override {};
-
-            Expr *getLValue() const override;
-
-            Expr *getRValue() const override;
-
-        private:
-            Expr *value;
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
