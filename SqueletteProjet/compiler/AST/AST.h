@@ -16,6 +16,8 @@ class IRInstr;
 
 class Type;
 
+enum TYPE_EXPR {ADD, SUB, MULT, MINUS, AND, OR, XOR, CONST, CONSTCHAR, NAME, TABACCESS, CALLFUN, GETCHAR, EQ, NEQ, LEQ, LOW, GEQ, GREAT, NOT};
+
 namespace AST {
     class Bloc;
 
@@ -24,13 +26,17 @@ namespace AST {
         public:
             virtual int getValue() = 0;
 
-            virtual bool isConst() = 0;
+            virtual TYPE_EXPR getType() = 0;
 
             virtual std::string buildIR(bool not_flag) = 0;
 
             virtual void buildReturnIR() = 0;
 
             virtual void display() = 0;
+
+            virtual Expr* getLValue() const = 0;
+
+            virtual Expr* getRValue() const = 0;
         };
 
         class Add : public Expr {
@@ -41,7 +47,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             Add(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line),
@@ -50,6 +56,10 @@ namespace AST {
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             Expr *lValue;
@@ -66,7 +76,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             Sub(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line),
@@ -75,6 +85,10 @@ namespace AST {
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             Expr *lValue;
@@ -92,7 +106,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             Mult(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line),
@@ -101,6 +115,10 @@ namespace AST {
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             Expr *lValue;
@@ -119,11 +137,15 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             Expr *value;
@@ -139,7 +161,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             And(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line),
@@ -148,6 +170,10 @@ namespace AST {
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             Expr *lValue;
@@ -164,7 +190,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             Or(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line),
@@ -173,6 +199,10 @@ namespace AST {
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             Expr *lValue;
@@ -189,7 +219,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             Xor(Expr *lValue, Expr *rValue, unsigned line, unsigned column) :
                     lValue(lValue), rValue(rValue), line(line),
@@ -198,6 +228,10 @@ namespace AST {
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             Expr *lValue;
@@ -214,7 +248,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             Const(int value, unsigned line, unsigned column) :
                     value(value), line(line), column(column) {};
@@ -222,6 +256,10 @@ namespace AST {
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             int value;
@@ -237,7 +275,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             ConstChar(char value, unsigned line, unsigned column) :
                     value(value), line(line), column(column) {};
@@ -245,6 +283,10 @@ namespace AST {
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             char value;
@@ -260,7 +302,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             Name(std::string name, unsigned line, unsigned column) :
                     name(name), line(line), column(column) {};
@@ -268,6 +310,10 @@ namespace AST {
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             std::string name;
@@ -283,7 +329,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             TabAccess(std::string name, Expr *index, unsigned line,
                       unsigned column) :
@@ -292,6 +338,10 @@ namespace AST {
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             std::string name;
@@ -309,7 +359,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             CallFun(std::string funName, std::vector<std::string> args,
                     unsigned line, unsigned column) :
@@ -318,6 +368,10 @@ namespace AST {
             void buildReturnIR() override;
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             std::string funName;
@@ -333,7 +387,7 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             GetChar(unsigned line, unsigned column) :
                     line(line), column(column) {};
@@ -342,6 +396,9 @@ namespace AST {
 
             void display() override;
 
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             unsigned line; // the line of the expression
@@ -358,13 +415,17 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             std::string buildIR(bool not_flag) override;
 
             void buildReturnIR() override {};
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -388,7 +449,11 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -407,11 +472,15 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             void buildReturnIR() override {};
 
             void display() override;
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -432,9 +501,13 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             void buildReturnIR() override {};
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -455,9 +528,13 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             void buildReturnIR() override {};
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -478,9 +555,13 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             void buildReturnIR() override {};
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             AST::Expr::Expr *lValue;
@@ -498,11 +579,15 @@ namespace AST {
 
             int getValue() override;
 
-            bool isConst() override;
+            TYPE_EXPR getType() override;
 
             void display() override;
 
             void buildReturnIR() override {};
+
+            Expr* getLValue() const override;
+
+            Expr* getRValue() const override;
 
         private:
             Expr *value;
