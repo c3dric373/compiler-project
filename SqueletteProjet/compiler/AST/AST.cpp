@@ -52,15 +52,18 @@ std::string AST::InitBloc::buildIR() {
     for (auto &function : initFuns) {
         function->is_fun();
     }
+
     for (auto &function : initFuns) {
-        AST::Bloc *child = function->get_bloc();
-        std::string();
-        CFG *cfg = new CFG(child, function->get_name());
-        cfgs.push_back(cfg);
-        currentCFG = cfg;
-        cfg->add_to_symbol_table(0, 0, nullptr, "!%eax", Type());
-        currentCFG->current_bb->bloc = child;
-        function->buildIR();
+        if(!function->is_decl()) {
+            AST::Bloc *child = function->get_bloc();
+            std::string();
+            CFG *cfg = new CFG(child, function->get_name());
+            cfgs.push_back(cfg);
+            currentCFG = cfg;
+            cfg->add_to_symbol_table(0, 0, nullptr, "!%eax", Type());
+            currentCFG->current_bb->bloc = child;
+            function->buildIR();
+        }
     }
     return std::string();
 }
@@ -1798,3 +1801,18 @@ AST::Expr::Expr *AST::Expr::Not::getRValue() const {
     return nullptr;
 }
 
+bool AST::InitInstr::DeclProc::is_decl() {
+    return true;
+}
+
+bool AST::InitInstr::DeclFun::is_decl() {
+    return true;
+}
+
+bool AST::InitInstr::DefFun::is_decl() {
+    return false;
+}
+
+bool AST::InitInstr::DefProc::is_decl() {
+    return false;
+}
