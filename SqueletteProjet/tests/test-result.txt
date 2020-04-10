@@ -16,7 +16,7 @@ TEST-CASE: pld-test-output/tests-Init-while-0_simple_while_leq
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-while-0_simple_while_neq
 TEST OK
-TEST-CASE: pld-test-output/tests-Init-while-1_while_with_if
+TEST-CASE: pld-test-output/tests-Init-analyse-statique-2variable_non_affecte_expr_complexe_add1
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-while-3_nested_while
 TEST OK
@@ -100,9 +100,9 @@ TEST-CASE: pld-test-output/tests-Init-char-add-3_addition_overflow
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-sub-substraction3
 TEST OK
-TEST-CASE: pld-test-output/tests-Init-char-sub-substraction4
+TEST-CASE: pld-test-output/tests-Init-char-mix-0_multAddSub_IntChar
 TEST OK
-TEST-CASE: pld-test-output/tests-Init-char-sub-substraction2
+TEST-CASE: pld-test-output/tests-Init-char-egal-0_egal_if
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-superieur-0_superieur_simple
 TEST OK
@@ -152,11 +152,11 @@ TEST-CASE: pld-test-output/tests-Init-char-inf_egal-1_inferieur_egal_if
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-inf_egal-2_inferieur_egal_complexe _1
 TEST OK
-TEST-CASE: pld-test-output/tests-Init-char-inf_egal-0_inferieur_egal_if
+TEST-CASE: pld-test-output/tests-Init-char-sub-substraction4
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-char-inf_egal-0_inferieur_egal_simple
 TEST OK
-TEST-CASE: pld-test-output/tests-Init-char-inf_egal-3_inferieur_egal_multiple_assign
+TEST-CASE: pld-test-output/tests-Init-char-sub-substraction2
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-analyse-statique-3variable_non_affecte_expr_complexe_mult1
 TEST OK
@@ -194,7 +194,7 @@ TEST-CASE: pld-test-output/tests-Init-bloc-1_ifElse_differentBlocs
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-tableaux-affectation_char
 TEST OK
-TEST-CASE: pld-test-output/tests-Init-tableaux-return_char_sub
+TEST-CASE: pld-test-output/tests-Init-functions-2_simple2
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_char
 TEST OK
@@ -213,4 +213,10 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_add_char_a
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_add_char_1_2
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-bloc-1_if_different_blocs
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-bloc-5_combination2
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-bloc-3_ifElseWhile+blocs
 TEST OK
