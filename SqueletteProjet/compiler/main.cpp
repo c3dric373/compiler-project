@@ -47,7 +47,6 @@ int main(int argn, const char **argv) {
 
         bool error = ast->getError();
         if (!error) {
-
             for (auto &it : cfgs) {
                 it->gen_asm(resultAssembly);
             }
