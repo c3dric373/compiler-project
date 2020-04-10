@@ -408,9 +408,11 @@ BasicBlock::BasicBlock(CFG *cfg, string entry_label) : cfg(cfg),
 
 void BasicBlock::gen_asm(ostream &o) {
     std::string label = this->label;
+    // Add the label of the BasicBlock if it exists
     if (!label.empty()) {
         o << this->label << ": " << endl;
     }
+    // Generate assembly code for each instruction contained in the instrs vector
     for (auto instr : instrs) {
         instr->gen_asm(o);
     }
@@ -419,9 +421,9 @@ void BasicBlock::gen_asm(ostream &o) {
 void
 BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
                         vector<string> params) {
-    // Analyse statique :
+    // Syntactic analysis:
     // Find out if the variable placed in params has already been declared
-    // if offset == 1, it hasn't been declared
+    // if offset == 12000, it hasn't been declared
     for (std::string param : params) {
         if (param != "%eax") {
             int offset = 0;
@@ -464,6 +466,7 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
             }
         }
     }
+    // If there is no error, we can push the instruction to the instrs vector
     instrs.push_back(new IRInstr(this, op, t, params));
 }
 
@@ -473,15 +476,17 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
 
 CFG::CFG(AST::Bloc *ast_, std::string name) : nextFreeSymbolIndex(0),
                                               nextBBnumber(0), ast(ast_) {
+    // Create a BasicBlock
     auto firstBB = new BasicBlock(this, "");
+    // Add the firstBB to the BasicBlocks vector
     this->add_bb(firstBB);
     this->name = name;
 
-    // Create just one block
-    // In the future, we must create one more
+    // Create just one block with no next Block
     firstBB->exit_false = nullptr;
     firstBB->exit_true = nullptr;
 
+    // Set the current Block
     current_bb = firstBB;
 }
 
@@ -490,15 +495,20 @@ void CFG::add_bb(BasicBlock *bb) {
 }
 
 void CFG::gen_asm(ostream &o) {
+    // Generate assembly code of the prologue
     gen_asm_prologue(o);
+    // Generate assembly code for each BasicBlock contained in the CFG
     for (auto bb : basic_blocs) {
         bb->gen_asm(o);
     }
+    // Generate assembly code of the epilogue
     gen_asm_epilogue(o);
 }
 
-// take a variable and transform it to "-offset(%rbp)"
+
 std::string CFG::IR_reg_to_asm(AST::Bloc *bloc, string reg) {
+    // Take a variable and transform it to "-offset(%rbp)"
+    // Get the offset of the variable
     int offset = this->get_var_index(bloc, reg);
     std::string regString = std::to_string(offset) + "(%rbp)";
     return regString;
@@ -550,14 +560,15 @@ void
 CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name,
                          Type t) {
     std::string type;
+    // Get the nex free index in the SymbolIndex
+    nextFreeSymbolIndex -= t.get_offset();
+
     switch (t.type_) {
-        case Type::type_int: {
-            nextFreeSymbolIndex -= t.get_offset();
+        case Type::type_int: {    
             type = "int";
             break;
         }
         case Type::type_char: {
-            nextFreeSymbolIndex -= t.get_offset();
             type = "char";
             break;
         }
@@ -567,11 +578,14 @@ CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name,
     // pointer
     std::string new_name = get_var_name(bloc, name);
 
-
     if (SymbolIndex.find(new_name) == SymbolIndex.end()) {
+        // The new_name has not been found in the SymbolIndex
+        // We can add new_name to SymbolIndex and SymbolType
         SymbolType[new_name] = t;
         SymbolIndex[new_name] = nextFreeSymbolIndex;
     } else {
+        // The new_name already exists in the SymbolIndex
+
         std::string erreur =
                 "error line " + std::to_string(line) + " column " +
                 std::to_string(column) + " : " + type + " " + name +
@@ -581,7 +595,7 @@ CFG::add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name,
 }
 
 std::string CFG::create_new_temp_var(Type t) {
-
+    // Get the nex free index in the SymbolIndex
     nextFreeSymbolIndex -= t.get_offset();
 
     // nextFreeSymbolIndex is negative, so we put -nextFreeSymbolIndex in the tmp name
@@ -595,8 +609,12 @@ std::string CFG::create_new_temp_var(Type t) {
 
 int CFG::find_index(string name) {
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
+        // The name has not been found in the SymbolIndex
+        // An error should be raised : here return 12000
         return 12000;
     } else {
+        // The name has been found in the SymbolIndex
+        // Return the index corresponding to the name
         return SymbolIndex.at(name);
     }
 }
@@ -632,12 +650,16 @@ int CFG::get_var_index(AST::Bloc *bloc, string name) {
 
 Type CFG::find_type(string name, string realName) {
     if (SymbolType.find(name) == SymbolType.end()) {
+        // The name has not been found in the SymbolIndex
+        // An error should be raised
         std::string error =
                 "error : cannot find the type, the variable " + realName +
                 " has not been declared \n";
         this->addErreur(error);
         return Type();
     } else {
+        // The name has been found in the SymbolIndex
+        // Return the index corresponding to the name
         return SymbolType.at(name);
     }
 }
@@ -654,7 +676,6 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
     std::string new_name = get_var_name(bloc, name);
     if (bloc->parent_bloc == nullptr) {
         return find_type(new_name, name);
-
     }
 
     while (SymbolType.find(new_name) == SymbolType.end()) {
@@ -669,6 +690,7 @@ Type CFG::get_var_type(AST::Bloc *bloc, string name) {
 
         }
     }
+    // Return the index corresponding to the new_name
     return SymbolType.at(new_name);
 }
 
