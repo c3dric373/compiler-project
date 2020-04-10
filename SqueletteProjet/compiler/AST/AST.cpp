@@ -92,7 +92,8 @@ std::string AST::InitInstr::DefProc::buildIR() {
                 case CHAR:
                     type_current = Type(Type::type_char);
                     break;
-
+				default:
+				    break;
             }
             currentCFG->add_to_symbol_table(this->line, this->column,
                                             current_bloc,
@@ -199,7 +200,8 @@ std::string AST::InitInstr::DefFun::buildIR() {
                 case CHAR:
                     type_current = Type(Type::type_char);
                     break;
-
+				default:
+               		break;
             }
             currentCFG->add_to_symbol_table(this->line, this->column,
                                             current_bloc,
@@ -230,6 +232,7 @@ std::string AST::InitInstr::DefFun::buildIR() {
 
     }
     this->bloc->buildIR(nullptr);
+	return "";
 }
 
 
@@ -1589,10 +1592,12 @@ void AST::InitInstr::DefProc::is_fun() {
 }
 
 std::string AST::InitInstr::DeclFun::buildIR() {
+	return "";
 }
 
 
 std::string AST::InitInstr::DeclProc::buildIR() {
+	return "";
 }
 
 
