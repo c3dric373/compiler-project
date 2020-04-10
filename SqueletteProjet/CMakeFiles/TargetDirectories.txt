@@ -1,0 +1,3 @@
+/home/diskane/CLionProjects/compiler-project/SqueletteProjet/CMakeFiles/rebuild_cache.dir
+/home/diskane/CLionProjects/compiler-project/SqueletteProjet/CMakeFiles/ifcc.dir
+/home/diskane/CLionProjects/compiler-project/SqueletteProjet/CMakeFiles/edit_cache.dir
