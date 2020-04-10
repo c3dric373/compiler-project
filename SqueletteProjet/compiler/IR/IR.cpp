@@ -11,16 +11,21 @@ IRInstr::IRInstr(BasicBlock *bb_, Operation op_, Type t_,
                  vector<string> params_) : bb(bb_), op(op_), t(t_),
                                            params(params_) {}
 
-// TODO
 void IRInstr::gen_asm(ostream &o) {
+    // Suffix of assembly code corresponding to the Type
     std::string type = t.get_suffix();
+    // Ast::Bloc of the BasicBlock
     AST::Bloc *bloc = bb->bloc;
     vector<std::string> registers = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
                                      "%r9d"};
     switch (op) {
         case Operation::ldconst : {
-            // for const : params = [ name | value ]
+            // For const : params = [ name | value ]
+
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+
+            // Create assembly code
             o << "\tmov" + type + " $" << params[1] << ", " << regString
               << endl;
             break;
@@ -28,6 +33,8 @@ void IRInstr::gen_asm(ostream &o) {
 
         case Operation::copy: {
             // copy params [0] into params [1]
+
+            // Get the "-Index(%rbp)" corresponding to params
             std::string reg_tmp_var;
             if (params[0] == "%eax") {
                 reg_tmp_var = params[0];
@@ -35,6 +42,8 @@ void IRInstr::gen_asm(ostream &o) {
                 reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             }
             std::string reg_variable = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << reg_tmp_var << ", %eax" << endl;
@@ -52,10 +61,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::sub: {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\tsubl " << reg2String << ", %eax" << "# " << params[1]
               << " - " << params[2] << endl;
@@ -63,10 +74,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::mul: {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\timull " << reg2String << ", %eax" << " # " << params[1]
               << " * " << params[2] << endl;
@@ -74,10 +87,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::add : {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\taddl " << reg2String << ", %eax" << " # " << params[1]
               << " + " << params[2] << endl;
@@ -85,10 +100,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::and_: {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\tand " << reg2String << ", %eax" << " # " << params[1]
               << " and " << params[2] << endl;
@@ -96,10 +113,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::xor_: {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\txor " << reg2String << ", %eax" << " # " << params[1]
               << " xor " << params[2] << endl;
@@ -107,10 +126,12 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::or_: {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string regDestString = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string reg1String = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string reg2String = bb->cfg->IR_reg_to_asm(bloc, params[2]);
 
+            // Create assembly code
             o << "\tmovl " << reg1String << " , %eax" << endl;
             o << "\tor " << reg2String << ", %eax" << " # " << params[1]
               << " or" << params[2] << endl;
@@ -118,18 +139,23 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::if_: {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string expr = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+
+            // Create assembly code
             o << "\tcmpl $1, " << expr << endl;
             o << "\tje " << bb->exit_true->label << endl;
             o << "\tjmp " << bb->exit_false->label << endl;
             break;
         }
         case Operation::cmp_eq: {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
+            // Create assembly code
             o << "\tmovl " << lValue << ", %eax" << endl;
             o << "\tcmpl  %eax, " << rValue << endl;
             if (equal) {
@@ -145,11 +171,13 @@ void IRInstr::gen_asm(ostream &o) {
         }
 
         case Operation::cmp_low: {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << rValue << ", %eax" << endl;
@@ -176,11 +204,13 @@ void IRInstr::gen_asm(ostream &o) {
 
         }
         case Operation::cmp_great: {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string dest_location = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string lValue = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             std::string rValue = bb->cfg->IR_reg_to_asm(bloc, params[2]);
             bool equal = !(params[3].compare("eq"));
 
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << rValue << ", %eax" << endl;
@@ -221,8 +251,11 @@ void IRInstr::gen_asm(ostream &o) {
             break;
         }
         case Operation::neg: {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             std::string dest_var = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+
+            // Create assembly code
             o << "\tmovl " << tmp_var << ", %eax" << endl;
             o << "\tNEG %eax" << endl;
             o << "\tmovl %eax, " << dest_var << endl;
@@ -230,6 +263,8 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::jmp: {
             std::string basic_block = params[0];
+
+            // Create assembly code
             o << "\t jmp " << basic_block << endl;
             break;
         }
@@ -238,7 +273,10 @@ void IRInstr::gen_asm(ostream &o) {
             string registers[] = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
                                   "%r9d"};
             int num = std::stoi(params[1]);
+            // Get the "-Index(%rbp)" corresponding to params
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << reg_tmp_var << ", "
@@ -256,8 +294,11 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::add_fct_param_stack: {
             // copy params [0] into params [1]
+            // Get the "-Index(%rbp)" corresponding to params
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             int offset = std::stoi(params[1]);
+
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << reg_tmp_var << ", "
@@ -278,7 +319,10 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::call_fct: {
             std::string fct_name = params[0];
+            // Get the "-Index(%rbp)" corresponding to params
             std::string location_dest = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+
+            // Create assembly code
             o << "\tcall " << fct_name << endl;
             switch (t.type_) {
                 case Type::type_char : {
@@ -292,6 +336,8 @@ void IRInstr::gen_asm(ostream &o) {
         }
         case Operation::call_proc: {
             std::string fct_name = params[0];
+
+            // Create assembly code
             o << "\tcall " << fct_name << endl;
             break;
         }
@@ -299,7 +345,10 @@ void IRInstr::gen_asm(ostream &o) {
             // Arguments will be passed from left to right by the caller in the
             // registers :
             int num_arg = std::stoi(params[0]);
+            // Get the "-Index(%rbp)" corresponding to params
             std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[1]);
+
+            // Create assembly code
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << registers[num_arg] << ", " << location_arg
@@ -319,8 +368,8 @@ void IRInstr::gen_asm(ostream &o) {
         }
 
         case Operation::return_: {
+            // Create assembly code
             o << "\tnop" << endl;
-            // this->bb->cfg->gen_asm_epilogue(o);
             std::string epilogue_label = "." + this->bb->cfg->name + "_ret";
             o << "\t jmp " << epilogue_label << endl;
             break;
@@ -333,13 +382,15 @@ void IRInstr::gen_asm(ostream &o) {
                                                                     params[0]);
                 o << "\tmovl " + return_address + ", %eax" << endl;
             }
-            // this->bb->cfg->gen_asm_epilogue(o);
             std::string epilogue_label = "." + this->bb->cfg->name + "_ret";
             o << "\t jmp " << epilogue_label << endl;
             break;
         }
         case Operation::putchar: {
+            // Get the "-Index(%rbp)" corresponding to params
             std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+
+            // Create assembly code
             o<<"\tmovsbl "<<location_arg<<", %eax"<<std::endl
             <<"\tmovl %eax, %edi"<<std::endl
             <<"\tcall putchar"<<std::endl;
