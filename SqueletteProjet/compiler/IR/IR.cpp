@@ -407,15 +407,29 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
             int offset = 0;
             switch (op) {
                 case IRInstr::copy :
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                    break;
                 case IRInstr::and_ :
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                    break;
                 case IRInstr::xor_ :
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                    break;
                 case IRInstr::or_ :
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                    break;
                 case IRInstr::add :
                     offset = this->cfg->get_var_index(this->bloc, param);
                     break;
                 case IRInstr::sub :
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                    break;
                 case IRInstr::mul :
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                    break;
                 case IRInstr::neg :
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                    break;
                 case IRInstr::ret :
                     // if the param doesn't contain a !, this is not a constant
                     if (param.at(0) != '!') {
