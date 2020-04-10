@@ -24,8 +24,7 @@ public:
     AST::InitBloc* astInitBloc = visit(ctx->initbloc());
     AST::Bloc* astBloc = visit(ctx->bloc());
     astBloc->wrongReturnType(true);
-    AST::Expr::Expr* astExpr = visit(ctx->expr());
-    return new AST::Prog(astInitBloc, astBloc, astExpr);
+    return new AST::Prog(astInitBloc, astBloc);
   }
 
     virtual antlrcpp::Any visitBlocinit(ifccParser::BlocinitContext *ctx) override {
@@ -75,9 +74,15 @@ public:
     }
 
     virtual antlrcpp::Any visitDeclinttab(ifccParser::DeclinttabContext *ctx) override {
-      AST::Expr::Expr* astExpr = visit(ctx->expr());
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
+      AST::Expr::Expr* astExpr = visit(ctx->expr());
+      if(!astExpr->isConst()){
+          std::string errorMessage =
+                  "line" + std::to_string(line) + ':' + std::to_string(column)
+                  + " array size must be a constant";
+          std::cout << "\033[;31m" + errorMessage + "\033[0m" << std::endl;
+      }
         return (AST::Instr::Instr*)(new AST::Instr::DeclIntTab(ctx->NAME()->getText(), astExpr, line, column));
     }
 
@@ -156,6 +161,13 @@ public:
         if(astExpr->isConst() && astExpr->getValue() == 0){
             return (AST::Instr::Instr*)nullptr;
         }
+        //optimization : detection of an endless loop
+        if(astExpr->isConst() && astExpr->getValue() > 0 && !astBloc->containsReturn()){
+            std::string errorMessage =
+                    "line" + std::to_string(line) + ':' + std::to_string(column)
+                    + " warning : endless loop";
+            std::cout << "\033[;31m" + errorMessage + "\033[0m" << std::endl;
+        }
 
         return (AST::Instr::Instr*)(new AST::Instr::While(astExpr, astBloc));
     }
@@ -166,6 +178,10 @@ public:
             args.push_back(ctx->NAME()[i]->getText());
         }
         return (AST::Instr::Instr*)new AST::Instr::CallProc(ctx->NAME()[0]->getText(), args);
+    }
+
+    virtual antlrcpp::Any visitPutchar(ifccParser::PutcharContext *ctx) override {
+        return (AST::Instr::Instr*)new AST::Instr::Putchar(ctx->NAME()->getText());
     }
 
     virtual antlrcpp::Any visitReturn(ifccParser::ReturnContext *ctx) override {
@@ -184,6 +200,8 @@ public:
     //FOR LOOP
 
     virtual antlrcpp::Any visitForbloc(ifccParser::ForblocContext *ctx) override {
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
         AST::Bloc* astForBloc = new AST::Bloc();
         if(ctx->initfor() != nullptr){
             astForBloc->pushInstr(visit(ctx->initfor()));
@@ -198,6 +216,18 @@ public:
         for(auto& it : ctx->loopinstr()){
             astBloc->pushInstr(visit(it));
         }
+        //optimization : unreachable code
+        if(astExpr->isConst() && astExpr->getValue() == 0){
+            return (AST::Instr::Instr*)nullptr;
+        }
+        //optimization : detection of an endless loop
+        if(astExpr->isConst() && astExpr->getValue() > 0 && !astBloc->containsReturn()){
+            std::string errorMessage =
+                    "line" + std::to_string(line) + ':' + std::to_string(column)
+                    + " warning : endless loop";
+            std::cout << "\033[;31m" + errorMessage + "\033[0m" << std::endl;
+        }
+
         AST::Instr::While* astWhile = new AST::Instr::While(astExpr, astBloc);
         astForBloc->pushInstr(astWhile);
         return (AST::Instr::Instr*)new AST::Instr::Bloci(astForBloc);
@@ -503,6 +533,12 @@ public:
         unsigned line = ctx->getStart()->getLine();
         unsigned column = ctx->getStart()->getCharPositionInLine();
         return (AST::Expr::Expr*)new AST::Expr::CallFun(ctx->NAME()[0]->getText(), args, line, column);
+    }
+
+    virtual antlrcpp::Any visitGetchar(ifccParser::GetcharContext *ctx) override {
+        unsigned line = ctx->getStart()->getLine();
+        unsigned column = ctx->getStart()->getCharPositionInLine();
+        return (AST::Expr::Expr*)new AST::Expr::GetChar(line, column);
     }
 
   //COMPARAISONS ET BOOLEENS

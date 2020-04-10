@@ -94,9 +94,11 @@ public:
         return_expr,
         call_proc,
         add_fct_param,
+        add_fct_param_stack,
         call_fct,
         get_arg,
-        neg
+        neg,
+        putchar
     } Operation;
 
 
@@ -233,6 +235,7 @@ public:
 
 	std::string getErrorMessage();
 
+    std::string name;
 protected:
     map<string, Type> SymbolType; /**< part of the symbol table  */
     map<string, int> SymbolIndex; /**< part of the symbol table  */
@@ -240,7 +243,6 @@ protected:
     int nextBBnumber; /**< just for naming */
     vector<BasicBlock *> basic_blocs; /**< all the basic blocks of this CFG*/
     Erreur error;
-    std::string name;
 };
 
 

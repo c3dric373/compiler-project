@@ -1,15 +1,10 @@
-int factorielle(int valeur) {
-    if (valeur == 0) {
-        return 1;
-    } else {
-        int b = valeur -1;
-        return (valeur * factorielle(b));
-    }
-}
-
+#include <stdio.h>
 int main() {
-    int a = 7;
-    int b;
-    b = factorielle(a);
-    return b;
+    int a = 8;
+    int b = 'f';
+    char x;
+    putchar(b);
+    int n = 4;
+    x = getchar();
+    return x;
 }
