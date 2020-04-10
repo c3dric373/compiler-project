@@ -427,69 +427,100 @@ std::string AST::Instr::Bloci::buildIR() {
     return std::string();
 }
 
-//-----------------------------EXPRESSIONS--------------------------------------
 
+std::string AST::Instr::DeclInt::buildIR() {
+    for (auto &it : this->names) {
+        // Ajout de la variable it à la table des symboles de currentCFG
+        AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
+                                        it, Type::type_int);
+    }
+    return std::string();
+}
+
+std::string AST::Instr::DeclChar::buildIR() {
+    for (auto &it : this->names) {
+        // Ajout de la variable it à la table des symboles de currentCFG
+        AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
+        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
+                                        it, Type::type_char);
+    }
+    return std::string();
+}
+
+
+/**---------------------------------------------------------------------------*/
+/**-----------------------------EXPRESSIONS-----------------------------------*/
+/**---------------------------------------------------------------------------*/
+
+
+vector<std::string>
+create_tmp_var(AST::Expr::Expr *lValue, AST::Expr::Expr *rValue,
+               bool not_flag) {
+    std::string tmp_expr1 = lValue->buildIR(not_flag);
+    std::string tmp_expr2 = rValue->buildIR(not_flag);
+    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
+    vector<std::string> res;
+    res.push_back(tmp_dest);
+    res.push_back(tmp_expr1);
+    res.push_back(tmp_expr2);
+    return res;
+}
 
 std::string AST::Expr::And::buildIR(bool not_flag) {
-    std::string tmp_expr1 = this->lValue->buildIR(not_flag);
-    std::string tmp_expr2 = this->rValue->buildIR(not_flag);
-    AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
     currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::and_,
                                         Type(),
-                                        {tmp_dest, tmp_expr1, tmp_expr2});
-    return tmp_dest;
+                                        {args[0], args[1], args[2]});
+    return args[0];
 }
 
 
 std::string AST::Expr::Xor::buildIR(bool not_flag) {
-    std::string tmp_expr1 = this->lValue->buildIR(not_flag);
-    std::string tmp_expr2 = this->rValue->buildIR(not_flag);
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
     currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::xor_,
                                         Type(),
-                                        {tmp_dest, tmp_expr1, tmp_expr2});
-    return tmp_dest;
+                                        {args[0], args[1], args[2]});
+    return args[0];
 }
 
+
 std::string AST::Expr::Or::buildIR(bool not_flag) {
-    std::string tmp_expr1 = this->lValue->buildIR(not_flag);
-    std::string tmp_expr2 = this->rValue->buildIR(not_flag);
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
     currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::or_,
                                         Type(),
-                                        {tmp_dest, tmp_expr1, tmp_expr2});
-    return tmp_dest;
+                                        {args[0], args[1], args[2]});
+    return args[0];
 }
 
 std::string AST::Expr::Add::buildIR(bool not_flag) {
-    std::string tmp_expr1 = this->lValue->buildIR(not_flag);
-    std::string tmp_expr2 = this->rValue->buildIR(not_flag);
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
     currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::add,
                                         Type(),
-                                        {tmp_dest, tmp_expr1, tmp_expr2});
-    return tmp_dest;
+                                        {args[0], args[1], args[2]});
+    return args[0];
 }
 
 std::string AST::Expr::Sub::buildIR(bool not_flag) {
-    std::string tmp_expr1 = this->lValue->buildIR(not_flag);
-    std::string tmp_expr2 = this->rValue->buildIR(not_flag);
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
     currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::sub,
                                         Type(),
-                                        {tmp_dest, tmp_expr1, tmp_expr2});
-    return tmp_dest;
+                                        {args[0], args[1], args[2]});
+    return args[0];
 }
 
 std::string AST::Expr::Mult::buildIR(bool not_flag) {
-    std::string tmp_expr1 = this->lValue->buildIR(not_flag);
-    std::string tmp_expr2 = this->rValue->buildIR(not_flag);
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
     currentCFG->current_bb->add_IRInstr(this->line, this->column, IRInstr::mul,
                                         Type(),
-                                        {tmp_dest, tmp_expr1, tmp_expr2});
-    return tmp_dest;
+                                        {args[0], args[1], args[2]});
+    return args[0];
 }
 
 std::string AST::Expr::Name::buildIR(bool not_flag) {
@@ -524,155 +555,129 @@ std::string AST::Expr::ConstChar::buildIR(bool not_flag) {
 }
 
 std::string AST::Expr::Eq::buildIR(bool not_flag) {
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_lValue = this->lValue->buildIR(not_flag);
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_rValue = this->rValue->buildIR(not_flag);
-    // create tmp var to store result of expression
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_eq, Type(),
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_eq, Type(),
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "eq"});
     }
-    return tmp_dest;
+    return args[0];
 
 }
 
 std::string AST::Expr::Neq::buildIR(bool not_flag) {
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_lValue = this->lValue->buildIR(not_flag);
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_rValue = this->rValue->buildIR(not_flag);
-    // create tmp var to store result of expression
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_eq, Type(),
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_eq, Type(),
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "neq"});
     }
-    return tmp_dest;
+    return args[0];
 }
 
 
 std::string AST::Expr::Geq::buildIR(bool not_flag) {
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_lValue = this->lValue->buildIR(not_flag);
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_rValue = this->rValue->buildIR(not_flag);
-    // create tmp var to store result of expression
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
 
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    Type t = currentCFG->get_var_type(current_bloc, name_lValue);
+    Type t = currentCFG->get_var_type(current_bloc, args[1]);
 
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_low, t,
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_great, t,
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "eq"});
     }
-    return tmp_dest;
+    return args[0];
 }
 
 std::string AST::Expr::Great::buildIR(bool not_flag) {
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_lValue = this->lValue->buildIR(not_flag);
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_rValue = this->rValue->buildIR(not_flag);
-    // create tmp var to store result of expression
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
-
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    Type t = currentCFG->get_var_type(current_bloc, name_lValue);
+    Type t = currentCFG->get_var_type(current_bloc, args[1]);
 
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_low, t,
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_great, t,
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "neq"});
     }
-    return tmp_dest;
+    return args[0];
 }
 
 std::string AST::Expr::Low::buildIR(bool not_flag) {
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_lValue = this->lValue->buildIR(not_flag);
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_rValue = this->rValue->buildIR(not_flag);
-    // create tmp var to store result of expression
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
-
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    Type t = currentCFG->get_var_type(current_bloc, name_lValue);
+    Type t = currentCFG->get_var_type(current_bloc, args[1]);
 
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_great, t,
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "eq"});
     } else {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_low, t,
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "neq"});
     }
-    return tmp_dest;
+    return args[0];
 }
 
 
 std::string AST::Expr::Leq::buildIR(bool not_flag) {
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_lValue = this->lValue->buildIR(not_flag);
-    // récupérer le nom de la variable temporaire dans laquelle est stockée lValue
-    std::string name_rValue = this->rValue->buildIR(not_flag);
-    // create tmp var to store result of expression
-    std::string tmp_dest = currentCFG->create_new_temp_var(Type());
-
+    vector<std::string> args = create_tmp_var(this->lValue, this->rValue,
+                                              not_flag);
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    Type t = currentCFG->get_var_type(current_bloc, name_lValue);
+    Type t = currentCFG->get_var_type(current_bloc, args[1]);
+
 
     // Put instruction into current block
     if (not_flag) {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_great, t,
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "neq"});
     } else {
         currentCFG->current_bb->add_IRInstr(this->line, this->column,
                                             IRInstr::cmp_low, t,
-                                            {tmp_dest, name_lValue, name_rValue,
+                                            {args[0], args[1], args[2],
                                              "eq"});
     }
 
-    return tmp_dest;
+    return args[0];
 }
 
 
@@ -684,25 +689,6 @@ std::string AST::Expr::Expr::buildIR(bool not_flag) {
     return "";
 }
 
-std::string AST::Instr::DeclInt::buildIR() {
-    for (auto &it : this->names) {
-        // Ajout de la variable it à la table des symboles de currentCFG
-        AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
-                                        it, Type::type_int);
-    }
-    return std::string();
-}
-
-std::string AST::Instr::DeclChar::buildIR() {
-    for (auto &it : this->names) {
-        // Ajout de la variable it à la table des symboles de currentCFG
-        AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        currentCFG->add_to_symbol_table(this->line, this->column, current_bloc,
-                                        it, Type::type_char);
-    }
-    return std::string();
-}
 
 std::string AST::Expr::TabAccess::buildIR(bool not_flag) {
     std::string _name = to_string(this->index->getValue()) + this->name;
