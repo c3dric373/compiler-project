@@ -1,4 +1,4 @@
-#README 
+# README 
 
 Pour utiliser le compilateur il faut tout d'abord se rendre dans le dossier: compiler. 
 ```
@@ -17,24 +17,24 @@ Une fois le compilateur créé, son utilisation est relativement simple :
 Cette commande génère le fichier assembleur fichier.s qui pourra être utilisé plus tard pour créer un executable (en utilisant gcc par exemple)
 
 Nous avons implementé certain scripts: qui facilite l'utilisation:
-###Execute
+### Execute
 Le script `execute.sh` utilise notre compilateur pour compiler un fichier nommé `ret42.c`. De plus il compilera le fichier `ret42.s`, qui a été créé par notre compilateur, sera compilé avec gcc. Finalement la valeur retourné par la compilation sera affiché dans le terminal. 
 ```
 ./execute.sh
 ```
-###Run_gcc
+### Run_gcc
 Ce script compile simplement le fichier `ret42.c` avec gcc et affiche son résultat dans le terminal. 
 ```
 ./run_gcc.sh
 ```
 
-###Test
+### Test
 Ce script (`test.sh`) permet d'afficher les résultats des deux scripts précédants, afin de pouvoi comparer les deux compilateur plus facilement. 
 ```
 ./test.sh
 ```
 
-##Environnement de test
+## Environnement de test
 L'environnement de test se trouve sous: 
 `/test`
 Le fichier `test.sh` à executer avec docker se nomme test.sh et s'execute sans entrée.
