@@ -38,6 +38,8 @@ int main(int argn, const char **argv) {
     AST::Prog *ast = visitor.visit(tree);
     stringstream resultAssembly;
 
+    ast->display();
+
     std::vector<CFG *> cfgs = ast->generateIR();
 
     bool error = ast->getError();
