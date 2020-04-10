@@ -6,6 +6,8 @@ TEST-CASE: pld-test-output/tests-Init-0_test_fct
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-test-rendu-mi-parcours
 TEST OK
+TEST-CASE: pld-test-output/tests-Init-2-No_PointVirgule
+TEST OK
 TEST-CASE: pld-test-output/tests-Init-while-0_simple_while_leq
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-while-0_simple_while_greater
@@ -371,6 +373,18 @@ TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-recursive-2_recursive_parite_croisee
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-functions-recursive-4_recursive_recurrence_double
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-functions-procedures-1_simple
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-functions-procedures-3_nested_procedures
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-functions-procedures-0_false_return_test
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-functions-procedures-3_unauthorized_procedure_assignment
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-functions-procedures-4_nested_procedures2
+TEST OK
+TEST-CASE: pld-test-output/tests-Init-functions-procedures-2_simple2
 TEST OK
 TEST-CASE: pld-test-output/tests-Init-tableaux-return_add_char_a
 TEST OK
