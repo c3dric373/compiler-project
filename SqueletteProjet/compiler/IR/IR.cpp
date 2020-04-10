@@ -265,7 +265,7 @@ void IRInstr::gen_asm(ostream &o) {
             // copy params [0] into params [1]
             string registers[] = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
                                   "%r9d"};
-            int num=std::stoi(params[1]);
+            int num = std::stoi(params[1]);
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
             switch (t.type_) {
                 case Type::type_int : {
@@ -286,19 +286,19 @@ void IRInstr::gen_asm(ostream &o) {
             AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
-            int offset=std::stoi(params[1]);
+            int offset = std::stoi(params[1]);
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << reg_tmp_var << ", "
-                      << "%eax"<<endl;
-                    o <<"\tmovl %eax, "<<offset<<"(%rbp)"
+                      << "%eax" << endl;
+                    o << "\tmovl %eax, " << offset << "(%rbp)"
                       << " # fct param " << params[0] << endl;
                     break;
                 }
                 case Type::type_char : {
                     o << "\tmovl " << reg_tmp_var << ", "
-                      << "%eax"<<endl;
-                    o <<"\tmovl %eax, "<<offset<<"(%rbp)"
+                      << "%eax" << endl;
+                    o << "\tmovl %eax, " << offset << "(%rbp)"
                       << " # fct param " << params[0] << endl;
                     break;
                 }
@@ -339,7 +339,9 @@ void IRInstr::gen_asm(ostream &o) {
 
         case Operation::return_: {
             o << "\tnop" << endl;
-            this->bb->cfg->gen_asm_epilogue(o);
+            // this->bb->cfg->gen_asm_epilogue(o);
+            std::string epilogue_label = "." + this->bb->cfg->name + "_ret";
+            o << "\t jmp " << epilogue_label << endl;
             break;
         }
         case Operation::return_expr: {
@@ -352,7 +354,9 @@ void IRInstr::gen_asm(ostream &o) {
                                                                     params[0]);
                 o << "\tmovl " + return_address + ", %eax" << endl;
             }
-            this->bb->cfg->gen_asm_epilogue(o);
+            // this->bb->cfg->gen_asm_epilogue(o);
+            std::string epilogue_label = "." + this->bb->cfg->name + "_ret";
+            o << "\t jmp " << epilogue_label << endl;
             break;
         }
     }
@@ -453,7 +457,7 @@ void CFG::gen_asm(ostream &o) {
     for (auto bb : basic_blocs) {
         bb->gen_asm(o);
     }
-    //gen_asm_epilogue(o);
+    gen_asm_epilogue(o);
 }
 
 // take a variable and transform it to "-offset(%rbp)"
@@ -486,6 +490,8 @@ void CFG::gen_asm_prologue(ostream &o) {
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {
+    std::string epilogue_label = "." + this->name + "_ret";
+    o << epilogue_label << ":" << endl;
     o << "\taddq $" << this->nextFreeSymbolIndex * (-1) << ", %rsp" << endl;
     o << "\tpopq %rbp" << endl;
     o << "\tret" << endl;
