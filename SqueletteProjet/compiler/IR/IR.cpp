@@ -263,17 +263,42 @@ void IRInstr::gen_asm(ostream &o) {
         case Operation::add_fct_param: {
             AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
+            string registers[] = {"%edi", "%esi", "%edx", "%ecx", "%r8d",
+                                  "%r9d"};
+            int num=std::stoi(params[1]);
             std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
-            int num_arg = std::stoi(params[1]);
             switch (t.type_) {
                 case Type::type_int : {
                     o << "\tmovl " << reg_tmp_var << ", "
-                      << registers.at(num_arg)
+                      << registers[num]
                       << " # fct param " << params[0] << endl;
                     break;
                 }
                 case Type::type_char : {
-                    o << "\tmovl " << reg_tmp_var << ", " << registers[num_arg]
+                    o << "\tmovl " << reg_tmp_var << ", " << registers[num]
+                      << " # fct param " << params[0] << endl;
+                    break;
+                }
+            }
+            break;
+        }
+        case Operation::add_fct_param_stack: {
+            AST::Bloc *bloc = bb->bloc;
+            // copy params [0] into params [1]
+            std::string reg_tmp_var = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            int offset=std::stoi(params[1]);
+            switch (t.type_) {
+                case Type::type_int : {
+                    o << "\tmovl " << reg_tmp_var << ", "
+                      << "%eax"<<endl;
+                    o <<"\tmovl %eax, "<<offset<<"(%rbp)"
+                      << " # fct param " << params[0] << endl;
+                    break;
+                }
+                case Type::type_char : {
+                    o << "\tmovl " << reg_tmp_var << ", "
+                      << "%eax"<<endl;
+                    o <<"\tmovl %eax, "<<offset<<"(%rbp)"
                       << " # fct param " << params[0] << endl;
                     break;
                 }
