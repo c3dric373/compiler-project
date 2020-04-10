@@ -44,7 +44,7 @@ public:
      * @brief get_suffix
      * @return the suffix corresponding to the type
      *
-     * get the suffix needed by the assembly command
+     * Get the suffix needed by the assembly command
      */
     std::string get_suffix(){
         std::string suffix;
@@ -65,7 +65,7 @@ public:
      * @brief get_offset
      * @return the offset corresponding to the type
      *
-     * get the suffix to know the offset for "-X(%rbp)
+     * Get the suffix to know the offset for "-X(%rbp)
      */
     int get_offset(){
             int offset;
@@ -86,10 +86,10 @@ public:
 
     type_enum type_;
 
-    /** size of an int (in bytes) */
+    /** Size of an int (in bytes) */
     int INTOFFSET = 4;
 
-    /** size of a char (in bytes) */
+    /** Size of a char (in bytes) */
     int CHAROFFSET=1;
 
 };
@@ -141,7 +141,7 @@ public:
      * @brief gen_asm
      * @param o outpustream where the assembly code will be written
      *
-     * write the x86 assembly code for this instruction
+     * Write the x86 assembly code for this instruction
      */
     void gen_asm(ostream &o);
 
@@ -178,7 +178,7 @@ public:
      * @brief gen_asm
      * @param o outpustream where the assembly code will be written
      *
-     * write the x86 assembly code for this basic block
+     * Write the x86 assembly code for this basic block
      */
     void gen_asm(ostream &o);
 
@@ -196,24 +196,24 @@ public:
 
     //-------------------Attributs---------------------
 
-    /** pointer to the next basic block, true branch.
+    /** Pointer to the next basic block, true branch.
       * If nullptr, return from procedure */
     BasicBlock *exit_true;
 
-    /** pointer to the next basic block, false branch.
+    /** Pointer to the next basic block, false branch.
       *  If null_ptr, the basic block ends with an unconditional jump */
     BasicBlock *exit_false;
 
-    /** label of the BB, also will be the label in the generated code */
+    /** Label of the BB, also will be the label in the generated code */
     string label;
 
-    /**  the CFG where this block belongs */
+    /**  The CFG where this block belongs */
     CFG *cfg;
 
-    /**  vector containing the instructions of the block */
+    /**  Vector containing the instructions of the block */
     vector<IRInstr *> instrs;
 
-    /** bloc to which the bb belongs, needed for the symbol table*/
+    /** Bloc to which the bb belongs, needed for the symbol table*/
     AST::Bloc *bloc;
 
 protected:
@@ -245,7 +245,7 @@ public:
      * @brief gen_asm
      * @param o outpustream where the assembly code will be written
      *
-     * write the x86 assembly code generation for this basic block
+     * Write the x86 assembly code generation for this basic block
      */
     void gen_asm(ostream &o);
 
@@ -261,7 +261,7 @@ public:
      * @brief gen_asm_prologue
      * @param o outpustream where the assembly code will be written
      *
-     * write the x86 assembly prologue code for this CFG
+     * Write the x86 assembly prologue code for this CFG
      */
     void gen_asm_prologue(ostream &o);
 
@@ -269,7 +269,7 @@ public:
      * @brief gen_asm_epilogue
      * @param o outpustream where the assembly code will be written
      *
-     * write the x86 assembly epilogue code for this CFG
+     * Write the x86 assembly epilogue code for this CFG
      */
     void gen_asm_epilogue(ostream &o);
 
@@ -400,10 +400,10 @@ public:
     /** The AST::Bloc this CFG comes from */
     AST::Bloc *ast;
 
-    /** current BasicBlock of the CFG */
+    /** Current BasicBlock of the CFG */
     BasicBlock *current_bb;
 
-    /** name of the CFG */
+    /** Name of the CFG */
     std::string name;
 
 protected:
