@@ -10,7 +10,7 @@
 #include "../Erreur/Erreur.h"
 
 
-// Declarations from the parser -- replace with your own
+
 class Type;
 
 class BasicBlock;
@@ -19,6 +19,10 @@ class CFG;
 
 using namespace std;
 
+
+/** class Type 
+  * Type can be of 2 Types : char and int
+*/
 class Type {
 
 public:
@@ -27,51 +31,76 @@ public:
         type_char
     } type_enum;
 
+    /**
+     * @brief Type constructor
+     * @param type_enum_
+     */
     Type(type_enum type_enum_) : type_(type_enum_){};
 
+    /**  default constructor */
     Type()=default;
 	
+    /**
+     * @brief get_suffix
+     * @return the suffix corresponding to the type
+     *
+     * Get the suffix needed by the assembly command
+     */
     std::string get_suffix(){
-		std::string suffix;
-		switch (type_) {
-			case type_enum::type_int: {
-				suffix="l";
-				break;
-			}
-			case type_enum::type_char: {
-				suffix="b";
-				break;
-			}
-		}
-		return suffix;
+        std::string suffix;
+        switch (type_) {
+            case type_enum::type_int: {
+                suffix="l";
+                break;
+            }
+            case type_enum::type_char: {
+                suffix="b";
+                break;
+            }
+        }
+        return suffix;
     }
 
-	int get_offset(){
-		int offset;
-		switch (type_) {
-			case type_enum::type_int: {
-				offset=INTOFFSET;
-				break;
-			}
-			case type_enum::type_char: {
-				offset=CHAROFFSET;
-				break;
-			}
-		}
-		return offset;
-	}
-	
+    /**
+     * @brief get_offset
+     * @return the offset corresponding to the type
+     *
+     * Get the suffix to know the offset for "-X(%rbp)
+     */
+    int get_offset(){
+            int offset;
+            switch (type_) {
+                    case type_enum::type_int: {
+                            offset=INTOFFSET;
+                            break;
+                    }
+                    case type_enum::type_char: {
+                            offset=CHAROFFSET;
+                            break;
+                    }
+            }
+            return offset;
+    }
+
+    //------Attributs--------
+
     type_enum type_;
-	int INTOFFSET = 4;
-	int CHAROFFSET=1;
+
+    /** Size of an int (in bytes) */
+    int INTOFFSET = 4;
+
+    /** Size of a char (in bytes) */
+    int CHAROFFSET=1;
 
 };
 
-//! The class for one 3-address instruction
+
+/** class IRInstr for one 3-address instruction 
+*/ 
 class IRInstr {
 
 public:
-    /** The instructions themselves -- feel free to subclass instead */
+    /** The instructions that are accepted */
     typedef enum {
         ldconst,
         jmp,
@@ -82,9 +111,6 @@ public:
         add,
         sub,
         mul,
-        rmem,
-        wmem,
-        call,
         if_,
         cmp_eq,
         cmp_low,
@@ -102,146 +128,301 @@ public:
     } Operation;
 
 
-    /**  constructor */
+    /**
+     * @brief IRInstr constructor
+     * @param bb_ the BasicBlock this instruction belongs to
+     * @param op Operator corresponding to the instruction
+     * @param t Type of the instruction ( int or char )
+     * @param params vector containing the variables
+     */
     IRInstr(BasicBlock *bb_, Operation op, Type t, vector<string> params);
 
-    /** Actual code generation */
-    void
-    gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
-
-private:
-    BasicBlock *bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
-    Operation op;
-    Type t;
-    vector<string> params; /**< For 3-op instrs: d, x, y; for ldconst: d, c;  For call: label, d, params;  for wmem and rmem: choose yourself */
-    // if you subclass IRInstr, each IRInstr subclass has its parameters and the previous (very important) comment becomes useless: it would be a better design.
-};
-
-
-
-
-
-
-/**  The class for a basic block */
-
-/* A few important comments.
-	 IRInstr has no jump instructions.
-	 cmp_* instructions behaves as an arithmetic two-operand instruction (add or mult),
-	  returning a boolean value (as an int)
-
-	 Assembly jumps are generated as follows:
-	 BasicBlock::gen_asm() first calls IRInstr::gen_asm() on all its instructions, and then
-		    if  exit_true  is a  nullptr,
-            the epilogue is generated
-        else if exit_false is a nullptr,
-          an unconditional jmp to the exit_true branch is generated
-				else (we have two successors, hence a branch)
-          an instruction comparing the value of test_var_name to true is generated,
-					followed by a conditional branch to the exit_false branch,
-					followed by an unconditional branch to the exit_true branch
-	 The attribute test_var_name itself is defined when converting
-  the if, while, etc of the AST  to IR.
-
-Possible optimization:
-     a cmp_* comparison instructions, if it is the last instruction of its block,
-       generates an actual assembly comparison
-       followed by a conditional jump to the exit_false branch
-*/
-
-class BasicBlock {
-public:
-    BasicBlock(CFG *cfg, string entry_label);
-
-    void
-    gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
-
-    void add_IRInstr(int line, int column, IRInstr::Operation op, Type t, vector<string> params);
-
-    // No encapsulation whatsoever here. Feel free to do better.
-    BasicBlock *exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
-    BasicBlock *exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
-    string label; /**< label of the BB, also will be the label in the generated code */
-    CFG *cfg; /** < the CFG where this block belongs */
-    vector<IRInstr *> instrs; /** < the instructions themselves. */
-    string test_var_name;  /** < when generating IR code for an if(expr) or while(expr) etc,
-												 store here the name of the variable that holds the value of expr */
-    AST::Bloc *bloc; /** bloc to which the bb belongs, needed for the symbol table*/
-
-protected:
-
-
-};
-
-
-
-
-/** The class for the control flow graph, also includes the symbol table */
-
-/* A few important comments:
-	 The entry block is the one with the same label as the AST function name.
-	   (it could be the first of basic_blocs, or it could be defined by an attribute value)
-	 The exit block is the one with both exit pointers equal to nullptr.
-     (again it could be identified in a more explicit way)
-
- */
-class CFG {
-public:
-    CFG(AST::Bloc *ast, std::string name);
-
-    AST::Bloc *ast; /**< The AST this CFG comes from */
-
-    void add_bb(BasicBlock *bb);
-
-    // x86 code generation: could be encapsulated in a processor class in a retargetable compiler
+    /**
+     * @brief gen_asm
+     * @param o outpustream where the assembly code will be written
+     *
+     * Write the x86 assembly code for this instruction
+     */
     void gen_asm(ostream &o);
 
-    string IR_reg_to_asm(AST::Bloc *bloc,
-                         string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
+private:
+    /** The BB this instruction belongs to,
+     * which provides a pointer to the CFG this instruction belong to */
+    BasicBlock *bb;
+
+    /** Operator corresponding to the instruction */
+    Operation op;
+
+    /** Type of the instruction ( int or char ) */
+    Type t;
+
+    /** ector containing the variables
+     * For 3-op instrs: d, x, y; for ldconst: d, c ; ... */
+    vector<string> params;
+};
+
+
+/** class BasicBlock
+*/
+class BasicBlock {
+public:
+
+    /**
+     * @brief BasicBlock constructor
+     * @param cfg the CFG where the block belongs
+     * @param entry_label
+     */
+    BasicBlock(CFG *cfg, string entry_label);
+
+    /**
+     * @brief gen_asm
+     * @param o outpustream where the assembly code will be written
+     *
+     * Write the x86 assembly code for this basic block
+     */
+    void gen_asm(ostream &o);
+
+    /**
+     * @brief add_IRInstr
+     * @param line where the instruction has been written ( in the .c file)
+     * @param column where the instruction has been written ( in the .c file)
+     * @param op Operator corresponding to the instruction
+     * @param t Type of the instruction ( int or char )
+     * @param params vector containing the variables
+     *
+     * Add instruction to the instrs vector
+     */
+    void add_IRInstr(int line, int column, IRInstr::Operation op, Type t, vector<string> params);
+
+    //-------------------Attributs---------------------
+
+    /** Pointer to the next basic block, true branch.
+      * If nullptr, return from procedure */
+    BasicBlock *exit_true;
+
+    /** Pointer to the next basic block, false branch.
+      *  If null_ptr, the basic block ends with an unconditional jump */
+    BasicBlock *exit_false;
+
+    /** Label of the BB, also will be the label in the generated code */
+    string label;
+
+    /**  The CFG where this block belongs */
+    CFG *cfg;
+
+    /**  Vector containing the instructions of the block */
+    vector<IRInstr *> instrs;
+
+    /** Bloc to which the bb belongs, needed for the symbol table*/
+    AST::Bloc *bloc;
+
+protected:
+};
+
+
+
+
+/** Control Flow Graph
+*/
+class CFG {
+public:
+    /**
+     * @brief CFG constructor
+     * @param ast AST::Bloc where the CFG comes from
+     * @param name of the CFG
+     */
+    CFG(AST::Bloc *ast, std::string name);
+
+    /**
+     * @brief add_bb
+     * @param bb BasicBlock
+     *
+     * Add the bb to the basic_blocs vector
+     */
+    void add_bb(BasicBlock *bb);
+
+    /**
+     * @brief gen_asm
+     * @param o outpustream where the assembly code will be written
+     *
+     * Write the x86 assembly code generation for this basic block
+     */
+    void gen_asm(ostream &o);
+
+    /**
+     * @brief IR_reg_to_asm
+     * @param bloc AST::Bloc to which the bb belongs
+     * @param reg string to which we must find the index
+     * @return regString string that looks like "-Index(%rbp)"
+     */
+    string IR_reg_to_asm(AST::Bloc *bloc, string reg);
+
+    /**
+     * @brief gen_asm_prologue
+     * @param o outpustream where the assembly code will be written
+     *
+     * Write the x86 assembly prologue code for this CFG
+     */
     void gen_asm_prologue(ostream &o);
 
+    /**
+     * @brief gen_asm_epilogue
+     * @param o outpustream where the assembly code will be written
+     *
+     * Write the x86 assembly epilogue code for this CFG
+     */
     void gen_asm_epilogue(ostream &o);
 
-    // symbol table methods
+    /**
+     * @brief add_to_symbol_table
+     * @param line where the instruction has been written ( in the .c file)
+     * @param column where the instruction has been written ( in the .c file)
+     * @param bloc AST::Bloc to which the bb belongs
+     * @param name of the variable
+     * @param t Type of the instruction ( int or char )
+     *
+     * Add the variable to the SymbolIndex and SymbolType
+     * If it already exists, add the error to Erreur
+     */
     void add_to_symbol_table(int line, int column, AST::Bloc *bloc, string name, Type t);
 
+    /**
+     * @brief create_new_temp_var
+     * @param t Type of the instruction ( int or char )
+     * @return the name of the new temp variable
+     */
     string create_new_temp_var(Type t);
 
+    /**
+     * @brief get_var_index
+     * @param bloc AST::Bloc to which the bb belongs
+     * @param name of the variable
+     * @return int, the index of the SymbolIndex corresponding to the name
+     */
     int get_var_index(AST::Bloc *bloc, string name);
 
+    /**
+     * @brief get_var_type
+     * @param bloc AST::Bloc to which the bb belongs
+     * @param name of the variable
+     * @return Type, the Type of the SymbolType corresponding to the name
+     */
     Type get_var_type(AST::Bloc *bloc, string name);
 
-    // basic block management
+    /**
+     * @brief new_BB_name
+     * @return the name of the new BasicBlock
+     */
     string new_BB_name();
 
-    BasicBlock *current_bb;
-
+    /**
+     * @brief get_bb_before_last
+     * @return the BasicBlock that is before the last BasicBlock
+     */
     BasicBlock *get_bb_before_last();
 
+    /**
+     * @brief find_index
+     * @param name of the variable
+     * @return int, the index of the SymbolIndex corresponding to the name
+     *
+     * The name is the name of the variable to which we have added the num of the AST:Bloc
+     * to allow the user to give the same name to variables that are in different AST::Bloc
+     */
     int find_index(string name);
 
+    /**
+     * @brief find_type
+     * @param name of the variable
+     * @param realName of the variable
+     * @return Type, the Type of the SymbolIndex corresponding to the name
+     *
+     * The realName is the name used in the .c code, we need it to display the error
+     *
+     * The name is the name of the variable to which we have added the num of the AST:Bloc
+     * to allow the user to give the same name to variables that are in different AST::Bloc
+     */
     Type find_type(string name, string realName);
 
+    /**
+     * @brief get_name
+     * @return string, the name of the CFG
+     */
     std::string get_name();
 
+    /**
+     * @brief set_name
+     * @param name
+     *
+     * Set the name of the CFG
+     */
     void set_name(std::string name);
 
+    /**
+     * @brief getNextFreeSymbolIndex
+     * @return int, the index of the next free symbol
+     */
     int getNextFreeSymbolIndex();
 
-	Erreur getErreur();
+    /**
+     * @brief getErreur
+     * @return Erreur, the error of the CFG
+     */
+    Erreur getErreur();
 
-	void addErreur(std::string message);
-	
-	bool hasError();
+    /**
+     * @brief addErreur
+     * @param message, error message
+     *
+     * Add the message to the error message of the object Erreur
+     */
+    void addErreur(std::string message);
 
-	std::string getErrorMessage();
+    /**
+     * @brief hasError
+     * @return bool
+     *
+     * Return true if an error has been raised
+     * Else return False
+     */
+    bool hasError();
 
+    /**
+     * @brief getErrorMessage
+     * @return string, corresponding to the concatenation of
+     * all of the messages that the error contains
+     */
+    std::string getErrorMessage();
+
+
+    //-------------------------Attributs--------------------------
+
+    /** The AST::Bloc this CFG comes from */
+    AST::Bloc *ast;
+
+    /** Current BasicBlock of the CFG */
+    BasicBlock *current_bb;
+
+    /** Name of the CFG */
     std::string name;
+
 protected:
-    map<string, Type> SymbolType; /**< part of the symbol table  */
-    map<string, int> SymbolIndex; /**< part of the symbol table  */
-    int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
-    int nextBBnumber; /**< just for naming */
-    vector<BasicBlock *> basic_blocs; /**< all the basic blocks of this CFG*/
+    /** Part of the symbol table  */
+    map<string, Type> SymbolType;
+
+    /** Part of the symbol table  */
+    map<string, int> SymbolIndex;
+
+    /** The index of the next free symbol in the Symbol table */
+    int nextFreeSymbolIndex;
+
+    /** Num of the next BasicBlock */
+    int nextBBnumber;
+
+    /** Vector containing the BasicBlocks of the CFG */
+    vector<BasicBlock *> basic_blocs;
+
+    /** Error raised by the CFG */
     Erreur error;
 };
 
