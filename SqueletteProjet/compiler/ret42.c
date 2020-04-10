@@ -1,19 +1,10 @@
-int factorielle(int a, char b, char c, int d, int e, int pp, int valeur )
-{
-   int nextval;
-   if (valeur == 0){
-      return 1;
-   }
-   else{
-      nextval=valeur - 1;
-      return valeur * factorielle(nextval,b,c,d,e,pp,nextval);
-   }
-}
-
-int main(){
-    int a=7;
-    int b;
-    char e='e';
-    b=factorielle(a,e,e,a,a,a,a);
-    return  b;
+#include <stdio.h>
+int main() {
+    int a = 8;
+    int b = 'f';
+    char x;
+    putchar(b);
+    int n = 4;
+    x = getchar();
+    return x;
 }
