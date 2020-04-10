@@ -310,7 +310,14 @@ void IRInstr::gen_asm(ostream &o) {
             std::string fct_name = params[0];
             std::string location_dest = bb->cfg->IR_reg_to_asm(bloc, params[1]);
             o << "\tcall " << fct_name << endl;
-            o << "\tmovl %eax, " << location_dest << endl;
+            switch (t.type_) {
+                case Type::type_char : {
+                    o << "\tmovb %al, " << location_dest << endl;
+                    break;
+                }
+                default:
+                    o << "\tmovl %eax, " << location_dest << endl;
+            }
             break;
         }
         case Operation::get_arg: {
@@ -357,6 +364,14 @@ void IRInstr::gen_asm(ostream &o) {
             // this->bb->cfg->gen_asm_epilogue(o);
             std::string epilogue_label = "." + this->bb->cfg->name + "_ret";
             o << "\t jmp " << epilogue_label << endl;
+            break;
+        }
+        case Operation::putchar: {
+            AST::Bloc *bloc = bb->bloc;
+            std::string location_arg = bb->cfg->IR_reg_to_asm(bloc, params[0]);
+            o<<"\tmovsbl "<<location_arg<<", %eax"<<std::endl
+            <<"\tmovl %eax, %edi"<<std::endl
+            <<"\tcall putchar"<<std::endl;
             break;
         }
     }

@@ -1492,3 +1492,41 @@ bool AST::Bloc::containsReturn() {
     }
     return false;
 }
+
+//Ajout d putchar et getchar
+
+std::string AST::Expr::GetChar::buildIR(bool not_flag){
+    std::string tmp_dest = currentCFG->create_new_temp_var(Type(Type::type_char));
+    currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::call_fct, Type(),
+                                        {"getchar",tmp_dest});
+
+    return tmp_dest;
+}
+int AST::Expr::GetChar::getValue(){
+    return 0;
+}
+bool AST::Expr::GetChar::isConst(){
+    return false;
+}
+void AST::Expr::GetChar::buildReturnIR(){
+
+}
+void AST::Expr::GetChar::display(){
+    std::cout << " CG " << std::flush;
+}
+
+void AST::Instr::Putchar::display(){
+    std::cout << "(PC " << arg << ')' << std::flush;
+}
+std::string AST::Instr::Putchar::buildIR(){
+    currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::putchar, Type(),
+                                        {this->arg});
+    return "";
+}
+bool AST::Instr::Putchar::wrongReturnType(bool returnType){
+    return false;
+}
+
+bool AST::Instr::Putchar::containsReturn() {
+    return false;
+}

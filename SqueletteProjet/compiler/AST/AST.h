@@ -324,6 +324,28 @@ namespace AST {
             unsigned column; // even more: the column in this line
         };
 
+        class GetChar : public Expr {
+        public:
+
+            std::string buildIR(bool not_flag) override;
+
+            int getValue() override;
+
+            bool isConst() override;
+
+            GetChar(unsigned line, unsigned column):
+                    line(line), column(column){};
+
+            void buildReturnIR() override;
+
+            void display() override;
+
+
+        private:
+            unsigned line; // the line of the expression
+            unsigned column; // even more: the column in this line
+        };
+
         //COMPARAISONS ET BOOLEENS
 
         class Eq : public Expr {
@@ -752,6 +774,23 @@ namespace AST {
         private:
             std::string procName;
             std::vector<std::string> args;
+        };
+
+        class Putchar : public Instr {
+        public:
+            Putchar(std::string arg) :
+                    arg(arg) {};
+
+            void display() override;
+
+            std::string buildIR() override;
+
+            bool wrongReturnType(bool returnType) override;
+            bool containsReturn() override;
+
+
+        private:
+            std::string arg;
         };
 
         class Return : public Instr {
