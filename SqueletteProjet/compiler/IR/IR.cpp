@@ -339,6 +339,7 @@ void IRInstr::gen_asm(ostream &o) {
 
         case Operation::return_: {
             o << "\tnop" << endl;
+            this->bb->cfg->gen_asm_epilogue(o);
             break;
         }
         case Operation::return_expr: {
@@ -351,6 +352,7 @@ void IRInstr::gen_asm(ostream &o) {
                                                                     params[0]);
                 o << "\tmovl " + return_address + ", %eax" << endl;
             }
+            this->bb->cfg->gen_asm_epilogue(o);
             break;
         }
     }
@@ -411,7 +413,7 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
                     break;
             }
             // if param has not been declared, launch an error
-            if (offset == 100) {
+            if (offset == 12000) {
                 std::string erreur =
                         "error line " + std::to_string(line) + " column " +
                         std::to_string(column) +
@@ -451,7 +453,7 @@ void CFG::gen_asm(ostream &o) {
     for (auto bb : basic_blocs) {
         bb->gen_asm(o);
     }
-    gen_asm_epilogue(o);
+    //gen_asm_epilogue(o);
 }
 
 // take a variable and transform it to "-offset(%rbp)"
@@ -550,7 +552,7 @@ std::string CFG::create_new_temp_var(Type t) {
 
 int CFG::find_index(string name) {
     if (SymbolIndex.find(name) == SymbolIndex.end()) {
-        return 100;
+        return 12000;
     } else {
         return SymbolIndex.at(name);
     }

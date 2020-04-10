@@ -3,7 +3,7 @@ grammar ifcc;
 axiom : prog
       ;
 
-prog : initbloc 'int' 'main' OPENPAR CLOSEPAR OPENBRACE bloc RETURN expr ';' CLOSEBRACE
+prog : initbloc 'int' 'main' OPENPAR CLOSEPAR OPENBRACE bloc CLOSEBRACE
 ;
 
 initbloc :
