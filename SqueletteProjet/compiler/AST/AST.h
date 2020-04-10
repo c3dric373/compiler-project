@@ -285,7 +285,8 @@ namespace AST {
 
             bool isConst() override;
 
-            TabAccess(std::string name, Expr* index, unsigned line, unsigned column) :
+            TabAccess(std::string name, Expr *index, unsigned line,
+                      unsigned column) :
                     name(name), index(index), line(line), column(column) {};
 
             void buildReturnIR() override;
@@ -294,15 +295,15 @@ namespace AST {
 
         private:
             std::string name;
-            Expr* index;
+            Expr *index;
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
 
         class CallFun : public Expr {
         public:
-            CallFun(std::string funName, std::vector<std::string> args):
-                    funName(funName), args(args){};
+            CallFun(std::string funName, std::vector<std::string> args) :
+                    funName(funName), args(args) {};
 
             std::string buildIR(bool not_flag) override;
 
@@ -310,8 +311,9 @@ namespace AST {
 
             bool isConst() override;
 
-            CallFun(std::string funName, std::vector<std::string> args, unsigned line, unsigned column):
-                    funName(funName), args(args), line(line), column(column){};
+            CallFun(std::string funName, std::vector<std::string> args,
+                    unsigned line, unsigned column) :
+                    funName(funName), args(args), line(line), column(column) {};
 
             void buildReturnIR() override;
 
@@ -333,8 +335,8 @@ namespace AST {
 
             bool isConst() override;
 
-            GetChar(unsigned line, unsigned column):
-                    line(line), column(column){};
+            GetChar(unsigned line, unsigned column) :
+                    line(line), column(column) {};
 
             void buildReturnIR() override;
 
@@ -563,7 +565,8 @@ namespace AST {
 
         class DeclIntTab : public Instr {
         public:
-            DeclIntTab(std::string name, Expr::Expr* size, unsigned line, unsigned column) :
+            DeclIntTab(std::string name, Expr::Expr *size, unsigned line,
+                       unsigned column) :
                     name(name), size(size), line(line), column(column) {};
 
             std::string buildIR() override;
@@ -576,15 +579,16 @@ namespace AST {
 
         private:
             std::string name;
-            Expr::Expr* size;
+            Expr::Expr *size;
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
 
         class DeclCharTab : public Instr {
         public:
-            DeclCharTab(std::string name, Expr::Expr* size, unsigned line, unsigned column) :
-            name(name), size(size), line(line), column(column) {};
+            DeclCharTab(std::string name, Expr::Expr *size, unsigned line,
+                        unsigned column) :
+                    name(name), size(size), line(line), column(column) {};
 
             std::string buildIR() override;
 
@@ -596,7 +600,7 @@ namespace AST {
 
         private:
             std::string name;
-            Expr::Expr* size;
+            Expr::Expr *size;
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
@@ -666,9 +670,11 @@ namespace AST {
 
         class AffctTab : public Instr {
         public:
-            AffctTab(std::string name, Expr::Expr *index, Expr::Expr *expr, unsigned line,
-                  unsigned column) :
-                    name(name), index(index), expr(expr), line(line), column(column) {};
+            AffctTab(std::string name, Expr::Expr *index, Expr::Expr *expr,
+                     unsigned line,
+                     unsigned column) :
+                    name(name), index(index), expr(expr), line(line),
+                    column(column) {};
 
             std::string buildIR() override;
 
@@ -680,8 +686,8 @@ namespace AST {
 
         private:
             std::string name;
-            Expr::Expr* index;
-            Expr::Expr* expr;
+            Expr::Expr *index;
+            Expr::Expr *expr;
             unsigned line; // the line of the expression
             unsigned column; // even more: the column in this line
         };
@@ -786,6 +792,7 @@ namespace AST {
             std::string buildIR() override;
 
             bool wrongReturnType(bool returnType) override;
+
             bool containsReturn() override;
 
 
@@ -839,7 +846,10 @@ namespace AST {
             virtual void display() = 0;
 
             virtual std::string get_name() = 0;
-            virtual AST::Bloc* get_bloc()=0;
+
+            virtual AST::Bloc *get_bloc() = 0;
+
+            virtual void is_fun() = 0;
         };
 
         class DeclProc : InitInstr {
@@ -853,9 +863,11 @@ namespace AST {
 
             void display() override;
 
-            std::string get_name()  override ;
-            AST::Bloc* get_bloc() override;
+            std::string get_name() override;
 
+            AST::Bloc *get_bloc() override;
+
+            void is_fun() override;
 
 
         private:
@@ -877,9 +889,11 @@ namespace AST {
 
             void display() override;
 
-            std::string get_name()  override ;
-            AST::Bloc* get_bloc() override;
+            std::string get_name() override;
 
+            AST::Bloc *get_bloc() override;
+
+            void is_fun() override;
 
 
         private:
@@ -904,9 +918,11 @@ namespace AST {
 
             void display() override;
 
-            std::string get_name()  override ;
+            std::string get_name() override;
 
-            AST::Bloc* get_bloc() override;
+            AST::Bloc *get_bloc() override;
+
+            void is_fun() override;
 
 
         private:
@@ -929,9 +945,11 @@ namespace AST {
 
             void display() override;
 
-            std::string get_name()  override ;
-            AST::Bloc* get_bloc() override;
+            std::string get_name() override;
 
+            AST::Bloc *get_bloc() override;
+
+            void is_fun() override;
 
 
         private:
