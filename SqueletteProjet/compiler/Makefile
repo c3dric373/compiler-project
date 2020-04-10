@@ -35,3 +35,6 @@ dirs:
 clean:
 	rm -rf $(OUTPUT)
 	rm -rf $(GENERATED)
+
+test:
+	@bash -c "cd ../tests; sh test_if.sh"
