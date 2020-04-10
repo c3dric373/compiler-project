@@ -134,7 +134,7 @@ std::string AST::Expr::CallFun::buildIR(bool not_flag) {
         currentCFG->addErreur(
                 line_col + " Function " + this->funName +
                 " has not been defined");
-        return "-" + funName;;
+        return "-" + funName;
     }
     bool is_fun = functions[this->funName];
     if (is_fun) {
@@ -173,7 +173,9 @@ std::string AST::Expr::CallFun::buildIR(bool not_flag) {
         return tmp_dest;
     } else {
         currentCFG->addErreur(
-                line_col + "Error: Trying to assign procedure call to variable\n");
+                line_col +
+                "Error: Trying to assign procedure call to variable\n");
+        return "-" + funName;
     }
 }
 

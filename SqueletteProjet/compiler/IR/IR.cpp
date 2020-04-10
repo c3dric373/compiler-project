@@ -411,11 +411,11 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
                 case IRInstr::xor_ :
                 case IRInstr::or_ :
                 case IRInstr::add :
+                    offset = this->cfg->get_var_index(this->bloc, param);
+                    break;
                 case IRInstr::sub :
                 case IRInstr::mul :
                 case IRInstr::neg :
-                    offset = this->cfg->get_var_index(this->bloc, param);
-                    break;
                 case IRInstr::ret :
                     // if the param doesn't contain a !, this is not a constant
                     if (param.at(0) != '!') {
