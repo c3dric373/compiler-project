@@ -256,10 +256,6 @@ void IRInstr::gen_asm(ostream &o) {
             o << "\t jmp " << basic_block << endl;
             break;
         }
-        case Operation::call_proc: {
-
-            break;
-        }
         case Operation::add_fct_param: {
             AST::Bloc *bloc = bb->bloc;
             // copy params [0] into params [1]
@@ -318,6 +314,12 @@ void IRInstr::gen_asm(ostream &o) {
                 default:
                     o << "\tmovl %eax, " << location_dest << endl;
             }
+            break;
+        }
+        case Operation::call_proc: {
+            AST::Bloc *bloc = bb->bloc;
+            std::string fct_name = params[0];
+            o << "\tcall " << fct_name << endl;
             break;
         }
         case Operation::get_arg: {

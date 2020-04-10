@@ -7,5 +7,6 @@ void f(){
 
 
 int main(){
+    f ();
     return  ;
 }

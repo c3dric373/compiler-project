@@ -1,10 +1,10 @@
-#include <stdio.h>
-int main() {
-    int a = 8;
-    int b = 'f';
-    char x;
-    putchar(b);
-    int n = 4;
-    x = getchar();
-    return x;
+void f(int i){
+    i=i+1;
+}
+
+
+int main(){
+    int a=1;
+    a = f(a);
+    return  a;
 }
