@@ -52,15 +52,18 @@ std::string AST::InitBloc::buildIR() {
     for (auto &function : initFuns) {
         function->is_fun();
     }
+
     for (auto &function : initFuns) {
-        AST::Bloc *child = function->get_bloc();
-        std::string();
-        CFG *cfg = new CFG(child, function->get_name());
-        cfgs.push_back(cfg);
-        currentCFG = cfg;
-        cfg->add_to_symbol_table(0, 0, nullptr, "!%eax", Type());
-        currentCFG->current_bb->bloc = child;
-        function->buildIR();
+        if (!function->is_decl()) {
+            AST::Bloc *child = function->get_bloc();
+            std::string();
+            CFG *cfg = new CFG(child, function->get_name());
+            cfgs.push_back(cfg);
+            currentCFG = cfg;
+            cfg->add_to_symbol_table(0, 0, nullptr, "!%eax", Type());
+            currentCFG->current_bb->bloc = child;
+            function->buildIR();
+        }
     }
     return std::string();
 }
@@ -125,26 +128,18 @@ std::string AST::InitInstr::DefProc::buildIR() {
 
 
 std::string AST::Expr::CallFun::buildIR(bool not_flag) {
+    std::string line_col = "Line: " + std::to_string(this->line) + " Col: " +
+                           std::to_string(this->column) + "\n";
     if (functions.count(this->funName) == 0) {
         currentCFG->addErreur(
-                "function " + this->funName + " has not been declared");
-        return std::string();
+                line_col + " Function " + this->funName +
+                " has not been defined");
+        return "-" + funName;
     }
     bool is_fun = functions[this->funName];
     if (is_fun) {
         int offset = currentCFG->getNextFreeSymbolIndex() - 24;
         AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-        int i = 0;
-        /*for (auto it = this->args.begin(); it != this->args.end(); it++) {
-            std::string arg = *it;
-            Type t = currentCFG->get_var_type(current_bloc, arg);
-            offset -= 4;
-            std::string rbp = to_string(offset) + "(%rbp)";
-            // Ajout de l'instruction au current_block
-            currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::add_fct_param, t,
-                                                {arg, std::to_string(i)});
-            i++;
-        }*/
         auto it = this->args.begin();
 
         if (this->args.size() > 6) {
@@ -178,7 +173,9 @@ std::string AST::Expr::CallFun::buildIR(bool not_flag) {
         return tmp_dest;
     } else {
         currentCFG->addErreur(
-                "trying to assign procedure to variable or function is not defined");
+                line_col +
+                "Error: Trying to assign procedure call to variable\n");
+        return "-" + funName;
     }
 }
 
@@ -186,7 +183,6 @@ std::string AST::Expr::CallFun::buildIR(bool not_flag) {
 std::string AST::InitInstr::DefFun::buildIR() {
     std::string function_name = funName;
     functions[this->funName] = true;
-    vector<TYPES>::iterator ptr = this->types.begin();
     Type type_current;
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
 
@@ -247,22 +243,12 @@ std::string AST::Instr::Return::buildIR() {
 std::string AST::Instr::CallProc::buildIR() {
     if (functions.count(this->procName) == 0) {
         currentCFG->addErreur(
-                "procedure " + this->procName + " has not been declared");
-        return std::string();
+                "Procedure " + this->procName + " has not been defined\n");
+        return "-" + procName;
     }
     int offset = currentCFG->getNextFreeSymbolIndex() - 24;
     AST::Bloc *current_bloc = currentCFG->current_bb->bloc;
-    int i = 0;
-    /*for (auto it = this->args.begin(); it != this->args.end(); it++) {
-        std::string arg = *it;
-        Type t = currentCFG->get_var_type(current_bloc, arg);
-        offset -= 4;
-        std::string rbp = to_string(offset) + "(%rbp)";
-        // Ajout de l'instruction au current_block
-        currentCFG->current_bb->add_IRInstr(0, 0, IRInstr::add_fct_param, t,
-                                            {arg, std::to_string(i)});
-        i++;
-    }*/
+
     auto it = this->args.begin();
 
     if (this->args.size() > 6) {
@@ -1798,3 +1784,18 @@ AST::Expr::Expr *AST::Expr::Not::getRValue() const {
     return nullptr;
 }
 
+bool AST::InitInstr::DeclProc::is_decl() {
+    return true;
+}
+
+bool AST::InitInstr::DeclFun::is_decl() {
+    return true;
+}
+
+bool AST::InitInstr::DefFun::is_decl() {
+    return false;
+}
+
+bool AST::InitInstr::DefProc::is_decl() {
+    return false;
+}

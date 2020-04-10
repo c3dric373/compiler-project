@@ -429,12 +429,19 @@ BasicBlock::add_IRInstr(int line, int column, IRInstr::Operation op, Type t,
             int offset = 0;
             switch (op) {
                 case IRInstr::copy :
+
                 case IRInstr::and_ :
+
                 case IRInstr::xor_ :
+
                 case IRInstr::or_ :
+
                 case IRInstr::add :
+
                 case IRInstr::sub :
+
                 case IRInstr::mul :
+
                 case IRInstr::neg :
                     offset = this->cfg->get_var_index(this->bloc, param);
                     break;
